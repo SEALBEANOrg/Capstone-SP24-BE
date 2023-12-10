@@ -43,6 +43,8 @@ namespace Services.Services
             studentClass.Status = 1;
             studentClass.CreatedBy = currentUserId;
             studentClass.ModifiedBy = currentUserId;
+            studentClass.CreatedOn = DateTime.Now;
+            studentClass.ModifiedOn = DateTime.Now;
 
             try
             {
@@ -84,6 +86,11 @@ namespace Services.Services
             if (studentClass == null)
             {
                 throw new Exception("Lớp học không tồn tại");
+            }
+
+            if (studentClass.Status == 0)
+            {
+                throw new Exception("Lớp đã ngừng hoạt động");
             }
 
             var currentUser = await GetCurrentUser();
@@ -138,7 +145,6 @@ namespace Services.Services
             var studentClass = await _unitOfWork.StudentClassRepo.FindByField(x => x.ClassId == id);
             var studentClassViewModels = _mapper.Map<StudentClassViewModels>(studentClass);
             return studentClassViewModels;
-
         }
 
         public async Task<bool> UpdateStatusOfStudentClass(Guid id, int status)
@@ -175,6 +181,11 @@ namespace Services.Services
             if (studentClass == null)
             {
                 throw new Exception("Lớp học không tồn tại");
+            }
+
+            if (studentClass.Status == 0)
+            {
+                throw new Exception("Lớp đã ngừng hoạt động");
             }
 
             var currentUser = await GetCurrentUser();
@@ -221,6 +232,11 @@ namespace Services.Services
             if (studentClass == null)
             {
                 throw new Exception("Lớp học không tồn tại");
+            }
+
+            if (studentClass.Status == 0)
+            {
+                throw new Exception("Lớp đã ngừng hoạt động");
             }
 
             var currentUser = await GetCurrentUser();
@@ -302,6 +318,11 @@ namespace Services.Services
             if (studentClass == null)
             {
                 throw new Exception("Lớp không tồn tại.");
+            }
+
+            if (studentClass.Status == 0)
+            {
+                throw new Exception("Lớp đã ngừng hoạt động");
             }
 
             var list = new List<Student>();

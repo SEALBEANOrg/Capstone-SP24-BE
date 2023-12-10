@@ -152,5 +152,17 @@ namespace Services.Services
             var requestViewModels = _mapper.Map<IEnumerable<Request>>(requests);
             return requestViewModels;
         }
+
+        public async Task<UserInfo> FindUserById(Guid guid)
+        {
+            var user = await _unitOfWork.UserRepo.FindByField(x => x.UserId == guid);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            return _mapper.Map<UserInfo>(user);
+        }
     }
 }

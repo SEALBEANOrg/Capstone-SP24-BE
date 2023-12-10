@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 
@@ -49,6 +50,7 @@ namespace WebAPI.Controllers
         /// Just For SchoolAdmin
         /// </summary>
         [HttpGet("GetTeacherOfMySchool")]
+        [Authorize(Roles = "2")]
         public async Task<IActionResult> GetTeacherOfMySchool()
         {
             try
@@ -78,6 +80,7 @@ namespace WebAPI.Controllers
         /// See all class in my school
         /// </summary>
         [HttpGet("GetAllClassOfMySchool")]
+        [Authorize(Roles = "1,2")]
         public async Task<IActionResult> GetAllClassOfMySchool()
         {
             try
@@ -107,6 +110,7 @@ namespace WebAPI.Controllers
         /// Remove Teacher From School
         /// </summary>
         [HttpPut("RemoveTeacherFromSchool/{teacherId}")]
+        [Authorize(Roles = "2")]
         public async Task<IActionResult> RemoveTeacherFromSchool(Guid teacherId)
         {
             try

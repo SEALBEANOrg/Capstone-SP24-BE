@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Services.ViewModels;
@@ -7,6 +8,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "1")]
     public class StudentControllers : ControllerBase
     {
         private readonly IStudentServices _studentServices;
@@ -60,6 +62,7 @@ namespace WebAPI.Controllers
         /// </summary>
         /// <param name="studentId"></param>
         /// <returns></returns>
+        [Authorize(Roles = "2")]
         [HttpGet("MoveOutStudent")]
         public async Task<IActionResult> MoveOutStudent(Guid studentId)
         {

@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
+using System.Data;
 
 namespace WebAPI.Controllers
 {
@@ -24,6 +26,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("/Request/RequestJoinSchool")]
+        [Authorize(Roles = "1")]
         public async Task<IActionResult> RequestJoinSchool([FromBody] Guid schoolId)
         {
             try
@@ -48,6 +51,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("/Request/ResponseRequest/{userId}")]
+        [Authorize(Roles = "2")]
         public async Task<IActionResult> ResponseRequest(Guid userId, [FromBody] bool isAccept)
         {
             try
@@ -72,6 +76,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetListRequestToMySchool")]
+        [Authorize(Roles = "2")]
         public async Task<IActionResult> GetListRequestToMySchool()
         {
             try

@@ -8,7 +8,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "1")]
+    [Authorize(Roles = "1, 2")]
     public class StudentClassControllers : ControllerBase
     {
         private readonly IStudentClassServices _studentClassServices;
@@ -90,6 +90,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("AddStudentIntoClass")]
+        [Authorize(Roles = "1")]
         public async Task<IActionResult> AddStudentIntoClass([FromBody] StudentCreate studentClassCreate)
         {
             try
@@ -113,6 +114,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("RemoveStudentFromClass/{studentId}")]
+        [Authorize(Roles = "1")]
         public async Task<IActionResult> RemoveStudentFromClass(Guid studentId)
         {
             try
@@ -136,6 +138,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("CreateClass")]
+        [Authorize(Roles = "1")]
         public async Task<IActionResult> CreateClass([FromBody] StudentClassCreate studentClassCreate)
         {
             try
@@ -159,6 +162,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateClass")]
+        [Authorize(Roles = "1")]
         public async Task<IActionResult> UpdateClass([FromBody] StudentClassUpdate studentClassUpdate)
         {
             try
@@ -182,6 +186,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteClass/{classId}")]
+        [Authorize(Roles = "1")]
         public async Task<IActionResult> DeleteClass(Guid classId)
         {
             try
@@ -228,6 +233,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("ImportExcelToAddStudent/{classId}")]
+        [Authorize(Roles = "1")]
         public async Task<IActionResult> ImportExcelToAddStudent(IFormFile file, Guid classId)
         {
             try
