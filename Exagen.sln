@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "WebAPI\WebAPI.csproj", "{DD81EA85-4B13-4D65-95CD-B76CCFF7C271}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "WebAPI\WebAPI.csproj", "{DD81EA85-4B13-4D65-95CD-B76CCFF7C271}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories", "Repositories\Repositories.csproj", "{EDD4E8C7-4D55-4E91-81A1-D78BDBEC193D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repositories", "Repositories\Repositories.csproj", "{EDD4E8C7-4D55-4E91-81A1-D78BDBEC193D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{3D789341-C32C-4B20-AFF0-B65A4081AA8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{3D789341-C32C-4B20-AFF0-B65A4081AA8B}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ExagenSharedProject", "ExagenSharedProject\ExagenSharedProject.shproj", "{E606A442-D8A3-4086-BB27-D145DD694D73}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,5 +35,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0DA8E77-59FC-4956-8551-CDFCD2F4C7A8}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		ExagenSharedProject\ExagenSharedProject.projitems*{e606a442-d8a3-4086-bb27-d145dd694d73}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

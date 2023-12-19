@@ -257,5 +257,23 @@ namespace WebAPI.Controllers
             
         }
 
+
+        [AllowAnonymous]
+        [HttpPost("SendImage")]
+        public async Task<IActionResult> SendImage([FromBody] string base64Image)
+        {
+            if (string.IsNullOrEmpty(base64Image))
+            {
+                return BadRequest();
+            }
+
+            return Ok(new ResultForScan { Base64Image = base64Image, ResultString = "1:A|2:B|3:D|4:|5:B,C|6:A,B,C,D" });
+        }
     }
+}
+
+public class ResultForScan
+{
+    public string Base64Image { get; set; }
+    public string ResultString { get; set; }
 }
