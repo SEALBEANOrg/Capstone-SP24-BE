@@ -43,7 +43,7 @@ namespace Services.Services
 
         public async Task<UserInfo> FindUserByEmail(string email)
         {
-            var user = await _unitOfWork.UserRepo.FindByField(x => x.Email == email);
+            var user = await _unitOfWork.UserRepo.FindByField(user => user.Email == email);
             var userInfo = _mapper.Map<UserInfo>(user);
             return userInfo;
         }
@@ -62,7 +62,7 @@ namespace Services.Services
         public async Task<bool> RequestJoinSchool(Guid schoolId)
         {
             //var currentUser = await _unitOfWork.UserRepo.FindByField(x => x.UserId == userId);
-            var currentUser = await _unitOfWork.UserRepo.FindByField(x => x.UserId == _claimsService.GetCurrentUser);
+            var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == _claimsService.GetCurrentUser);
 
             if (currentUser.Status == 0)
             {
@@ -78,7 +78,7 @@ namespace Services.Services
             }
             else if (currentUser.Status == 1)
             {
-                var school = await _unitOfWork.SchoolRepo.FindByField(x => x.SchoolId == schoolId);
+                var school = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == schoolId);
                 
                 if (school == null)
                 {
@@ -115,7 +115,9 @@ namespace Services.Services
 
         public async Task<bool> ResponseRequest(Guid userId, bool isAccept)
         {
-            var user = await _unitOfWork.UserRepo.FindByField(x => x.UserId == userId);
+            var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == userId);
+            var currentUser = await GetCurrentUser();
+
             if (user == null)
             {
                 throw new Exception("Tài khoản không tồn tại");
@@ -132,7 +134,7 @@ namespace Services.Services
             }
 
             user.ModifiedOn = DateTime.Now;
-            user.ModifiedBy = await GetCurrentUser();
+            user.ModifiedBy = currentUser;
 
             _unitOfWork.UserRepo.Update(user);
             
@@ -142,8 +144,8 @@ namespace Services.Services
         public async Task<IEnumerable<Request>> GetListRequestToMySchool()
         {
             var currentUserId = _claimsService.GetCurrentUser;
-            var currentUser = await _unitOfWork.UserRepo.FindByField(x => x.UserId == currentUserId);
-            var requests = await _unitOfWork.UserRepo.FindListByField(x => x.SchoolId == currentUser.SchoolId && x.Status == 2);
+            var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
+            var requests = await _unitOfWork.UserRepo.FindListByField(user => user.SchoolId == currentUser.SchoolId && user.Status == 2);
 
             if (requests == null)
             {
@@ -156,7 +158,7 @@ namespace Services.Services
 
         public async Task<UserInfo> FindUserById(Guid guid)
         {
-            var user = await _unitOfWork.UserRepo.FindByField(x => x.UserId == guid);
+            var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == guid);
 
             if (user == null)
             {

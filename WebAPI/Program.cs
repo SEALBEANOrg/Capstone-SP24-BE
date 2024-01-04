@@ -69,7 +69,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "TrialAPI", Version = "v1" });
 
-    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    c.AddSecurityDefinition("JWT", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme",
         Name = "Authorization",

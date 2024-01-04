@@ -18,7 +18,7 @@ namespace Services.Services
 
         public async Task<StudentViewModels> GetStudentById(Guid studentId)
         {
-            var student = await _unitOfWork.StudentRepo.FindByField(x => x.StudentId == studentId);
+            var student = await _unitOfWork.StudentRepo.FindByField(student => student.StudentId == studentId);
             if (student == null)
             {
                 throw new Exception("Học sinh không tồn tại.");
@@ -30,8 +30,8 @@ namespace Services.Services
 
         public async Task<IEnumerable<StudentViewModels>> GetStudentsOfClass(Guid classId, Guid currentUser)
         {
-            var studentClass = await _unitOfWork.StudentClassRepo.FindByField(x => x.ClassId == classId);
-            var user = await _unitOfWork.UserRepo.FindByField(x => x.UserId == currentUser);
+            var studentClass = await _unitOfWork.StudentClassRepo.FindByField(studentClass => studentClass.ClassId == classId);
+            var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUser);
 
             if (studentClass == null)
             {
@@ -42,7 +42,7 @@ namespace Services.Services
             {
                 throw new Exception("Lớp này thuộc phận sự của trường, bạn không phải giáo viên trường này.");
             }
-            var students = await _unitOfWork.StudentRepo.FindListByField(x => x.ClassId == classId);
+            var students = await _unitOfWork.StudentRepo.FindListByField(students => students.ClassId == classId);
 
             if (students == null)
             {
@@ -60,13 +60,13 @@ namespace Services.Services
 
         public async Task<StudentViewModels> UpdateStudent(StudentUpdate studentUpdate, Guid currentUser)
         {
-            var student = await _unitOfWork.StudentRepo.FindByField(x => x.StudentId == studentUpdate.StudentId);
+            var student = await _unitOfWork.StudentRepo.FindByField(student => student.StudentId == studentUpdate.StudentId);
             if (student == null)
             {
                 throw new Exception("Học sinh không tồn tại.");
             }
 
-            var studentClass = await _unitOfWork.StudentClassRepo.FindByField(x => x.ClassId == student.ClassId);
+            var studentClass = await _unitOfWork.StudentClassRepo.FindByField(studentClass => studentClass.ClassId == student.ClassId);
 
             if (studentClass.CreatedBy != currentUser)
             {

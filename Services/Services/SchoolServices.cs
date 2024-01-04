@@ -18,8 +18,8 @@ namespace Services.Services
 
         public async Task<IEnumerable<StudentClassViewModels>> GetAllClassOfMySchool(Guid currentUserId)
         {
-            var schoolId = (await _unitOfWork.UserRepo.FindByField(x => x.UserId == currentUserId)).SchoolId;
-            var classes = await _unitOfWork.StudentClassRepo.FindListByField(x => x.SchoolId == schoolId);
+            var schoolId = (await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId)).SchoolId;
+            var classes = await _unitOfWork.StudentClassRepo.FindListByField(studentClass => studentClass.SchoolId == schoolId);
             var studentClassViewModels = _mapper.Map<IEnumerable<StudentClassViewModels>>(classes);
             
             return studentClassViewModels;
@@ -34,9 +34,9 @@ namespace Services.Services
 
         public async Task<IEnumerable<UserViewModels>> GetTeacherOfMySchool(Guid currentUserId)
         {
-            var user = await _unitOfWork.UserRepo.FindByField(x => x.UserId == currentUserId);
+            var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
 
-            var teachers = await _unitOfWork.UserRepo.FindListByField(x => x.SchoolId == user.SchoolId && x.UserType == 1);
+            var teachers = await _unitOfWork.UserRepo.FindListByField(user => user.SchoolId == user.SchoolId && x.UserType == 1);
 
             if (teachers.Count() <= 0)
             {
@@ -49,13 +49,13 @@ namespace Services.Services
 
         public async Task<bool> RemoveTeacherFromSchool(Guid teacherId, Guid currentUser)
         {
-            var teacher = await _unitOfWork.UserRepo.FindByField(x => x.UserId == teacherId);
+            var teacher = await _unitOfWork.UserRepo.FindByField(user => user.UserId == teacherId);
             if (teacher == null)
             {
                 return false;
             }
 
-            var curUser = await _unitOfWork.UserRepo.FindByField(x => x.UserId == currentUser);
+            var curUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUser);
             if (teacher.SchoolId != curUser.SchoolId || teacher.Status != 3)
             {
                 throw new Exception("Giáo viên này không thuộc phận sự của trường bạn.");
@@ -63,7 +63,7 @@ namespace Services.Services
 
             try
             {
-                var school = await _unitOfWork.SchoolRepo.FindByField(x => x.SchoolId == teacher.SchoolId);
+                var school = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == teacher.SchoolId);
                 
                 teacher.SchoolId = null;
                 teacher.ModifiedOn = DateTime.Now;
