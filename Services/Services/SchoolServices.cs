@@ -36,7 +36,7 @@ namespace Services.Services
         {
             var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
 
-            var teachers = await _unitOfWork.UserRepo.FindListByField(user => user.SchoolId == user.SchoolId && x.UserType == 1);
+            var teachers = await _unitOfWork.UserRepo.FindListByField(user => user.SchoolId == user.SchoolId && user.UserType == 1);
 
             if (teachers.Count() <= 0)
             {
