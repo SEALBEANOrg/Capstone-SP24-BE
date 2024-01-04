@@ -31,12 +31,12 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] string authToken)
+        public async Task<IActionResult> Login([FromBody] AuthToken authToken)
         {
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var jsonToken = tokenHandler.ReadToken(authToken);
+                var jsonToken = tokenHandler.ReadToken(authToken.Token);
 
                 var payload = ((JwtSecurityToken)jsonToken).Payload.SerializeToJson();
 
@@ -116,15 +116,15 @@ namespace WebAPI.Controllers
 
         [HttpPost("refresh-token")]
 
-        public async Task<IActionResult> refreshToken([FromBody] string tokenRequest)
+        public async Task<IActionResult> refreshToken([FromBody] AuthToken tokenRequest)
         {
-            if (!ValidateToken(tokenRequest))
+            if (!ValidateToken(tokenRequest.Token))
             {
                 return Unauthorized("Invalid refresh token");
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var jsonToken = tokenHandler.ReadToken(tokenRequest);
+            var jsonToken = tokenHandler.ReadToken(tokenRequest.Token);
 
             var payload = ((JwtSecurityToken)jsonToken).Payload.SerializeToJson();
 

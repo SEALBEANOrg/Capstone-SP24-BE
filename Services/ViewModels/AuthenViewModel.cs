@@ -11,6 +11,11 @@ namespace Services.ViewModels
     {
     }
 
+    public class AuthToken
+    {
+        public string Token { get; set; } = null!;
+    }
+
     public class UserLogin
     {
         public string iss { get; set; }
