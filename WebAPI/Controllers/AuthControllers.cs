@@ -81,19 +81,19 @@ namespace WebAPI.Controllers
                     }
                 }
 
-                bool isExistInFirebase = await _userServices.CheckExistInFirebase(userLogin.email);
-
-                if (!isExistInFirebase)
-                {
-                    var uid = await _userServices.RegisterAsync(userLogin.email);
-                }
-
                 if (loginResponse == null || (loginResponse != null && loginResponse.UserInfo.Status != 1))
                 {
                     return Unauthorized(new
                     {
                         Message = "Access denied, you are deactivated"
                     });
+                }
+
+                bool isExistInFirebase = await _userServices.CheckExistInFirebase(userLogin.email);
+
+                if (!isExistInFirebase)
+                {
+                    var uid = await _userServices.RegisterAsync(userLogin.email);
                 }
 
                 var accessToken = loginResponse.UserInfo.GenerateToken(AuthJWT.ACCESS_TOKEN_EXPIRED);
