@@ -36,7 +36,7 @@ namespace MiniStore.Service.Utilities
                 Issuer = configuration["JwtAuth:Issuer"],
                 Subject = new ClaimsIdentity(claimList),
                 Audience = configuration["JwtAuth:Audience"],
-                Expires = DateTime.UtcNow.AddMinutes(expiredDate),
+                Expires = DateTime.UtcNow.AddHours(expiredDate),
                 SigningCredentials = new SigningCredentials(
                                         new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256)
             };
