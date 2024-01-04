@@ -10,7 +10,6 @@ namespace Repositories.Models
         public Guid? TestId { get; set; }
         public Guid? UserId { get; set; }
         public Guid? SchoolId { get; set; }
-        public Guid? ProvinceId { get; set; }
         public int Type { get; set; }
         public int PermissionType { get; set; }
         public DateTime CreatedOn { get; set; }
@@ -19,8 +18,6 @@ namespace Repositories.Models
         public Guid ModifiedBy { get; set; }
         public int? ShareLevel { get; set; }
 
-        public virtual Province? Province { get; set; }
-        public virtual School? School { get; set; }
-        public virtual User? User { get; set; }
+        public virtual Question? Question { get; set; }
     }
 }

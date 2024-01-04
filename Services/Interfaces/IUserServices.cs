@@ -12,5 +12,7 @@ namespace Services.Interfaces
         Task<bool> ResponseRequest(Guid userId, bool isAccept);
         Task<Guid> GetCurrentUser();
         Task<IEnumerable<Request>> GetListRequestToMySchool();
+        Task<string> RegisterAsync(string email);
+        Task<bool> CheckExistInFirebase(string email);
     }
 }

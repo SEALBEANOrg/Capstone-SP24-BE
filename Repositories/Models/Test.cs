@@ -7,7 +7,6 @@ namespace Repositories.Models
     {
         public Guid TestId { get; set; }
         public Guid? SchoolId { get; set; }
-        public Guid ProvinceId { get; set; }
         public string Name { get; set; } = null!;
         public int TotalPaper { get; set; }
         public int NumOfDifferentPaper { get; set; }
@@ -19,8 +18,5 @@ namespace Repositories.Models
         public Guid CreatedBy { get; set; }
         public DateTime ModifiedOn { get; set; }
         public Guid ModifiedBy { get; set; }
-
-        public virtual Province Province { get; set; } = null!;
-        public virtual School? School { get; set; }
     }
 }

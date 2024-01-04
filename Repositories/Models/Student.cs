@@ -9,7 +9,5 @@ namespace Repositories.Models
         public Guid ClassId { get; set; }
         public string FullName { get; set; } = null!;
         public int? Grade { get; set; }
-
-        public virtual StudentClass Class { get; set; } = null!;
     }
 }

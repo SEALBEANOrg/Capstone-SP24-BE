@@ -5,7 +5,6 @@ namespace Repositories
     public interface IUnitOfWork
     {
         public IPaperRepo PaperRepo { get; }
-        public IProvinceRepo ProvinceRepo { get; }
         public IQuestionRepo QuestionRepo { get; }
         public IQuestionTransactionRepo QuestionTransactionRepo { get; }
         public ISchoolRepo SchoolRepo { get; }

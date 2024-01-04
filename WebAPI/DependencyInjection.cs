@@ -20,7 +20,6 @@ namespace WebAPI
 
             #region Repositories
             services.AddScoped<IPaperRepo, PaperRepo>();
-            services.AddScoped<IProvinceRepo, ProvinceRepo>();
             services.AddScoped<IQuestionRepo, QuestionRepo>();
             services.AddScoped<IQuestionTransactionRepo, QuestionTransactionRepo>();
             services.AddScoped<ISchoolRepo, SchoolRepo>();
@@ -36,7 +35,6 @@ namespace WebAPI
             #region Services
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPaperServices, PaperServices>();
-            services.AddScoped<IProvinceServices, ProvinceServices>();
             services.AddScoped<IQuestionServices, QuestionServices>();
             services.AddScoped<IQuestionTransactionServices, QuestionTransactionServices>();
             services.AddScoped<ISchoolServices, SchoolServices>();

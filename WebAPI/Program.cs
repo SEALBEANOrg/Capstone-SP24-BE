@@ -3,7 +3,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using WebAPI;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using WebAPI.Middlewares;
+using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,9 +17,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddInfrastructure();
 builder.Services.AddServices();
 
-#region JWT
+#region JWT(use)
 
 IConfiguration config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -42,19 +46,49 @@ builder.Services.AddAuthentication(x =>
 
 #endregion
 
+#region OAuth(not use)
+
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+//})
+//.AddCookie()
+//.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+//{
+//    options.ClientId = builder.Configuration["GoogleKeys:ClientId"];
+//    options.ClientSecret = builder.Configuration["GoogleKeys:ClientSecret"];
+//});
+
+#endregion
+
+
 #region Swagger_Jwt
 
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "TrialAPI", Version = "v1" });
 
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer"
+        //Type = SecuritySchemeType.OAuth2,
+        //Flows = new OpenApiOAuthFlows
+        //{
+        //    ClientCredentials = new OpenApiOAuthFlow
+        //    {
+        //        AuthorizationUrl = new Uri("https://accounts.google.com/o/oauth2/auth"),
+        //        TokenUrl = new Uri("https://oauth2.googleapis.com/token"),
+        //        Scopes = new Dictionary<string, string>
+        //        {
+        //            { "api1", "Exagen API" }
+        //        }
+        //    }
+        //}
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -65,6 +99,7 @@ builder.Services.AddSwaggerGen(c =>
                             Reference = new OpenApiReference
                             {
                                 Type = ReferenceType.SecurityScheme,
+                                //Id = "oauth2"
                                 Id = JwtBearerDefaults.AuthenticationScheme
                             }
                         },
@@ -100,6 +135,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowCors");
+
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 

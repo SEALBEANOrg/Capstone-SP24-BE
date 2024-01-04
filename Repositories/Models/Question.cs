@@ -8,7 +8,6 @@ namespace Repositories.Models
         public Guid QuestionId { get; set; }
         public Guid? SectionId { get; set; }
         public Guid? SchoolId { get; set; }
-        public Guid ProvinceId { get; set; }
         public string QuestionContent { get; set; } = null!;
         public int Difficulty { get; set; }
         public int? Grade { get; set; }
@@ -18,9 +17,5 @@ namespace Repositories.Models
         public Guid CreatedBy { get; set; }
         public DateTime ModifiedOn { get; set; }
         public Guid ModifiedBy { get; set; }
-
-        public virtual Province Province { get; set; } = null!;
-        public virtual School? School { get; set; }
-        public virtual SubjectSection? Section { get; set; }
     }
 }

@@ -25,8 +25,8 @@ namespace Services.ViewModels
         //public string given_name { get; set; }
         //public string family_name { get; set; }
         //public string locale { get; set; }
-        //public string iat { get; set; }
-        //public string exp { get; set; }
+        public long iat { get; set; }
+        public long exp { get; set; }
 
     }
 
@@ -58,6 +58,7 @@ namespace Services.ViewModels
 
     public class UserSignUp
     {
+        public Guid? Guid { get; set; }
         public string Email { get; set; }
         public string FullName { get; set; } = null!;
     }

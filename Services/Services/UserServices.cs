@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FirebaseAdmin.Auth;
 using Repositories;
 using Repositories.Models;
 using Services.Interfaces;
@@ -163,6 +164,43 @@ namespace Services.Services
             }
 
             return _mapper.Map<UserInfo>(user);
+        }
+
+        public async Task<string> RegisterAsync(string email)
+        {
+            var userArgs = new UserRecordArgs()
+            {
+                Email = email,
+
+            };
+            
+            var userRecord = await FirebaseAuth.DefaultInstance.CreateUserAsync(userArgs);
+
+            //add role into firebase
+            var claims = new Dictionary<string, object>()
+            {
+                {"role", "1"}
+            };
+            await FirebaseAuth.DefaultInstance.SetCustomUserClaimsAsync(userRecord.Uid, claims);
+
+            return userRecord.Uid;
+        }
+
+        public async Task<bool> CheckExistInFirebase(string email)
+        {   try
+            {
+                var userRecord = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(email);
+
+                if (userRecord == null)
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

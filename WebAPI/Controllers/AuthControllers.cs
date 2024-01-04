@@ -14,6 +14,8 @@ using System;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.Sockets;
+using Google.Apis.Auth;
+using System.Linq.Expressions;
 
 namespace WebAPI.Controllers
 {
@@ -31,18 +33,27 @@ namespace WebAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] string authToken)
         {
-            try 
-            { 
+            try
+            {
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var jsonToken = tokenHandler.ReadToken(authToken);
 
                 var payload = ((JwtSecurityToken)jsonToken).Payload.SerializeToJson();
-                    
+
                 var userLogin = JsonSerializer.Deserialize<UserLogin>(payload);
-    
+
+                var expDate = DateTimeOffset.FromUnixTimeSeconds(userLogin.exp).DateTime;
+                if (expDate < DateTime.UtcNow)
+                {
+                    return Unauthorized(new
+                    {
+                        Message = "Access denied, token is expired"
+                    });
+                }
+
                 LoginResponse loginResponse = null;
                 UserInfo userInfo = await _userServices.FindUserByEmail(userLogin.email);
-                    
+
                 if (userInfo != null)
                 {
                     loginResponse = new LoginResponse
@@ -52,14 +63,15 @@ namespace WebAPI.Controllers
                 }
                 else
                 {
+
                     UserSignUp userSignUp = new UserSignUp
                     {
                         Email = userLogin.email,
                         FullName = userLogin.name
                     };
-                        
+
                     userInfo = await _userServices.CreateNewUser(userSignUp);
-                        
+
                     if (userInfo != null)
                     {
                         loginResponse = new LoginResponse
@@ -67,6 +79,13 @@ namespace WebAPI.Controllers
                             UserInfo = userInfo
                         };
                     }
+                }
+
+                bool isExistInFirebase = await _userServices.CheckExistInFirebase(userLogin.email);
+
+                if (!isExistInFirebase)
+                {
+                    var uid = await _userServices.RegisterAsync(userLogin.email);
                 }
 
                 if (loginResponse == null || (loginResponse != null && loginResponse.UserInfo.Status != 1))
@@ -79,7 +98,7 @@ namespace WebAPI.Controllers
 
                 var accessToken = loginResponse.UserInfo.GenerateToken(AuthJWT.ACCESS_TOKEN_EXPIRED);
                 var refreshToken = loginResponse.UserInfo.GenerateToken(AuthJWT.REFRESH_TOKEN_EXPIRED);
-                    
+
                 loginResponse.Token = accessToken;
                 loginResponse.RefreshToken = refreshToken;
 
@@ -88,9 +107,9 @@ namespace WebAPI.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-                return BadRequest (new 
-                { 
-                    Message = "Login Failed: " + e.Message 
+                return BadRequest(new
+                {
+                    Message = "Login Failed: " + e.Message
                 });
             }
         }
@@ -112,8 +131,8 @@ namespace WebAPI.Controllers
             var userLogin = JsonSerializer.Deserialize<RefreshLogin>(payload);
 
 
-            string email = userLogin.nameid;
-            UserInfo userInfo = await _userServices.FindUserById(Guid.Parse(userLogin.nameid));
+            Guid email = Guid.Parse(userLogin.nameid);
+            UserInfo userInfo = await _userServices.FindUserById(email);
             
             if (userInfo == null)
             {
@@ -127,6 +146,9 @@ namespace WebAPI.Controllers
 
             string newToken = loginResponse.UserInfo.GenerateToken(AuthJWT.ACCESS_TOKEN_EXPIRED);
             string newRefreshToken = loginResponse.UserInfo.GenerateToken(AuthJWT.REFRESH_TOKEN_EXPIRED);
+
+            loginResponse.Token = newToken;
+            loginResponse.RefreshToken = newRefreshToken;
 
             return Ok(loginResponse);
         }

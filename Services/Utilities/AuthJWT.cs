@@ -26,7 +26,7 @@ namespace MiniStore.Service.Utilities
             var claimList = new List<Claim>()
             {
                 new Claim(JwtRegisteredClaimNames.NameId, user.UserId.ToString()),
-                new Claim(ClaimTypes.Name, user.FullName),
+                //new Claim(ClaimTypes.Name, user.FullName),
                 new Claim(JwtRegisteredClaimNames.Typ, user.Status.ToString()),
                 new Claim(ClaimTypes.Role, user.UserType.ToString())
             };
@@ -36,7 +36,7 @@ namespace MiniStore.Service.Utilities
                 Issuer = configuration["JwtAuth:Issuer"],
                 Subject = new ClaimsIdentity(claimList),
                 Audience = configuration["JwtAuth:Audience"],
-                Expires = DateTime.UtcNow.AddHours(expiredDate),
+                Expires = DateTime.UtcNow.AddMinutes(expiredDate),
                 SigningCredentials = new SigningCredentials(
                                         new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256)
             };

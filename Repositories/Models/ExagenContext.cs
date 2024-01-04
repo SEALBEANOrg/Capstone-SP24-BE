@@ -17,9 +17,7 @@ namespace Repositories.Models
         }
 
         public virtual DbSet<Paper> Papers { get; set; } = null!;
-        public virtual DbSet<Province> Provinces { get; set; } = null!;
         public virtual DbSet<Question> Questions { get; set; } = null!;
-        public virtual DbSet<QuestionTransaction> QuestionTransactions { get; set; } = null!;
         public virtual DbSet<School> Schools { get; set; } = null!;
         public virtual DbSet<Share> Shares { get; set; } = null!;
         public virtual DbSet<Student> Students { get; set; } = null!;
@@ -60,84 +58,30 @@ namespace Repositories.Models
                 entity.Property(e => e.TestId).HasColumnName("TestID");
             });
 
-            modelBuilder.Entity<Province>(entity =>
-            {
-                entity.ToTable("Province");
-
-                entity.Property(e => e.ProvinceId)
-                    .HasColumnName("ProvinceID")
-                    .HasDefaultValueSql("(newsequentialid())");
-
-                entity.Property(e => e.AdminId).HasColumnName("AdminID");
-
-                entity.Property(e => e.Name).HasMaxLength(100);
-            });
-
             modelBuilder.Entity<Question>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.QuestionId)
+                    .HasName("pk_question")
+                    .IsClustered(false);
 
                 entity.ToTable("Question");
 
                 entity.HasIndex(e => e.Grade, "IX_Question_Grade")
                     .IsClustered();
 
-                entity.HasIndex(e => new { e.Grade, e.QuestionId }, "IX_Question_ID");
+                entity.Property(e => e.QuestionId)
+                    .HasColumnName("QuestionID")
+                    .HasDefaultValueSql("(newsequentialid())");
 
                 entity.Property(e => e.CreatedOn).HasColumnType("datetime");
 
                 entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
-
-                entity.Property(e => e.ProvinceId).HasColumnName("ProvinceID");
-
-                entity.Property(e => e.QuestionId)
-                    .HasColumnName("QuestionID")
-                    .HasDefaultValueSql("(newsequentialid())");
 
                 entity.Property(e => e.SchoolId).HasColumnName("SchoolID");
 
                 entity.Property(e => e.SectionId).HasColumnName("SectionID");
 
                 entity.Property(e => e.Subject).HasComputedColumnSql("([dbo].[GetSubjectForSection]([SectionID]))", false);
-
-                entity.HasOne(d => d.Province)
-                    .WithMany()
-                    .HasForeignKey(d => d.ProvinceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
-
-                entity.HasOne(d => d.School)
-                    .WithMany()
-                    .HasForeignKey(d => d.SchoolId);
-
-                entity.HasOne(d => d.Section)
-                    .WithMany()
-                    .HasForeignKey(d => d.SectionId);
-            });
-
-            modelBuilder.Entity<QuestionTransaction>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("QuestionTransaction");
-
-                entity.HasIndex(e => e.CreatedOn, "IX_QuestionTransaction_CreatedOn")
-                    .IsClustered();
-
-                entity.HasIndex(e => new { e.CreatedOn, e.QuestionTransactionId }, "IX_QuestionTransaction_ID");
-
-                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
-
-                entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
-
-                entity.Property(e => e.QuestionTransactionId)
-                    .HasColumnName("QuestionTransactionID")
-                    .HasDefaultValueSql("(newsequentialid())");
-
-                entity.Property(e => e.UserId).HasColumnName("UserID");
-
-                entity.HasOne(d => d.User)
-                    .WithMany()
-                    .HasForeignKey(d => d.UserId);
             });
 
             modelBuilder.Entity<School>(entity =>
@@ -157,13 +101,6 @@ namespace Repositories.Models
                 entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
 
                 entity.Property(e => e.Name).HasMaxLength(255);
-
-                entity.Property(e => e.ProvinceId).HasColumnName("ProvinceID");
-
-                entity.HasOne(d => d.Province)
-                    .WithMany(p => p.Schools)
-                    .HasForeignKey(d => d.ProvinceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             modelBuilder.Entity<Share>(entity =>
@@ -181,8 +118,6 @@ namespace Repositories.Models
 
                 entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
 
-                entity.Property(e => e.ProvinceId).HasColumnName("ProvinceID");
-
                 entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
 
                 entity.Property(e => e.SchoolId).HasColumnName("SchoolID");
@@ -191,23 +126,15 @@ namespace Repositories.Models
                     .HasColumnName("ShareID")
                     .HasDefaultValueSql("(newsequentialid())");
 
-                entity.Property(e => e.ShareLevel).HasComputedColumnSql("([dbo].[GetShareLevel]([UserID],[SchoolID],[ProvinceID]))", false);
+                entity.Property(e => e.ShareLevel).HasComputedColumnSql("([dbo].[GetShareLevel]([UserID],[SchoolID]))", false);
 
                 entity.Property(e => e.TestId).HasColumnName("TestID");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
-                entity.HasOne(d => d.Province)
+                entity.HasOne(d => d.Question)
                     .WithMany()
-                    .HasForeignKey(d => d.ProvinceId);
-
-                entity.HasOne(d => d.School)
-                    .WithMany()
-                    .HasForeignKey(d => d.SchoolId);
-
-                entity.HasOne(d => d.User)
-                    .WithMany()
-                    .HasForeignKey(d => d.UserId)
+                    .HasForeignKey(d => d.QuestionId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
@@ -224,16 +151,12 @@ namespace Repositories.Models
                 entity.Property(e => e.FullName).HasMaxLength(255);
 
                 entity.Property(e => e.Grade).HasComputedColumnSql("([dbo].[GetGradeForStudent]([ClassID]))", false);
-
-                entity.HasOne(d => d.Class)
-                    .WithMany(p => p.Students)
-                    .HasForeignKey(d => d.ClassId);
             });
 
             modelBuilder.Entity<StudentClass>(entity =>
             {
                 entity.HasKey(e => e.ClassId)
-                    .HasName("PK__StudentC__CB1927A0D45028BC");
+                    .HasName("PK__StudentC__CB1927A0FC6AC89F");
 
                 entity.ToTable("StudentClass");
 
@@ -250,17 +173,12 @@ namespace Repositories.Models
                 entity.Property(e => e.SchoolId).HasColumnName("SchoolID");
 
                 entity.Property(e => e.TotalStudent).HasComputedColumnSql("([dbo].[CountStudent]([ClassID]))", false);
-
-                entity.HasOne(d => d.School)
-                    .WithMany(p => p.StudentClasses)
-                    .HasForeignKey(d => d.SchoolId)
-                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<SubjectSection>(entity =>
             {
                 entity.HasKey(e => e.SectionId)
-                    .HasName("PK__SubjectS__80EF089230C2DE41");
+                    .HasName("PK__SubjectS__80EF08924CD6E0D9");
 
                 entity.ToTable("SubjectSection");
 
@@ -296,23 +214,11 @@ namespace Repositories.Models
 
                 entity.Property(e => e.Name).HasMaxLength(255);
 
-                entity.Property(e => e.ProvinceId).HasColumnName("ProvinceID");
-
                 entity.Property(e => e.SchoolId).HasColumnName("SchoolID");
 
                 entity.Property(e => e.TestId)
                     .HasColumnName("TestID")
                     .HasDefaultValueSql("(newsequentialid())");
-
-                entity.HasOne(d => d.Province)
-                    .WithMany()
-                    .HasForeignKey(d => d.ProvinceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
-
-                entity.HasOne(d => d.School)
-                    .WithMany()
-                    .HasForeignKey(d => d.SchoolId)
-                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<TestResult>(entity =>
@@ -337,17 +243,13 @@ namespace Repositories.Models
                     .HasDefaultValueSql("(newsequentialid())");
 
                 entity.Property(e => e.TestId).HasColumnName("TestID");
-
-                entity.HasOne(d => d.Class)
-                    .WithMany()
-                    .HasForeignKey(d => d.ClassId);
             });
 
             modelBuilder.Entity<User>(entity =>
             {
                 entity.ToTable("User");
 
-                entity.HasIndex(e => e.Email, "UQ__User__A9D1053431D5D4EA")
+                entity.HasIndex(e => e.Email, "UQ__User__A9D10534290506D2")
                     .IsUnique();
 
                 entity.Property(e => e.UserId)
@@ -365,11 +267,6 @@ namespace Repositories.Models
                 entity.Property(e => e.Phone).HasMaxLength(20);
 
                 entity.Property(e => e.SchoolId).HasColumnName("SchoolID");
-
-                entity.HasOne(d => d.School)
-                    .WithMany(p => p.Users)
-                    .HasForeignKey(d => d.SchoolId)
-                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             OnModelCreatingPartial(modelBuilder);
