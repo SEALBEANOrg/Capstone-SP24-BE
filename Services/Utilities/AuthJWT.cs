@@ -11,7 +11,7 @@ namespace MiniStore.Service.Utilities
 {
     public static class AuthJWT
     {
-        public static readonly int ACCESS_TOKEN_EXPIRED = 2;
+        public static readonly int ACCESS_TOKEN_EXPIRED = 5;
         public static readonly int REFRESH_TOKEN_EXPIRED = 2 * 24;
 
         public static string GenerateToken(this UserInfo user, int expiredDate)
@@ -36,7 +36,7 @@ namespace MiniStore.Service.Utilities
                 Issuer = configuration["JwtAuth:Issuer"],
                 Subject = new ClaimsIdentity(claimList),
                 Audience = configuration["JwtAuth:Audience"],
-                Expires = DateTime.UtcNow.AddHours(expiredDate),
+                Expires = DateTime.UtcNow.AddMinutes(expiredDate),
                 SigningCredentials = new SigningCredentials(
                                         new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256)
             };
