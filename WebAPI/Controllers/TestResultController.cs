@@ -15,9 +15,9 @@ namespace WebAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("SendImage")]
-        public async Task<IActionResult> SendImage([FromBody] string base64Image)
+        public async Task<IActionResult> SendImage([FromBody] ResultForScanViewModel base64Image)
         {
-            if (string.IsNullOrEmpty(base64Image))
+            if (string.IsNullOrEmpty(base64Image.Base64Image))
             {
                 return BadRequest();
             }
@@ -25,7 +25,7 @@ namespace WebAPI.Controllers
             //code for call python script
             
 
-            return Ok(new ResultForScan { Base64Image = base64Image, ResultString = "1:A|2:B|3:D|4:|5:B,C|6:A,B,C,D" });
+            return Ok(new ResultForScan { Base64Image = base64Image.Base64Image, ResultString = "1:A|2:B|3:D|4:|5:B,C|6:A,B,C,D" });
         }
 
         [AllowAnonymous]
