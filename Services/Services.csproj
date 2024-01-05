@@ -21,4 +21,6 @@
     <ProjectReference Include="..\Repositories\Repositories.csproj" />
   </ItemGroup>
 
+  <Import Project="..\ExagenSharedProject\ExagenSharedProject.projitems" Label="Shared" />
+
 </Project>

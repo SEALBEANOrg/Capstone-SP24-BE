@@ -37,6 +37,7 @@ Global
 		SolutionGuid = {B0DA8E77-59FC-4956-8551-CDFCD2F4C7A8}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		ExagenSharedProject\ExagenSharedProject.projitems*{3d789341-c32c-4b20-aff0-b65a4081aa8b}*SharedItemsImports = 5
 		ExagenSharedProject\ExagenSharedProject.projitems*{e606a442-d8a3-4086-bb27-d145dd694d73}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
