@@ -39,6 +39,15 @@ namespace Services.Mapper
 
             #endregion
 
+            #region Question
+            CreateMap<QuestionRequest, Question>().ReverseMap();
+            CreateMap<Question, QuestionViewModels>().ReverseMap();
+            
+            #endregion
+
+            #region SubjectSection
+
+            #endregion
 
         }
 
