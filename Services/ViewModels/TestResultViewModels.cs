@@ -15,4 +15,9 @@ namespace Services.ViewModels
         public string Base64Image { get; set; }
         public string ResultString { get; set; }
     }
+
+    public class ResultForScanViewModel
+    {
+        public string Base64Image { get; set; }
+    }
 }
