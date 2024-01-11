@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ExagenSharedProject
 {
-    public static class Enum
+    public static class EnumStatus
     {
 
         //Create Status Enum for Question

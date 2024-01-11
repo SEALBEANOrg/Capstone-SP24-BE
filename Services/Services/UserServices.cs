@@ -204,5 +204,74 @@ namespace Services.Services
             }
             return true;
         }
+
+        public async Task<UserViewModels> GetProfile()
+        {
+            try
+            {
+                var currentUserId = _claimsService.GetCurrentUser;
+                var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
+
+                if (user == null)
+                {
+                    return null;
+                }
+
+                var userViewModels = _mapper.Map<UserViewModels>(user);
+                return userViewModels;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở UserServices - GetProfile: " + e.Message);
+            }
+        }
+
+        public async Task<bool> UpdateProfile(UserUpdate userUpdate)
+        {
+            try
+            {
+                var currentUserId = _claimsService.GetCurrentUser;
+                var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
+
+                if (string.IsNullOrEmpty(userUpdate.FullName))
+                {
+                    throw new Exception("Họ tên không được để trống");
+                }
+
+                bool isExistEmailInOtherUser = false;
+
+                if (userUpdate.Phone != null)
+                {
+                    var phoneInOtherUser = await _unitOfWork.UserRepo.FindByField(user => user.Phone == userUpdate.Phone && user.UserId != currentUserId);
+                    if (phoneInOtherUser != null)
+                    {
+                        isExistEmailInOtherUser = true;
+                    }
+                }
+
+                if (isExistEmailInOtherUser)
+                {
+                    throw new Exception("Số điện thoại đã được đăng ký ở một tài khoản khác");
+                }
+
+                user.FullName = userUpdate.FullName;
+                user.Phone = userUpdate.Phone;
+                user.ModifiedOn = DateTime.Now;
+                user.ModifiedBy = currentUserId;
+
+                _unitOfWork.UserRepo.Update(user);
+                var result = await _unitOfWork.SaveChangesAsync();
+                if (result <= 0)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở UserServices - UpdateProfile: " + e.Message);
+            }
+        }
     }
 }

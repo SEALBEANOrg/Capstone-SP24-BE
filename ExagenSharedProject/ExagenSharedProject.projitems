@@ -9,6 +9,6 @@
     <Import_RootNamespace>ExagenSharedProject</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Enum.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EnumStatus.cs" />
   </ItemGroup>
 </Project>

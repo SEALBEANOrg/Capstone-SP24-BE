@@ -13,6 +13,11 @@ namespace WebAPI.Controllers
     {
         private readonly ITestResultServices _testResultServices;
 
+        public TestResultController(ITestResultServices testResultServices)
+        {
+            _testResultServices = testResultServices;
+        }
+
         [AllowAnonymous]
         [HttpPost("SendImage")]
         public async Task<IActionResult> SendImage([FromBody] ResultForScanViewModel base64Image)
@@ -42,5 +47,20 @@ namespace WebAPI.Controllers
 
             return Ok();
         }
+
+        [AllowAnonymous]
+        [HttpGet("CheckPermissionAccessTest/{testCode}/{email}")]
+        public async Task<IActionResult> CheckPermissionAccessTest(string testCode, string email)
+        {
+            if (string.IsNullOrEmpty(testCode) || string.IsNullOrEmpty(email))
+            {
+                return BadRequest();
+            }
+
+            var result = await _testResultServices.CheckPermissionAccessTest(testCode, email);
+
+            return Ok(result);
+        }
+
     }
 }

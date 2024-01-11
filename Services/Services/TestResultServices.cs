@@ -15,5 +15,9 @@ namespace Services.Services
             _mapper = mapper;
         }
 
+        public Task<bool> CheckPermissionAccessTest(string testCode, string email)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -13,5 +13,7 @@ namespace Repositories.Models
         public Guid CreatedBy { get; set; }
         public DateTime ModifiedOn { get; set; }
         public Guid ModifiedBy { get; set; }
+
+        public virtual StudentClass Class { get; set; } = null!;
     }
 }

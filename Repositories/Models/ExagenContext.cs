@@ -66,7 +66,7 @@ namespace Repositories.Models
 
                 entity.ToTable("Question");
 
-                entity.HasIndex(e => e.Grade, "IX_Question_Grade")
+                entity.HasIndex(e => new { e.Grade, e.QuestionId }, "IDX_QUESTIONID")
                     .IsClustered();
 
                 entity.Property(e => e.QuestionId)
@@ -82,6 +82,14 @@ namespace Repositories.Models
                 entity.Property(e => e.SectionId).HasColumnName("SectionID");
 
                 entity.Property(e => e.Subject).HasComputedColumnSql("([dbo].[GetSubjectForSection]([SectionID]))", false);
+
+                entity.HasOne(d => d.School)
+                    .WithMany(p => p.Questions)
+                    .HasForeignKey(d => d.SchoolId);
+
+                entity.HasOne(d => d.Section)
+                    .WithMany(p => p.Questions)
+                    .HasForeignKey(d => d.SectionId);
             });
 
             modelBuilder.Entity<School>(entity =>
@@ -101,6 +109,8 @@ namespace Repositories.Models
                 entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
 
                 entity.Property(e => e.Name).HasMaxLength(255);
+
+                entity.Property(e => e.Province).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Share>(entity =>
@@ -136,6 +146,15 @@ namespace Repositories.Models
                     .WithMany()
                     .HasForeignKey(d => d.QuestionId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(d => d.School)
+                    .WithMany()
+                    .HasForeignKey(d => d.SchoolId);
+
+                entity.HasOne(d => d.User)
+                    .WithMany()
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Student>(entity =>
@@ -151,12 +170,16 @@ namespace Repositories.Models
                 entity.Property(e => e.FullName).HasMaxLength(255);
 
                 entity.Property(e => e.Grade).HasComputedColumnSql("([dbo].[GetGradeForStudent]([ClassID]))", false);
+
+                entity.HasOne(d => d.Class)
+                    .WithMany(p => p.Students)
+                    .HasForeignKey(d => d.ClassId);
             });
 
             modelBuilder.Entity<StudentClass>(entity =>
             {
                 entity.HasKey(e => e.ClassId)
-                    .HasName("PK__StudentC__CB1927A0FC6AC89F");
+                    .HasName("PK__StudentC__CB1927A07D757527");
 
                 entity.ToTable("StudentClass");
 
@@ -173,12 +196,17 @@ namespace Repositories.Models
                 entity.Property(e => e.SchoolId).HasColumnName("SchoolID");
 
                 entity.Property(e => e.TotalStudent).HasComputedColumnSql("([dbo].[CountStudent]([ClassID]))", false);
+
+                entity.HasOne(d => d.School)
+                    .WithMany(p => p.StudentClasses)
+                    .HasForeignKey(d => d.SchoolId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<SubjectSection>(entity =>
             {
                 entity.HasKey(e => e.SectionId)
-                    .HasName("PK__SubjectS__80EF08924CD6E0D9");
+                    .HasName("PK__SubjectS__80EF0892483F4592");
 
                 entity.ToTable("SubjectSection");
 
@@ -216,9 +244,16 @@ namespace Repositories.Models
 
                 entity.Property(e => e.SchoolId).HasColumnName("SchoolID");
 
+                entity.Property(e => e.TestCode).ValueGeneratedOnAdd();
+
                 entity.Property(e => e.TestId)
                     .HasColumnName("TestID")
                     .HasDefaultValueSql("(newsequentialid())");
+
+                entity.HasOne(d => d.School)
+                    .WithMany()
+                    .HasForeignKey(d => d.SchoolId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<TestResult>(entity =>
@@ -243,13 +278,17 @@ namespace Repositories.Models
                     .HasDefaultValueSql("(newsequentialid())");
 
                 entity.Property(e => e.TestId).HasColumnName("TestID");
+
+                entity.HasOne(d => d.Class)
+                    .WithMany()
+                    .HasForeignKey(d => d.ClassId);
             });
 
             modelBuilder.Entity<User>(entity =>
             {
                 entity.ToTable("User");
 
-                entity.HasIndex(e => e.Email, "UQ__User__A9D10534290506D2")
+                entity.HasIndex(e => e.Email, "UQ__User__A9D1053469AAB05D")
                     .IsUnique();
 
                 entity.Property(e => e.UserId)
@@ -267,6 +306,11 @@ namespace Repositories.Models
                 entity.Property(e => e.Phone).HasMaxLength(20);
 
                 entity.Property(e => e.SchoolId).HasColumnName("SchoolID");
+
+                entity.HasOne(d => d.School)
+                    .WithMany(p => p.Users)
+                    .HasForeignKey(d => d.SchoolId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             OnModelCreatingPartial(modelBuilder);

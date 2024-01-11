@@ -14,5 +14,7 @@ namespace Services.Interfaces
         Task<IEnumerable<Request>> GetListRequestToMySchool();
         Task<string> RegisterAsync(string email);
         Task<bool> CheckExistInFirebase(string email);
+        Task<UserViewModels> GetProfile();
+        Task<bool> UpdateProfile(UserUpdate userUpdate);
     }
 }

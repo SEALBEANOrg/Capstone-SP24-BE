@@ -5,6 +5,11 @@ namespace Repositories.Models
 {
     public partial class SubjectSection
     {
+        public SubjectSection()
+        {
+            Questions = new HashSet<Question>();
+        }
+
         public Guid SectionId { get; set; }
         public string? Description { get; set; }
         public int Grade { get; set; }
@@ -14,5 +19,7 @@ namespace Repositories.Models
         public Guid CreatedBy { get; set; }
         public DateTime ModifiedOn { get; set; }
         public Guid ModifiedBy { get; set; }
+
+        public virtual ICollection<Question> Questions { get; set; }
     }
 }

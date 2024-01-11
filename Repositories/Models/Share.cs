@@ -19,5 +19,7 @@ namespace Repositories.Models
         public int? ShareLevel { get; set; }
 
         public virtual Question? Question { get; set; }
+        public virtual School? School { get; set; }
+        public virtual User? User { get; set; }
     }
 }
