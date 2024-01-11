@@ -29,9 +29,9 @@ namespace Services.ViewModels
         public string Content { get; set; } = null!;
         public int Difficulty { get; set; }
         public List<string> Answers { get; set; }
+        public List<string> CorrectAnswers { get; set; }
         public int? Grade { get; set; }
         public int? Subject { get; set; }
-        public int IsUseToSell { get; set; }
     }
 
     public class QuestionUpdate
@@ -42,14 +42,15 @@ namespace Services.ViewModels
         public string Content { get; set; } = null!;
         public int Difficulty { get; set; }
         public List<string> Answers { get; set; }
+        public List<string> CorrectAnswers { get; set; }
         public int? Grade { get; set; }
         public int? Subject { get; set; }
-        public int IsUseToSell { get; set; }
     }
 
     public class QuestionJson
     {
         public string Content { get; set; } = null!;
         public List<string> Answers { get; set; }
+        public List<string> CorrectAnswers { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Services.ViewModels;
+using System.Diagnostics;
 
 namespace WebAPI.Controllers
 {
@@ -14,8 +15,15 @@ namespace WebAPI.Controllers
         private readonly IQuestionServices _questionServices;
         private readonly IUserServices _userServices;
 
-        [HttpPost("AddQuestion")]
-        public async Task<IActionResult> AddQuestion([FromBody] QuestionCreate questionCreate)
+        public QuestionController(IQuestionServices questionServices, IUserServices userServices)
+        {
+            _questionServices = questionServices;
+            _userServices = userServices;
+        }
+
+        [Authorize(Roles = "1,2,3")]
+        [HttpPost("AddQuestionIntoPrivateBank")]
+        public async Task<IActionResult> AddQuestionIntoPrivateBank([FromBody] QuestionCreate questionCreate)
         {
             try
             {
@@ -48,12 +56,14 @@ namespace WebAPI.Controllers
         }
 
 
-        [HttpGet("GetAllQuestion")]
-        public async Task<IActionResult> GetAllQuestion()
+        [Authorize(Roles = "1,2,3")]
+        [HttpGet("GetAllMyQuestionByGrade/{grade}")]
+        public async Task<IActionResult> GetAllMyQuestionByGrade(int grade)
         {
             try
             {
-                var questions = await _questionServices.GetAllQuestion();
+                var currentUserId = await _userServices.GetCurrentUser();
+                var questions = await _questionServices.GetAllMyQuestionByGrade(grade, currentUserId);
 
                 return Ok(questions);
             }
@@ -66,12 +76,34 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpGet("GetQuestionByQuestionId/{questionId}")]
-        public async Task<IActionResult> GetQuestionByQuestionId(Guid questionId)
+        [Authorize(Roles = "1,2,3")]
+        [HttpGet("GetAllValidQuestionByGradeForMe/{grade}")]
+        public async Task<IActionResult> GetAllValidQuestionByGradeForMe(int grade)
         {
             try
             {
-                var question = await _questionServices.GetQuestionByQuestionId(questionId);
+                var currentUserId = await _userServices.GetCurrentUser();
+                var questions = await _questionServices.GetAllValidQuestionByGradeForMe(grade, currentUserId);
+
+                return Ok(questions);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Authorize(Roles = "1,2,3")]
+        [HttpGet("GetQuestionByQuestionIdAndGrade/{grade}/{questionId}")]
+        public async Task<IActionResult> GetQuestionByQuestionIdAndGrade(int grade, Guid questionId)
+        {
+            try
+            {
+                var currentUserId = await _userServices.GetCurrentUser();
+                var question = await _questionServices.GetQuestionByQuestionIdAndGrade(questionId, grade, currentUserId);
 
                 return Ok(question);
             }
@@ -84,8 +116,48 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPut("UpdateQuestion")]
-        public async Task<IActionResult> UpdateQuestion([FromBody] QuestionUpdate questionUpdate)
+        [Authorize(Roles = "1,2,3")]
+        [HttpGet("GetMyQuestionBySubjectAndGrade/{grade}/{subject}")]
+        public async Task<IActionResult> GetQuestionBySubjectAndGrade(int grade, int subject)
+        {
+            try
+            {
+                var question = await _questionServices.GetQuestionBySubjectAndGrade(subject, grade);
+
+                return Ok(question);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Authorize(Roles = "1,2,3")]
+        [HttpGet("GetMyQuestionBySectionIdAndGrade/{grade}/{sectionId}")]
+        public async Task<IActionResult> GetQuestionBySectionIdAndGrade(int grade, Guid sectionId)
+        {
+            try
+            {
+                var question = await _questionServices.GetQuestionBySectionIdAndGrade(sectionId, grade);
+
+                return Ok(question);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
+
+        [Authorize(Roles = "1,2,3")]
+        [HttpPut("UpdateQuestion/{grade}")]
+        public async Task<IActionResult> UpdateQuestion([FromBody] QuestionUpdate questionUpdate, int grade)
         {
             try
             {
@@ -96,7 +168,7 @@ namespace WebAPI.Controllers
 
                 var currentUser = await _userServices.GetCurrentUser();
 
-                var result = await _questionServices.UpdateQuestion(questionUpdate, currentUser);
+                var result = await _questionServices.UpdateQuestion(questionUpdate, currentUser, grade);
 
                 if (!result)
                 {
@@ -117,8 +189,9 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpDelete("DeleteQuestion")]
-        public async Task<IActionResult> DeleteQuestion(Guid questionId)
+        [Authorize(Roles = "1,2,3")]
+        [HttpDelete("DeleteQuestion/{grade}")]
+        public async Task<IActionResult> DeleteQuestion(Guid questionId, int grade)
         {
             try
             {
@@ -129,7 +202,7 @@ namespace WebAPI.Controllers
 
                 var currentUser = await _userServices.GetCurrentUser();
 
-                var result = await _questionServices.DeleteQuestion(questionId, currentUser);
+                var result = await _questionServices.DeleteQuestion(questionId, currentUser, grade);
 
                 if (!result)
                 {
