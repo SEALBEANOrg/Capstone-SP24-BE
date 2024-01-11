@@ -28,6 +28,9 @@ namespace Services.Mapper
 
             #region School
             CreateMap<ComboSchool, School>().ReverseMap();
+            CreateMap<School, SchoolForCreateViewModel>().ReverseMap();
+            CreateMap<School, SchoolViewModels>().ReverseMap();
+            CreateMap<School, SchoolForUpdateViewModel>().ReverseMap();
 
             #endregion
 
