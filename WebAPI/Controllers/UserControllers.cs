@@ -19,12 +19,36 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "0")]
+        [Authorize(Roles = "0,1")] //chỉ 0
         public async Task<IActionResult> GetAll()
         {
             var users = await _userServices.GetAllUser();
 
             return Ok(users);
+        }
+
+        [HttpGet("GetUserById/{id}")]
+        [Authorize(Roles = "0")] //chỉ 0
+        public async Task<IActionResult> GetUserById(Guid id)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var user = await _userServices.GetUserById(id);
+
+                return Ok(user);
+            }
+            catch (DataException ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
         }
 
         [HttpGet("GetProfile")]
@@ -58,6 +82,38 @@ namespace WebAPI.Controllers
                 }
 
                 return Ok("Đã cập nhật thông tin cá nhân");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpPut("/OutSchool")]
+        [Authorize(Roles = "1,2")]
+        public async Task<IActionResult> OutSchool()
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var result = await _userServices.OutSchool();
+
+                if (!result)
+                {
+                    return BadRequest(new
+                    {
+                        Message = "Out School thất bại"
+                    });
+                }
+
+                return Ok("Đã rời khỏi trường");
             }
             catch (Exception ex)
             {

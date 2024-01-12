@@ -179,7 +179,7 @@ namespace Repositories.Models
             modelBuilder.Entity<StudentClass>(entity =>
             {
                 entity.HasKey(e => e.ClassId)
-                    .HasName("PK__StudentC__CB1927A07D757527");
+                    .HasName("PK__StudentC__CB1927A091CE7EB5");
 
                 entity.ToTable("StudentClass");
 
@@ -206,7 +206,7 @@ namespace Repositories.Models
             modelBuilder.Entity<SubjectSection>(entity =>
             {
                 entity.HasKey(e => e.SectionId)
-                    .HasName("PK__SubjectS__80EF0892483F4592");
+                    .HasName("PK__SubjectS__80EF0892FAB13837");
 
                 entity.ToTable("SubjectSection");
 
@@ -244,8 +244,6 @@ namespace Repositories.Models
 
                 entity.Property(e => e.SchoolId).HasColumnName("SchoolID");
 
-                entity.Property(e => e.TestCode).ValueGeneratedOnAdd();
-
                 entity.Property(e => e.TestId)
                     .HasColumnName("TestID")
                     .HasDefaultValueSql("(newsequentialid())");
@@ -277,6 +275,8 @@ namespace Repositories.Models
                     .HasColumnName("ResultID")
                     .HasDefaultValueSql("(newsequentialid())");
 
+                entity.Property(e => e.TestCode).ValueGeneratedOnAdd();
+
                 entity.Property(e => e.TestId).HasColumnName("TestID");
 
                 entity.HasOne(d => d.Class)
@@ -288,7 +288,7 @@ namespace Repositories.Models
             {
                 entity.ToTable("User");
 
-                entity.HasIndex(e => e.Email, "UQ__User__A9D1053469AAB05D")
+                entity.HasIndex(e => e.Email, "UQ__User__A9D10534C937E8F0")
                     .IsUnique();
 
                 entity.Property(e => e.UserId)

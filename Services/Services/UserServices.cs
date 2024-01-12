@@ -48,14 +48,14 @@ namespace Services.Services
             return userInfo;
         }
 
-        public async Task<UserViewModels> GetAllUser()
+        public async Task<IEnumerable<UserViewModels>> GetAllUser()
         {
             var users = await _unitOfWork.UserRepo.GetAllAsync();
             if (users == null)
             {
                 return null;
             }
-            var userViewModels = _mapper.Map<UserViewModels>(users);
+            var userViewModels = _mapper.Map<IEnumerable<UserViewModels>>(users);
             return userViewModels;
         }
 
@@ -271,6 +271,62 @@ namespace Services.Services
             catch (Exception e)
             {
                 throw new Exception("Lỗi ở UserServices - UpdateProfile: " + e.Message);
+            }
+        }
+
+        public async Task<UserViewModels> GetUserById(Guid id)
+        {
+            try
+            {
+                var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == id);
+
+                if (user == null)
+                {
+                    throw new Exception("Người dùng không tồn tại");
+                }
+
+                var userViewModels = _mapper.Map<UserViewModels>(user);
+                return userViewModels;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở UserServices - GetUserById: " + e.Message);
+            }
+        }
+
+        public async Task<bool> OutSchool()
+        {
+            try 
+            {                 
+                var currentUserId = _claimsService.GetCurrentUser;
+                var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
+                var school = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == user.SchoolId);
+                
+                if (school == null)
+                {
+                    throw new Exception("Bạn không trong trường nào");
+                }
+
+                if (user.UserType == 2)
+                {
+                    var users = await _unitOfWork.UserRepo.FindListByField(user => user.SchoolId == user.SchoolId);
+                    if (users.Count() > 1 && school.Status == 1)
+                    {
+                        throw new Exception("Trường học đang hoạt động và bạn là admin, không thể tự rời trường");
+                    }
+                }
+                user.SchoolId = null;
+                user.ModifiedOn = DateTime.Now;
+                user.ModifiedBy = currentUserId;
+                user.Status = 1;
+                _unitOfWork.UserRepo.Update(user);
+                var result = await _unitOfWork.SaveChangesAsync();
+                
+                return result > 0;
+            }
+            catch(Exception e)
+            {
+                throw new Exception("Lỗi ở UserServices - OutSchool: " + e.Message);
             }
         }
     }

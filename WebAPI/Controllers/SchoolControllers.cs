@@ -172,7 +172,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("GetAllSchool")]
-        [Authorize(Roles = "0,1")] //chỉ 0
+        [Authorize(Roles = "0")] //chỉ 0
         public async Task<IActionResult> GetAllSchool()
         {
             try
@@ -250,7 +250,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("UpdateSchool")]
-        [Authorize(Roles = "0,1")] //chỉ 0
+        [Authorize(Roles = "0")] //chỉ 0
         public async Task<IActionResult> UpdateSchool([FromBody] SchoolForUpdateViewModel schoolForUpdateViewModel)
         {
             try
@@ -283,7 +283,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("DeleteSchool/{schoolId}")]
-        [Authorize(Roles = "0,1")] //chỉ 0
+        [Authorize(Roles = "0")] //chỉ 0
         public async Task<IActionResult> DeleteSchool(Guid schoolId)
         {
             try
@@ -314,5 +314,43 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
+        [HttpPut("ChangeSchoolAdmin/{schoolId}/{email}")]
+        [Authorize(Roles = "0,1")] //chỉ 0
+        public async Task<IActionResult> ChangeSchoolAdmin(Guid schoolId, string email)
+        {
+            try
+            {
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var currentUserId = await _userServices.GetCurrentUser();
+
+                var result = await _schoolServices.ChangeSchoolAdmin(schoolId, email, currentUserId);
+
+                if (result == false)
+                {
+                    return BadRequest(new
+                    {
+                        Message = "Thay đổi quyền quản trị thất bại"
+                    });
+                }
+
+                return Ok("Đã thay đổi quyền quản trị thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
+
+
     }
 }

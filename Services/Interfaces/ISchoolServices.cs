@@ -5,6 +5,7 @@ namespace Services.Interfaces
     public interface ISchoolServices
     {
         Task<bool> AddNewSchool(SchoolForCreateViewModel schoolForCreateViewModel, Guid currentUserId);
+        Task<bool> ChangeSchoolAdmin(Guid schoolId, string email, Guid currentUserId);
         Task<bool> DeleteSchool(Guid schoolId);
         Task<IEnumerable<StudentClassViewModels>> GetAllClassOfMySchool(Guid currentUserId);
         Task<IEnumerable<SchoolViewModels>> GetAllSchool();

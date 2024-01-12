@@ -3,6 +3,7 @@ using Repositories;
 using Repositories.Models;
 using Services.Interfaces;
 using Services.ViewModels;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Services.Services
 {
@@ -87,6 +88,66 @@ namespace Services.Services
             catch (Exception e)
             {
                 throw new Exception("Lỗi ở SchoolServices - AddNewSchool: " + e.Message);
+            }
+        }
+
+        public async Task<bool> ChangeSchoolAdmin(Guid schoolId, string email, Guid currentUserId)
+        {
+            try
+            {
+                var school = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == schoolId);
+                var oldAdmin = await _unitOfWork.UserRepo.FindByField(user => user.UserId == school.AdminId);
+                var newAdmin = await _unitOfWork.UserRepo.FindByField(user => user.Email == email);
+                if (email == oldAdmin.Email)
+                {
+                    throw new Exception("Người dùng này đã là Admin trường.");
+                }
+
+                if (school == null)
+                {
+                    throw new Exception("Trường học không tồn tại");
+                }
+
+                var adminSchool = await _unitOfWork.UserRepo.FindByField(user => user.Email == email);
+                if (adminSchool == null)
+                {
+                    throw new Exception("Không tìm thấy người dùng này.");
+                }
+
+                if (adminSchool.Status != 1)
+                {
+                    throw new Exception("Người dùng này đã ngưng hoạt động hoặc đã thuộc trường khác.");
+                }
+
+                if (adminSchool.UserType != 1)
+                {
+                    throw new Exception("Phải là giáo viên để được nâng cấp thành Admin trường.");
+                }
+
+                school.AdminId = newAdmin.UserId;
+                school.ModifiedOn = DateTime.Now;
+                school.ModifiedBy = currentUserId;
+
+                oldAdmin.UserType = 1;
+                oldAdmin.ModifiedOn = DateTime.Now;
+                oldAdmin.ModifiedBy = currentUserId;
+
+                newAdmin.UserType = 2;
+                newAdmin.Status = 3;
+                newAdmin.SchoolId = schoolId;
+                newAdmin.ModifiedOn = DateTime.Now;
+                newAdmin.ModifiedBy = currentUserId;
+
+                _unitOfWork.SchoolRepo.Update(school);
+                _unitOfWork.UserRepo.Update(oldAdmin);
+                _unitOfWork.UserRepo.Update(newAdmin);
+                var result = await _unitOfWork.SaveChangesAsync();
+
+                return result > 0;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở SchoolServices - ChangeSchoolAdmin: " + e.Message);
             }
         }
 

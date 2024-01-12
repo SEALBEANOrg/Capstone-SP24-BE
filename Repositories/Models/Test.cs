@@ -7,7 +7,6 @@ namespace Repositories.Models
     {
         public Guid TestId { get; set; }
         public Guid? SchoolId { get; set; }
-        public int TestCode { get; set; }
         public string Name { get; set; } = null!;
         public int TotalPaper { get; set; }
         public int NumOfDifferentPaper { get; set; }

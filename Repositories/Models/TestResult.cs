@@ -8,6 +8,7 @@ namespace Repositories.Models
         public Guid ResultId { get; set; }
         public Guid TestId { get; set; }
         public Guid ClassId { get; set; }
+        public int TestCode { get; set; }
         public string? Marks { get; set; }
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }

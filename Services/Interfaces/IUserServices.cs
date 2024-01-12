@@ -7,7 +7,7 @@ namespace Services.Interfaces
         Task<UserInfo?> CreateNewUser(UserSignUp userSignUp);
         Task<UserInfo> FindUserByEmail(string email);
         Task<UserInfo> FindUserById(Guid id);
-        Task<UserViewModels> GetAllUser();
+        Task<IEnumerable<UserViewModels>> GetAllUser();
         Task<bool> RequestJoinSchool(Guid schoolId);
         Task<bool> ResponseRequest(Guid userId, bool isAccept);
         Task<Guid> GetCurrentUser();
@@ -16,5 +16,7 @@ namespace Services.Interfaces
         Task<bool> CheckExistInFirebase(string email);
         Task<UserViewModels> GetProfile();
         Task<bool> UpdateProfile(UserUpdate userUpdate);
+        Task<UserViewModels> GetUserById(Guid id);
+        Task<bool> OutSchool();
     }
 }

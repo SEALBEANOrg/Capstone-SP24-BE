@@ -297,7 +297,7 @@ namespace Services.Services
 
         private async Task<bool> CheckPermissionForQuestion(Guid questionId, int permissionType, Guid userId, Guid? schoolId)
         {
-            if (schoolId != null)
+            if (schoolId == null)
             {
                 var share = await _unitOfWork.ShareRepo.FindByField(share => share.QuestionId == questionId && share.PermissionType >= permissionType &&
                                                                                 share.UserId == userId);
@@ -312,7 +312,7 @@ namespace Services.Services
             else
             {
                 var share = await _unitOfWork.ShareRepo.FindByField(share => share.QuestionId == questionId && share.PermissionType >= permissionType &&
-                                                                                (share.UserId == userId || share.SchoolId == schoolId));
+                                                                                share.SchoolId == schoolId);
                 if (share == null)
                 {
                     return false;
@@ -324,7 +324,7 @@ namespace Services.Services
     
         private async Task<IEnumerable<Guid>> GetQuestionIdIsSharedToRead(Guid userId, Guid? schoolId)
         {
-            if (schoolId != null)
+            if (schoolId == null)
             {
                 var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.UserId == userId);
                 if (shares == null)
