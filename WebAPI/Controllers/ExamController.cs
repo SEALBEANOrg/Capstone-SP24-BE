@@ -9,11 +9,11 @@ namespace WebAPI.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "1")]
-    public class TestResultController : ControllerBase
+    public class ExamController : ControllerBase
     {
-        private readonly ITestResultServices _testResultServices;
+        private readonly IExamServices _testResultServices;
 
-        public TestResultController(ITestResultServices testResultServices)
+        public ExamController(IExamServices testResultServices)
         {
             _testResultServices = testResultServices;
         }
@@ -58,6 +58,20 @@ namespace WebAPI.Controllers
             }
 
             var result = await _testResultServices.CheckPermissionAccessTest(testCode, email);
+
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("GetInfoOfClassInExam/{testCode}/{email}")]
+        public async Task<IActionResult> GetInfoOfClassInExam(string testCode, string email)
+        {
+            if (string.IsNullOrEmpty(testCode) || string.IsNullOrEmpty(email))
+            {
+                return BadRequest();
+            }
+
+            var result = await _testResultServices.GetInfoOfClassInExam(testCode, email);
 
             return Ok(result);
         }

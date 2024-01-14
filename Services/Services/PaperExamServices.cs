@@ -4,20 +4,16 @@ using Services.Interfaces;
 
 namespace Services.Services
 {
-    public class TestResultServices : ITestResultServices
+    public class PaperExamServices : IPaperExamServices
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public TestResultServices(IUnitOfWork unitOfWork, IMapper mapper)
+    
+        public PaperExamServices(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-
-        public Task<bool> CheckPermissionAccessTest(string testCode, string email)
-        {
-            throw new NotImplementedException();
-        }
+    
     }
 }

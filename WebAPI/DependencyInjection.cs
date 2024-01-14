@@ -21,13 +21,13 @@ namespace WebAPI
             #region Repositories
             services.AddScoped<IPaperRepo, PaperRepo>();
             services.AddScoped<IQuestionRepo, QuestionRepo>();
-            services.AddScoped<IQuestionTransactionRepo, QuestionTransactionRepo>();
+            services.AddScoped<IPaperExamRepo, PaperExamRepo>();
             services.AddScoped<ISchoolRepo, SchoolRepo>();
             services.AddScoped<IShareRepo, ShareRepo>();
             services.AddScoped<IStudentClassRepo, StudentClassRepo>();
             services.AddScoped<IStudentRepo, StudentRepo>();
             services.AddScoped<ISubjectSectionRepo, SubjectSectionRepo>();
-            services.AddScoped<ITestResultRepo, TestResultRepo>();
+            services.AddScoped<IExamRepo, ExamRepo>();
             services.AddScoped<ITestRepo, TestRepo>();
             services.AddScoped<IUserRepo, UserRepo>();
             #endregion
@@ -36,13 +36,13 @@ namespace WebAPI
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPaperServices, PaperServices>();
             services.AddScoped<IQuestionServices, QuestionServices>();
-            services.AddScoped<IQuestionTransactionServices, QuestionTransactionServices>();
+            services.AddScoped<IPaperExamServices, PaperExamServices>();
             services.AddScoped<ISchoolServices, SchoolServices>();
             services.AddScoped<IShareServices, ShareServices>();
             services.AddScoped<IStudentClassServices, StudentClassServices>();
             services.AddScoped<IStudentServices, StudentServices>();
             services.AddScoped<ISubjectSectionServices, SubjectSectionServices>();
-            services.AddScoped<ITestResultServices, TestResultServices>();
+            services.AddScoped<IExamServices, ExamServices>();
             services.AddScoped<ITestServices, TestServices>();
             services.AddScoped<IUserServices, UserServices>();
             #endregion

@@ -10,47 +10,47 @@ namespace Repositories
 
         private readonly IPaperRepo _paperRepo;
         private readonly IQuestionRepo _questionRepo;
-        private readonly IQuestionTransactionRepo _questionTransactionRepo;
+        private readonly IPaperExamRepo _paperExamRepo;
         private readonly ISchoolRepo _schoolRepo;
         private readonly IShareRepo _shareRepo;
         private readonly IStudentRepo _studentRepo;
         private readonly IStudentClassRepo _studentClassRepo;
         private readonly ISubjectSectionRepo _subjectSectionRepo;
         private readonly ITestRepo _testRepo;
-        private readonly ITestResultRepo _testResultRepo;
+        private readonly IExamRepo _examRepo;
         private readonly IUserRepo _userRepo;
 
         public UnitOfWork(ExagenContext context, IPaperRepo paperRepo, IQuestionRepo questionRepo,
-                            IQuestionTransactionRepo questionTransactionRepo, ISchoolRepo schoolRepo, IShareRepo shareRepo, 
+                            IPaperExamRepo paperExamRepo, ISchoolRepo schoolRepo, IShareRepo shareRepo, 
                             IStudentRepo studentRepo, IStudentClassRepo studentClassRepo, ISubjectSectionRepo subjectSectionRepo, 
-                            ITestRepo testRepo, ITestResultRepo testResultRepo, IUserRepo userRepo)
+                            ITestRepo testRepo, IExamRepo examRepo, IUserRepo userRepo)
         {
             _context = context;
             _paperRepo = paperRepo;
             _questionRepo = questionRepo;
-            _questionTransactionRepo = questionTransactionRepo;
+            _paperExamRepo = paperExamRepo;
             _schoolRepo = schoolRepo;
             _shareRepo = shareRepo;
             _studentRepo = studentRepo;
             _studentClassRepo = studentClassRepo;
             _subjectSectionRepo = subjectSectionRepo;
             _testRepo = testRepo;
-            _testResultRepo = testResultRepo;
+            _examRepo = examRepo;
             _userRepo = userRepo;
         }
 
         public IPaperRepo PaperRepo => _paperRepo;
         public IQuestionRepo QuestionRepo => _questionRepo;
-        public IQuestionTransactionRepo QuestionTransactionRepo => _questionTransactionRepo;
         public ISchoolRepo SchoolRepo => _schoolRepo;
         public IShareRepo ShareRepo => _shareRepo;
         public IStudentRepo StudentRepo => _studentRepo;
         public IStudentClassRepo StudentClassRepo => _studentClassRepo;
         public ISubjectSectionRepo SubjectSectionRepo => _subjectSectionRepo;
         public ITestRepo TestRepo => _testRepo;
-        public ITestResultRepo TestResultRepo => _testResultRepo;
         public IUserRepo UserRepo => _userRepo;
-        
+        public IPaperExamRepo PaperExamRepo => _paperExamRepo;
+        public IExamRepo ExamRepo => _examRepo;
+
         public async Task<int> SaveChangesAsync()
         {
             try

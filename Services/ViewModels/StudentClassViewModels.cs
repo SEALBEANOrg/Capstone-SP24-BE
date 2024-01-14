@@ -39,4 +39,19 @@ namespace Services.ViewModels
         public int? Grade { get; set; }
         public int Status { get; set; }
     }
+
+    public class InfoClassInExam 
+    {
+        public int TestCode { get; set; }
+        public List<ComboStudent> StudentInExam { get; set; }
+        public string DescriptionOfTest { get; set; }
+
+    }
+
+    public class  ComboStudent 
+    {
+        public Guid StudentId { get; set; }
+        public string Name { get; set; }
+        public int? Mark { get; set;}
+    }
 }

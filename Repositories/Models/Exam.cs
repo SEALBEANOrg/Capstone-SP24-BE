@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace Repositories.Models
 {
-    public partial class TestResult
+    public partial class Exam
     {
-        public Guid ResultId { get; set; }
-        public Guid TestId { get; set; }
+        public Guid ExamId { get; set; }
         public Guid ClassId { get; set; }
         public int TestCode { get; set; }
+        public string? Description { get; set; }
         public string? Marks { get; set; }
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }

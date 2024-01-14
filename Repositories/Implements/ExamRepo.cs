@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Repositories.Implements
 {
-    public class TestResultRepo : GenericRepo<TestResult>, ITestResultRepo
+    public class ExamRepo : GenericRepo<Exam>, IExamRepo
     {
-        public TestResultRepo(ExagenContext context) : base(context)
+        public ExamRepo(ExagenContext context) : base(context)
         {
         }
     }

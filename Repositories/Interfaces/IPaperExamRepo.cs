@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Repositories.Interfaces
 {
-    public interface IQuestionTransactionRepo : IGenericRepo<QuestionTransaction>
+    public interface IPaperExamRepo : IGenericRepo<PaperExam>
     {
     }
 }

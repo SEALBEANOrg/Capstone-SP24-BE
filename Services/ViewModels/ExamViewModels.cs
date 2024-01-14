@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Services.ViewModels
 {
-    public class TestResultViewModels
+    public class ExamViewModels
     {
     }
 

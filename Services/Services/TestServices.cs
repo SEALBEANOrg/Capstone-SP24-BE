@@ -15,31 +15,31 @@ namespace Services.Services
             _mapper = mapper;
         }
 
-        public async Task<bool> CheckPermissionAccessTest(string testCode, string email)
-        {
-            var user = await _unitOfWork.UserRepo.FindByField(user => user.Email == email);
-            if (user == null)
-            {
-                return false;
-            }
+        //public async Task<bool> CheckPermissionAccessTest(string testCode, string email)
+        //{
+        //    var user = await _unitOfWork.UserRepo.FindByField(user => user.Email == email);
+        //    if (user == null)
+        //    {
+        //        return false;
+        //    }
 
-            int testCodeInt = int.Parse(testCode);
-            var test = await _unitOfWork.TestResultRepo.FindByField(test => test.TestCode == testCodeInt);
-            if (user == null)
-            {
-                return false;
-            }
+        //    int testCodeInt = int.Parse(testCode);
+        //    var test = await _unitOfWork.ExamRepo.FindByField(test => test.TestCode == testCodeInt);
+        //    if (user == null)
+        //    {
+        //        return false;
+        //    }
 
-            bool isShare = false;
+        //    bool isShare = false;
 
-            var share = await _unitOfWork.ShareRepo.FindByField(share => share.TestId == test.TestId && 
-                                                                        (share.UserId == user.UserId || (user.SchoolId != null && share.SchoolId == user.SchoolId)));
-            if (test.CreatedBy != user.UserId && isShare)
-            {
-                return false;
-            }
+        //    var share = await _unitOfWork.ShareRepo.FindByField(share => share.TestId == test.TestId && 
+        //                                                                (share.UserId == user.UserId || (user.SchoolId != null && share.SchoolId == user.SchoolId)));
+        //    if (test.CreatedBy != user.UserId && isShare)
+        //    {
+        //        return false;
+        //    }
 
-            return true;
-        }
+        //    return true;
+        //}
     }
 }
