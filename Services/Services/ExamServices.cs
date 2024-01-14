@@ -95,7 +95,7 @@ namespace Services.Services
                         var comboStudent = new ComboStudent
                         {
                             StudentId = item.StudentId,
-                            Name = item.FullName + item.StudentNo,
+                            Name = item.FullName + " - " + item.StudentNo,
                             Mark = null
                         };
                         studentInExam.Add(comboStudent);
