@@ -95,7 +95,7 @@ namespace Services.Services
                         var comboStudent = new ComboStudent
                         {
                             StudentId = item.StudentId,
-                            Name = item.FullName + " - " + item.StudentNo,
+                            Name = item.FullName,
                             Mark = null
                         };
                         studentInExam.Add(comboStudent);
@@ -110,7 +110,7 @@ namespace Services.Services
                     foreach (var item in marks)
                     {
                         // StudentName - No | 4
-                        string[] parts = item.Split(new[] { " - ", " | " }, StringSplitOptions.None);
+                        string[] parts = item.Split(new[] { " | " }, StringSplitOptions.None);
                         var comboStudent = new ComboStudent
                         {
                             Name = parts[0],
