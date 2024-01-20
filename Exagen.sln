@@ -11,6 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Servic
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ExagenSharedProject", "ExagenSharedProject\ExagenSharedProject.shproj", "{E606A442-D8A3-4086-BB27-D145DD694D73}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dockerfile", "Dockerfile", "{94A93CBE-C42D-4CDF-9A00-A8EDD8847980}"
+	ProjectSection(SolutionItems) = preProject
+		ExagenSharedProject\Dockerfile = ExagenSharedProject\Dockerfile
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
