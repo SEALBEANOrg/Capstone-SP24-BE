@@ -22,25 +22,21 @@ namespace Services.Services
 
         public async Task<bool> CheckPermissionAccessTest(string testCode, string email)
         {
-            var user = await _unitOfWork.UserRepo.FindByField(user => user.Email == email);
-            
-            if (user == null)
-            {
-                return false;
-            }
-
             try
             {
-                int testCodeInt = int.Parse(testCode);
 
-                var testResult = await _unitOfWork.ExamRepo.FindByField(testResult => testResult.TestCode == testCodeInt);
+                var user = await _unitOfWork.UserRepo.FindByField(user => user.Email == email);
 
-                if (testResult == null)
+                if (user == null)
                 {
                     return false;
                 }
+                
+                int testCodeInt = int.Parse(testCode);
 
-                if (testResult.CreatedBy != user.UserId)
+                var testResult = await _unitOfWork.ExamRepo.FindByField(testResult => testResult.TestCode == testCodeInt && testResult.CreatedBy == user.UserId);
+
+                if (testResult == null)
                 {
                     return false;
                 }
@@ -56,17 +52,20 @@ namespace Services.Services
 
         public async Task<InfoClassInExam> GetInfoOfClassInExam(string testCode, string email)
         {
-            var user = await _unitOfWork.UserRepo.FindByField(user => user.Email == email);
-
-            if (user == null)
-            {
-                throw new Exception("Không tìm thấy user");
-            }
-
             try
             {
+
+                var user = await _unitOfWork.UserRepo.FindByField(user => user.Email == email);
+
+                if (user == null)
+                {
+                    throw new Exception("Không tìm thấy user");
+                }
+
                 int testCodeInt = int.Parse(testCode);
 
+                List<ComboStudent> studentInExam = new List<ComboStudent>();
+               
                 var testResult = await _unitOfWork.ExamRepo.FindByField(testResult => testResult.TestCode == testCodeInt && testResult.CreatedBy == user.UserId);
 
                 if (testResult == null)
@@ -78,8 +77,6 @@ namespace Services.Services
                     DescriptionOfTest = testResult.Description,
                     TestCode = testResult.TestCode,
                 };
-
-                List<ComboStudent> studentInExam = new List<ComboStudent>();
 
                 if (testResult.Marks == null)
                 {
@@ -96,7 +93,8 @@ namespace Services.Services
                         {
                             StudentId = item.StudentId,
                             Name = item.FullName,
-                            Mark = null
+                            Mark = null,
+                            No = item.StudentNo
                         };
                         studentInExam.Add(comboStudent);
                     }

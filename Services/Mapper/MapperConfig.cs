@@ -50,6 +50,8 @@ namespace Services.Mapper
             #endregion
 
             #region SubjectSection
+            CreateMap<SubjectSection, SubjectSectionViewModels>().ReverseMap();
+            CreateMap<SubjectSection, SubjectSectionCreate>().ReverseMap();
 
             #endregion
 
