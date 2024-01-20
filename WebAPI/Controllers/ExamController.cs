@@ -28,9 +28,10 @@ namespace WebAPI.Controllers
             }
 
             //code for call python script
-            
+            byte[] imageBytes = System.IO.File.ReadAllBytes(@"D:\FinalCapstone\Exagen\WebAPI\Test case 53_2.jpg");
+            string base64String = Convert.ToBase64String(imageBytes);
 
-            return Ok(new ResultForScan { Base64Image = base64Image.Base64Image, ResultString = "1:A|2:B|3:D|4:|5:B,C|6:A,B,C,D" });
+            return Ok(new ResultForScan { Base64Image = base64String, ResultString = "1:A|2:B|3:D|4:|5:B,C|6:A,B,C,D" });
         }
 
         [AllowAnonymous]

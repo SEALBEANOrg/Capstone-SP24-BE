@@ -120,7 +120,7 @@ namespace WebAPI.Controllers
         {
             if (!ValidateToken(tokenRequest.Token))
             {
-                return Unauthorized("Invalid refresh token");
+                return BadRequest("Invalid refresh token");
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -136,7 +136,7 @@ namespace WebAPI.Controllers
             
             if (userInfo == null)
             {
-                return Unauthorized("Token claim is invalid");
+                return BadRequest("Token claim is invalid");
             }
 
             var loginResponse = new LoginResponse
