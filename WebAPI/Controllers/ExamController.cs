@@ -6,7 +6,7 @@ using Services.ViewModels;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v/exam")]
     [ApiController]
     [Authorize(Roles = "1")]
     public class ExamController : ControllerBase

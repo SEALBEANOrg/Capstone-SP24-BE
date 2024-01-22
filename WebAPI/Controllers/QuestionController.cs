@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v/question")]
     [ApiController]
     [Authorize]
     public class QuestionController : ControllerBase

@@ -7,7 +7,7 @@ using System.Data;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v/user")]
     [ApiController]
     public class UserControllers : ControllerBase
     {
@@ -18,7 +18,7 @@ namespace WebAPI.Controllers
             _userServices = userServices;
         }
 
-        [HttpGet]
+        [HttpGet("GetAllUser")]
         [Authorize(Roles = "0")] //chỉ 0
         public async Task<IActionResult> GetAll()
         {

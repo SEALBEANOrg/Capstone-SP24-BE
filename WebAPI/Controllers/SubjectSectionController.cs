@@ -6,7 +6,7 @@ using Services.ViewModels;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v/subjectsection")]
     [ApiController]
     [Authorize(Roles = "0,1")] //chỉ 0
     public class SubjectSectionController : ControllerBase
