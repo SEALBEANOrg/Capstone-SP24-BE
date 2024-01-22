@@ -7,7 +7,7 @@ namespace Services.Interfaces
         Task<UserInfo?> CreateNewUser(UserSignUp userSignUp);
         Task<UserInfo> FindUserByEmail(string email);
         Task<UserInfo> FindUserById(Guid id);
-        Task<IEnumerable<UserViewModels>> GetAllUser();
+        Task<IEnumerable<UserViewModels>> GetAllUser(int page, int pageSize);
         Task<bool> RequestJoinSchool(Guid schoolId);
         Task<bool> ResponseRequest(Guid userId, bool isAccept);
         Task<Guid> GetCurrentUser();

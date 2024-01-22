@@ -12,7 +12,7 @@ namespace Services.Interfaces
         Task<IEnumerable<ComboSchool>> GetComboSchool();
         Task<SchoolViewModels> GetInfoMySchool(Guid currentUserId);
         Task<SchoolViewModels> GetSchoolById(Guid schoolId);
-        Task<IEnumerable<UserViewModels>> GetTeacherOfMySchool(Guid currentUserId);
+        Task<IEnumerable<UserViewModels>> GetTeacherOfMySchool(Guid currentUserId, int page, int pageSize);
         Task<bool> RemoveTeacherFromSchool(Guid teacherId, Guid currentUser);
         Task<bool> UpdateSchool(SchoolForUpdateViewModel schoolForUpdateViewModel);
     }

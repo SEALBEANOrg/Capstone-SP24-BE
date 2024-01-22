@@ -7,7 +7,7 @@ using System.Data;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/v/user")]
+    [Route("api/v0/users")]
     [ApiController]
     public class UserControllers : ControllerBase
     {
@@ -20,15 +20,15 @@ namespace WebAPI.Controllers
 
         [HttpGet("GetAllUser")]
         [Authorize(Roles = "0")] //chỉ 0
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var users = await _userServices.GetAllUser();
+            var users = await _userServices.GetAllUser(page, pageSize);
 
             return Ok(users);
         }
 
         [HttpGet("GetUserById/{id}")]
-        [Authorize(Roles = "0")] //chỉ 0
+        [Authorize(Roles = "0,2")] //chỉ 0, 2
         public async Task<IActionResult> GetUserById(Guid id)
         {
             try

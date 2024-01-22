@@ -19,7 +19,7 @@ using System.Linq.Expressions;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/v/auth")]
+    [Route("api/v0/auth")]
     [ApiController]
     public class AuthControllers : ControllerBase
     {

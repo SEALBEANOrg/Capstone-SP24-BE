@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FirebaseAdmin.Auth;
+using PagedList;
 using Repositories;
 using Repositories.Models;
 using Services.Interfaces;
@@ -48,9 +49,10 @@ namespace Services.Services
             return userInfo;
         }
 
-        public async Task<IEnumerable<UserViewModels>> GetAllUser()
+        public async Task<IEnumerable<UserViewModels>> GetAllUser(int page, int pageSize)
         {
-            var users = await _unitOfWork.UserRepo.GetAllAsync(x => x.School);
+            var users = (await _unitOfWork.UserRepo.GetAllAsync(x => x.School)).ToPagedList(page, pageSize);
+
             if (users == null)
             {
                 return null;

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using PagedList;
 using Repositories;
 using Repositories.Models;
 using Services.Interfaces;
@@ -250,7 +251,7 @@ namespace Services.Services
             return schoolViewModels;
         }
 
-        public async Task<IEnumerable<UserViewModels>> GetTeacherOfMySchool(Guid currentUserId)
+        public async Task<IEnumerable<UserViewModels>> GetTeacherOfMySchool(Guid currentUserId, int page, int pageSize)
         {
             var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
 
@@ -261,7 +262,7 @@ namespace Services.Services
                 return null;
             }   
 
-            var userViewModels = _mapper.Map<IEnumerable<UserViewModels>>(teachers);
+            var userViewModels = _mapper.Map<IEnumerable<UserViewModels>>(teachers.ToPagedList(page, pageSize));
             return userViewModels;
         }
 
