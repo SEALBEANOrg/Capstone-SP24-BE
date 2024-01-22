@@ -252,9 +252,9 @@ namespace Services.Services
 
         public async Task<IEnumerable<UserViewModels>> GetTeacherOfMySchool(Guid currentUserId)
         {
-            var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
+            var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
 
-            var teachers = await _unitOfWork.UserRepo.FindListByField(user => user.SchoolId == user.SchoolId && user.UserType == 1);
+            var teachers = await _unitOfWork.UserRepo.FindListByField(user => user.SchoolId == currentUser.SchoolId, user => user.School);
 
             if (teachers.Count() <= 0)
             {

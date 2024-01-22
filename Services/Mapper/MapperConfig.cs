@@ -11,12 +11,12 @@ namespace Services.Mapper
             #region User
             CreateMap<UserInfo, User>().ReverseMap();
             CreateMap<UserSignUp, User>().ReverseMap();
-            CreateMap<UserViewModels, User>().ReverseMap();
+            CreateMap<User, UserViewModels>().ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.School != null ? src.School.Name : null)).ReverseMap();
             CreateMap<UserLogin, User>().ReverseMap();
             CreateMap<Request, User>().ReverseMap();
             //CreateMap<EmployeeWithNote, Employee>().ReverseMap();
             //CreateMap<Employee, ComboEmployee>().ReverseMap();
-
+            
             #endregion
 
             #region StudentClass

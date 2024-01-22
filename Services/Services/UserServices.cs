@@ -50,7 +50,7 @@ namespace Services.Services
 
         public async Task<IEnumerable<UserViewModels>> GetAllUser()
         {
-            var users = await _unitOfWork.UserRepo.GetAllAsync();
+            var users = await _unitOfWork.UserRepo.GetAllAsync(x => x.School);
             if (users == null)
             {
                 return null;

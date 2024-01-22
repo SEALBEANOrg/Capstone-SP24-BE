@@ -20,4 +20,6 @@ namespace Services.ViewModels
     {
         public string Base64Image { get; set; }
     }
+
 }
+

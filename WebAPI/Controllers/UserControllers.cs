@@ -19,7 +19,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "0,1")] //chỉ 0
+        [Authorize(Roles = "0")] //chỉ 0
         public async Task<IActionResult> GetAll()
         {
             var users = await _userServices.GetAllUser();
