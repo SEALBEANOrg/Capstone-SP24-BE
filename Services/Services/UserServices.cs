@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using ExagenSharedProject;
 using FirebaseAdmin.Auth;
 using PagedList;
 using Repositories;
 using Repositories.Models;
 using Services.Interfaces;
 using Services.ViewModels;
+using System.Collections.Generic;
 
 namespace Services.Services
 {
@@ -49,14 +51,27 @@ namespace Services.Services
             return userInfo;
         }
 
-        public async Task<IEnumerable<UserViewModels>> GetAllUser(int page, int pageSize)
+        public async Task<IEnumerable<UserViewModels>> GetAllUser(string search)
         {
-            var users = (await _unitOfWork.UserRepo.GetAllAsync(x => x.School)).ToPagedList(page, pageSize);
+            var users = (await _unitOfWork.UserRepo.GetAllAsync(x => x.School));
 
             if (users == null)
             {
                 return null;
             }
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                List<int> resultKeys = EnumStatus.PositionID
+                                        .Where(entry => entry.Value.Contains(search))
+                                        .Select(entry => entry.Key)
+                                        .ToList();
+
+                users = users.Where(x => x.FullName.ToLower().Contains(search.ToLower()) || 
+                                        (resultKeys.Count > 0 && resultKeys.Contains(x.UserType)) ||
+                                        (x.School != null && x.School.Name.ToLower().Contains(search.ToLower()))).ToList();
+            }
+
             var userViewModels = _mapper.Map<IEnumerable<UserViewModels>>(users);
             return userViewModels;
         }

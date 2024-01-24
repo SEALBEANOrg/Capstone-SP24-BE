@@ -19,10 +19,10 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("GetAllUser")]
-        [Authorize(Roles = "0")] //chỉ 0
-        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        //[Authorize(Roles = "0")] //chỉ 0
+        public async Task<IActionResult> GetAll(string? search)
         {
-            var users = await _userServices.GetAllUser(page, pageSize);
+            var users = await _userServices.GetAllUser(search);
 
             return Ok(users);
         }

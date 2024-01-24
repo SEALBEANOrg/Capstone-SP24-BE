@@ -52,7 +52,7 @@ namespace WebAPI.Controllers
         /// </summary>
         [HttpGet("GetTeacherOfMySchool")]
         [Authorize(Roles = "2")]
-        public async Task<IActionResult> GetTeacherOfMySchool([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetTeacherOfMySchool()
         {
             try
             {
@@ -64,7 +64,7 @@ namespace WebAPI.Controllers
 
                 var currentUserId = await _userServices.GetCurrentUser();
 
-                var studentClasses = await _schoolServices.GetTeacherOfMySchool(currentUserId, page, pageSize);
+                var studentClasses = await _schoolServices.GetTeacherOfMySchool(currentUserId);
 
                 return Ok(studentClasses);
             }

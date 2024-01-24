@@ -251,7 +251,7 @@ namespace Services.Services
             return schoolViewModels;
         }
 
-        public async Task<IEnumerable<UserViewModels>> GetTeacherOfMySchool(Guid currentUserId, int page, int pageSize)
+        public async Task<IEnumerable<UserViewModels>> GetTeacherOfMySchool(Guid currentUserId)
         {
             var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
 
@@ -262,7 +262,7 @@ namespace Services.Services
                 return null;
             }   
 
-            var userViewModels = _mapper.Map<IEnumerable<UserViewModels>>(teachers.ToPagedList(page, pageSize));
+            var userViewModels = _mapper.Map<IEnumerable<UserViewModels>>(teachers);
             return userViewModels;
         }
 
