@@ -20,7 +20,7 @@ namespace WebAPI.Controllers
             _userServices = userServices;
         }
 
-        [HttpGet("GetAllBySubjectIdAndGrade")]
+        [HttpGet("{subjectId}/{grade}")]
         //[Authorize]
         [AllowAnonymous]
         public async Task<IActionResult> GetAllBySubjectIdAndGrade(int subjectId, int grade)
@@ -40,7 +40,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpGet("GetSectionBySectionId/{sectionId}")]
+        [HttpGet("{sectionId}")]
         [Authorize]
         public async Task<IActionResult> GetSectionBySectionId(Guid sectionId)
         {
@@ -59,7 +59,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost("AddSubjectSection")]
+        [HttpPost]
         public async Task<IActionResult> AddSubjectSection(SubjectSectionCreate subjectSectionCreate)
         {
             try
@@ -92,7 +92,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPut("UpdateSubjectSection")]
+        [HttpPut]
         [AllowAnonymous]
         public async Task<IActionResult> UpdateSubjectSection(SubjectSectionUpdate subjectSectionUpdate)
         {
@@ -126,7 +126,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpDelete("DeleteSubjectSection/{sectionId}")]
+        [HttpDelete("{sectionId}")]
         [AllowAnonymous]
         public async Task<IActionResult> DeleteSubjectSection(Guid sectionId)
         {

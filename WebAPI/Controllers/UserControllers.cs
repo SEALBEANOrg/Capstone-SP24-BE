@@ -18,7 +18,7 @@ namespace WebAPI.Controllers
             _userServices = userServices;
         }
 
-        [HttpGet("GetAllUser")]
+        [HttpGet]
         //[Authorize(Roles = "0")] //chỉ 0
         public async Task<IActionResult> GetAll(string? search)
         {
@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
             return Ok(users);
         }
 
-        [HttpGet("GetUserById/{id}")]
+        [HttpGet("{id}")]
         [Authorize(Roles = "0,2")] //chỉ 0, 2
         public async Task<IActionResult> GetUserById(Guid id)
         {
@@ -51,7 +51,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpGet("GetProfile")]
+        [HttpGet("profile")]
         [Authorize]
         public async Task<IActionResult> GetProfile()
         {
@@ -60,7 +60,7 @@ namespace WebAPI.Controllers
             return Ok(user);
         }
 
-        [HttpPut("UpdateProfile")]
+        [HttpPut("profile")]
         [Authorize]
         public async Task<IActionResult> UpdateProfile([FromBody] UserUpdate userUpdate)
         {
@@ -92,7 +92,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPut("/OutSchool")]
+        [HttpPut("/api/v0/schools/out-school")]
         [Authorize(Roles = "1,2")]
         public async Task<IActionResult> OutSchool()
         {
@@ -124,7 +124,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPut("/Request/RequestJoinSchool")]
+        [HttpPut("/api/v0/requests/join-school")]
         [Authorize(Roles = "1")]
         public async Task<IActionResult> RequestJoinSchool([FromBody] Guid schoolId)
         {
@@ -149,7 +149,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPut("/Request/ResponseRequest/{userId}")]
+        [HttpPut("/api/v0/requests/response/{userId}")]
         [Authorize(Roles = "2")]
         public async Task<IActionResult> ResponseRequest(Guid userId, [FromBody] bool isAccept)
         {
@@ -174,7 +174,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpGet("GetListRequestToMySchool")]
+        [HttpGet("/api/v0/requests")]
         [Authorize(Roles = "2")]
         public async Task<IActionResult> GetListRequestToMySchool()
         {
