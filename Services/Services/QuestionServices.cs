@@ -4,8 +4,10 @@ using Repositories;
 using Repositories.Models;
 using Services.Interfaces;
 using Services.ViewModels;
+using System.Diagnostics;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text.Json;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Services.Services
 {
@@ -144,7 +146,7 @@ namespace Services.Services
             }
         }
 
-        public async Task<IEnumerable<QuestionViewModels>> GetAllValidQuestionByGradeForMe(int grade, Guid currentUserId)
+        public async Task<IEnumerable<QuestionViewModels>> GetAllValidQuestionByGradeForMe(int? subject, int grade, Guid? sectionId, Guid currentUserId)
         {
             try
             {
@@ -154,6 +156,16 @@ namespace Services.Services
 
                 var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.Grade == grade && 
                                                                                             (listQuestionId.Contains(question.QuestionId) || question.CreatedBy == currentUserId));
+
+                if (subject != null)
+                {
+                    questions = questions.Where(question => question.Subject == subject).ToList();
+                }
+
+                if (sectionId != null)
+                {
+                    questions = questions.Where(question => question.SectionId == sectionId).ToList();
+                }
 
                 if (questions == null)
                 {
@@ -214,11 +226,17 @@ namespace Services.Services
             }
         }
 
-        public async Task<IEnumerable<QuestionViewModels>> GetQuestionBySubjectAndGrade(int subject, int grade)
+        public async Task<IEnumerable<QuestionViewModels>> GetQuestionBySubjectAndSectionAndGrade(int grade, int subject, Guid? sectionId)
         {
             try
             {
                 var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.Subject == subject && question.Grade == grade);
+                
+                if (sectionId != null)
+                {
+                    questions = questions.Where(question => question.SectionId == sectionId).ToList();
+                }
+                
                 if (questions == null)
                 {
                     return null;

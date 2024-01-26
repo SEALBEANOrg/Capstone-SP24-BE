@@ -21,7 +21,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{subjectId}/{grade}")]
-        //[Authorize]
+        [Authorize]
         [AllowAnonymous]
         public async Task<IActionResult> GetAllBySubjectIdAndGrade(int subjectId, int grade)
         {

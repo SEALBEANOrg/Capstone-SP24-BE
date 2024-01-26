@@ -23,7 +23,7 @@ namespace WebAPI.Controllers
         /// Get Combo School to Select to create new class
         /// </summary>
         /// <returns></returns>
-        [HttpGet("GetComboSchool")]
+        [HttpGet("combo-school")]
         public async Task<IActionResult> GetComboSchool()
         {
             try
@@ -50,7 +50,7 @@ namespace WebAPI.Controllers
         /// <summary>
         /// Just For SchoolAdmin
         /// </summary>
-        [HttpGet("GetTeacherOfMySchool")]
+        [HttpGet("teachers")]
         [Authorize(Roles = "2")]
         public async Task<IActionResult> GetTeacherOfMySchool()
         {
@@ -80,7 +80,7 @@ namespace WebAPI.Controllers
         /// <summary>
         /// See all class in my school
         /// </summary>
-        [HttpGet("GetAllClassOfMySchool")]
+        [HttpGet("classes")]
         [Authorize(Roles = "1,2")]
         public async Task<IActionResult> GetAllClassOfMySchool()
         {
@@ -110,7 +110,7 @@ namespace WebAPI.Controllers
         /// <summary>
         /// Remove Teacher From School
         /// </summary>
-        [HttpPut("RemoveTeacherFromSchool/{teacherId}")]
+        [HttpPut("teachers/{teacherId}/move-out-school")]
         [Authorize(Roles = "2")]
         public async Task<IActionResult> RemoveTeacherFromSchool(Guid teacherId)
         {
@@ -136,7 +136,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost("AddNewSchool")]
+        [HttpPost]
         [Authorize(Roles = "0")] //chỉ 0 
         public async Task<IActionResult> AddNewSchool([FromBody] SchoolForCreateViewModel schoolForCreateViewModel)
         {
@@ -171,7 +171,7 @@ namespace WebAPI.Controllers
         }
 
 
-        [HttpGet("GetAllSchool")]
+        [HttpGet]
         [Authorize(Roles = "0")] //chỉ 0
         public async Task<IActionResult> GetAllSchool()
         {
@@ -197,8 +197,8 @@ namespace WebAPI.Controllers
         }
 
 
-        [HttpGet("GetSchoolById/{schoolId}")]
-        [Authorize(Roles = "0")] //chỉ 0
+        [HttpGet("{schoolId}")]
+        [Authorize(Roles = "0,1,2")] //chỉ 0
         public async Task<IActionResult> GetSchoolById(Guid schoolId)
         {
             try
@@ -222,34 +222,34 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpGet("GetInfoMySchool")]
-        [Authorize(Roles = "1,2")]
-        public async Task<IActionResult> GetInfoMySchool()
-        {
-            try
-            {
+        //[HttpGet("GetInfoMySchool")]
+        //[Authorize(Roles = "1,2")]
+        //public async Task<IActionResult> GetInfoMySchool()
+        //{
+        //    try
+        //    {
 
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            return BadRequest(ModelState);
+        //        }
 
-                var currentUserId = await _userServices.GetCurrentUser();
+        //        var currentUserId = await _userServices.GetCurrentUser();
 
-                var school = await _schoolServices.GetInfoMySchool(currentUserId);
+        //        var school = await _schoolServices.GetInfoMySchool(currentUserId);
 
-                return Ok(school);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    Message = ex.Message
-                });
-            }
-        }
+        //        return Ok(school);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new
+        //        {
+        //            Message = ex.Message
+        //        });
+        //    }
+        //}
 
-        [HttpPut("UpdateSchool")]
+        [HttpPut]
         [Authorize(Roles = "0")] //chỉ 0
         public async Task<IActionResult> UpdateSchool([FromBody] SchoolForUpdateViewModel schoolForUpdateViewModel)
         {
@@ -282,7 +282,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpDelete("DeleteSchool/{schoolId}")]
+        [HttpDelete("{schoolId}")]
         [Authorize(Roles = "0")] //chỉ 0
         public async Task<IActionResult> DeleteSchool(Guid schoolId)
         {
@@ -315,8 +315,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPut("ChangeSchoolAdmin/{schoolId}/{email}")]
-        [Authorize(Roles = "0,1")] //chỉ 0
+        [HttpPut("{schoolId}/admin/{email}")]
+        [Authorize(Roles = "0")] //chỉ 0
         public async Task<IActionResult> ChangeSchoolAdmin(Guid schoolId, string email)
         {
             try
