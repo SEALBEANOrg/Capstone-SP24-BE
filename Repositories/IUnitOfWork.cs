@@ -12,7 +12,7 @@ namespace Repositories
         public IStudentRepo StudentRepo { get; }
         public IStudentClassRepo StudentClassRepo { get; }
         public ISubjectSectionRepo SubjectSectionRepo { get; }
-        public ITestRepo TestRepo { get; }
+        public IQuestionSetRepo TestRepo { get; }
         public IExamRepo ExamRepo { get; }
         public IUserRepo UserRepo { get; }
 

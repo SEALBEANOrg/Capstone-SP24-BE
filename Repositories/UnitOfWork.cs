@@ -16,14 +16,14 @@ namespace Repositories
         private readonly IStudentRepo _studentRepo;
         private readonly IStudentClassRepo _studentClassRepo;
         private readonly ISubjectSectionRepo _subjectSectionRepo;
-        private readonly ITestRepo _testRepo;
+        private readonly IQuestionSetRepo _testRepo;
         private readonly IExamRepo _examRepo;
         private readonly IUserRepo _userRepo;
 
         public UnitOfWork(ExagenContext context, IPaperRepo paperRepo, IQuestionRepo questionRepo,
                             IPaperExamRepo paperExamRepo, ISchoolRepo schoolRepo, IShareRepo shareRepo, 
                             IStudentRepo studentRepo, IStudentClassRepo studentClassRepo, ISubjectSectionRepo subjectSectionRepo, 
-                            ITestRepo testRepo, IExamRepo examRepo, IUserRepo userRepo)
+                            IQuestionSetRepo testRepo, IExamRepo examRepo, IUserRepo userRepo)
         {
             _context = context;
             _paperRepo = paperRepo;
@@ -46,7 +46,7 @@ namespace Repositories
         public IStudentRepo StudentRepo => _studentRepo;
         public IStudentClassRepo StudentClassRepo => _studentClassRepo;
         public ISubjectSectionRepo SubjectSectionRepo => _subjectSectionRepo;
-        public ITestRepo TestRepo => _testRepo;
+        public IQuestionSetRepo TestRepo => _testRepo;
         public IUserRepo UserRepo => _userRepo;
         public IPaperExamRepo PaperExamRepo => _paperExamRepo;
         public IExamRepo ExamRepo => _examRepo;

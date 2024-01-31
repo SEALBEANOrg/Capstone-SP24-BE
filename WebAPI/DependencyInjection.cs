@@ -28,7 +28,7 @@ namespace WebAPI
             services.AddScoped<IStudentRepo, StudentRepo>();
             services.AddScoped<ISubjectSectionRepo, SubjectSectionRepo>();
             services.AddScoped<IExamRepo, ExamRepo>();
-            services.AddScoped<ITestRepo, TestRepo>();
+            services.AddScoped<IQuestionSetRepo, Repositories.Implements.QuestionSetRepo>();
             services.AddScoped<IUserRepo, UserRepo>();
             #endregion
 
@@ -43,7 +43,7 @@ namespace WebAPI
             services.AddScoped<IStudentServices, StudentServices>();
             services.AddScoped<ISubjectSectionServices, SubjectSectionServices>();
             services.AddScoped<IExamServices, ExamServices>();
-            services.AddScoped<ITestServices, TestServices>();
+            services.AddScoped<IQuestionSetServices, QuestionSetServices>();
             services.AddScoped<IUserServices, UserServices>();
             #endregion
             

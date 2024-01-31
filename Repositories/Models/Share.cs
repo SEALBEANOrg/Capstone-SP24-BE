@@ -7,11 +7,13 @@ namespace Repositories.Models
     {
         public Guid ShareId { get; set; }
         public Guid? QuestionId { get; set; }
-        public Guid? TestId { get; set; }
+        public Guid? QuestionSetId { get; set; }
         public Guid? UserId { get; set; }
         public Guid? SchoolId { get; set; }
         public int Type { get; set; }
         public int PermissionType { get; set; }
+        public string? Note { get; set; }
+        public int Status { get; set; }
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }
         public DateTime ModifiedOn { get; set; }
