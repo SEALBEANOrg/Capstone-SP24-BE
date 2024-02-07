@@ -24,6 +24,7 @@ namespace WebAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("combo-school")]
+        [Authorize]
         public async Task<IActionResult> GetComboSchool()
         {
             try
@@ -173,7 +174,7 @@ namespace WebAPI.Controllers
 
         [HttpGet]
         [Authorize(Roles = "0")] //chỉ 0
-        public async Task<IActionResult> GetAllSchool()
+        public async Task<IActionResult> GetAllSchool(string? search, int status = 1)
         {
             try
             {
@@ -183,7 +184,7 @@ namespace WebAPI.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var schools = await _schoolServices.GetAllSchool();
+                var schools = await _schoolServices.GetAllSchool(search, status);
 
                 return Ok(schools);
             }

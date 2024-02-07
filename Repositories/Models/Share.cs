@@ -6,7 +6,6 @@ namespace Repositories.Models
     public partial class Share
     {
         public Guid ShareId { get; set; }
-        public Guid? QuestionId { get; set; }
         public Guid? QuestionSetId { get; set; }
         public Guid? UserId { get; set; }
         public Guid? SchoolId { get; set; }
@@ -20,7 +19,6 @@ namespace Repositories.Models
         public Guid ModifiedBy { get; set; }
         public int? ShareLevel { get; set; }
 
-        public virtual Question? Question { get; set; }
         public virtual School? School { get; set; }
         public virtual User? User { get; set; }
     }

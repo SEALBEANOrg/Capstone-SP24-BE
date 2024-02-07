@@ -19,6 +19,7 @@ namespace WebAPI
             services.AddHttpContextAccessor();
 
             #region Repositories
+            services.AddScoped<IDocumentRepo, DocumentRepo>();
             services.AddScoped<IPaperRepo, PaperRepo>();
             services.AddScoped<IQuestionRepo, QuestionRepo>();
             services.AddScoped<IPaperExamRepo, PaperExamRepo>();
@@ -28,12 +29,14 @@ namespace WebAPI
             services.AddScoped<IStudentRepo, StudentRepo>();
             services.AddScoped<ISubjectSectionRepo, SubjectSectionRepo>();
             services.AddScoped<IExamRepo, ExamRepo>();
-            services.AddScoped<IQuestionSetRepo, Repositories.Implements.QuestionSetRepo>();
+            services.AddScoped<IQuestionMappingRepo, QuestionMappingRepo>();
+            services.AddScoped<IQuestionSetRepo, QuestionSetRepo>();
             services.AddScoped<IUserRepo, UserRepo>();
             #endregion
 
             #region Services
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IDocumentServices, DocumentServices>();
             services.AddScoped<IPaperServices, PaperServices>();
             services.AddScoped<IQuestionServices, QuestionServices>();
             services.AddScoped<IPaperExamServices, PaperExamServices>();
@@ -47,7 +50,6 @@ namespace WebAPI
             services.AddScoped<IUserServices, UserServices>();
             #endregion
             
-
             services.AddSingleton<GlobalExceptionMiddleware>();
             services.AddRouting(opt => opt.LowercaseUrls = true);
             services.AddScoped<IClaimsService, ClaimsService>();

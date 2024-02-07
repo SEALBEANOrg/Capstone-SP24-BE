@@ -31,6 +31,7 @@ namespace Services.Mapper
             CreateMap<School, SchoolForCreateViewModel>().ReverseMap();
             CreateMap<School, SchoolViewModels>().ReverseMap();
             CreateMap<School, SchoolForUpdateViewModel>().ReverseMap();
+            CreateMap<SchoolList, School>().ReverseMap();
 
             #endregion
 

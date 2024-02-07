@@ -13,10 +13,12 @@ namespace Services.Interfaces
         Task<Guid> GetCurrentUser();
         Task<IEnumerable<Request>> GetListRequestToMySchool();
         Task<string> RegisterAsync(string email);
-        Task<bool> CheckExistInFirebase(string email);
+        Task<bool> CheckExistInFirebase(string email); 
         Task<UserViewModels> GetProfile();
-        Task<bool> UpdateProfile(UserUpdate userUpdate);
+        Task<bool> UpdateProfile(ProfileUpdate userUpdate);
         Task<UserViewModels> GetUserById(Guid id);
         Task<bool> OutSchool();
+        Task<bool> UpdateRoleUser(Guid id, RoleUpdate roleUpdate);
+        Task<bool> ChangeStatusOfUser(Guid id, bool isActive);
     }
 }

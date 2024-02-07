@@ -317,7 +317,7 @@ namespace Services.Services
         {
             if (schoolId == null)
             {
-                var share = await _unitOfWork.ShareRepo.FindByField(share => share.QuestionId == questionId && share.PermissionType >= permissionType &&
+                var share = await _unitOfWork.ShareRepo.FindByField(share => share.QuestionSetId == questionId && share.PermissionType >= permissionType &&
                                                                                 share.UserId == userId);
                 if (share == null)
                 {
@@ -329,7 +329,7 @@ namespace Services.Services
             }
             else
             {
-                var share = await _unitOfWork.ShareRepo.FindByField(share => share.QuestionId == questionId && share.PermissionType >= permissionType &&
+                var share = await _unitOfWork.ShareRepo.FindByField(share => share.QuestionSetId == questionId && share.PermissionType >= permissionType &&
                                                                                 share.SchoolId == schoolId);
                 if (share == null)
                 {
@@ -350,7 +350,7 @@ namespace Services.Services
                     return null;
                 }
 
-                var questionIds = shares.Select(share => share.QuestionId);
+                var questionIds = shares.Select(share => share.QuestionSetId);
                 
                 if (questionIds == null)
                 {
@@ -367,7 +367,7 @@ namespace Services.Services
                     return null;
                 }
 
-                var questionIds = shares.Select(share => share.QuestionId);
+                var questionIds = shares.Select(share => share.QuestionSetId);
 
                 if (questionIds == null)
                 {

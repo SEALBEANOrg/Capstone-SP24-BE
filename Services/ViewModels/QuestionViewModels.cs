@@ -28,8 +28,8 @@ namespace Services.ViewModels
         public Guid? SchoolId { get; set; }
         public string Content { get; set; } = null!;
         public int Difficulty { get; set; }
-        public List<string> Answers { get; set; }
-        public List<string> CorrectAnswers { get; set; }
+        public List<string> Answers { get; set; } // dạng đáp án: A. content
+        public List<string> CorrectAnswers { get; set; } // dạng correct: A, B, C, D
         public int? Grade { get; set; }
         public int? Subject { get; set; }
     }

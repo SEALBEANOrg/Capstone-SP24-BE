@@ -194,16 +194,23 @@ namespace Services.Services
             return studentClassViewModels;
         }
 
-        public async Task<IEnumerable<SchoolViewModels>> GetAllSchool()
+        public async Task<IEnumerable<SchoolList>> GetAllSchool(string? search, int status)
         {
-            var schools = await _unitOfWork.SchoolRepo.GetAllAsync();
+            var schools = await _unitOfWork.SchoolRepo.GetAllAsync(x => x.Status == status);
             
             if (schools == null)
             {
                 return null;
             }
 
-            var schoolViewModels = _mapper.Map<IEnumerable<SchoolViewModels>>(schools);
+            if (search != null)
+            {
+                schools = schools.Where(school => school.Name.Contains(search) || 
+                                                  school.Province.Contains(search) || 
+                                                  school.Address.Contains(search)).ToList();
+            }
+
+            var schoolViewModels = _mapper.Map<IEnumerable<SchoolList>>(schools);
             return schoolViewModels;
         }
 

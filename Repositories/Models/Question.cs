@@ -12,6 +12,7 @@ namespace Repositories.Models
         public int Difficulty { get; set; }
         public int? Grade { get; set; }
         public int? Subject { get; set; }
+        public bool IsPublic { get; set; }
         public int Status { get; set; }
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }

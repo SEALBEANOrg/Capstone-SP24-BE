@@ -10,6 +10,7 @@ namespace Repositories.Models
         public int TestCode { get; set; }
         public string? Description { get; set; }
         public string? Marks { get; set; }
+        public int Status { get; set; }
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }
         public DateTime ModifiedOn { get; set; }

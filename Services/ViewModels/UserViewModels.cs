@@ -31,9 +31,19 @@ namespace Services.ViewModels
 
     }
 
-    public class UserUpdate
+    public class ProfileUpdate
     {
         public string FullName { get; set; } = null!;
         public string? Phone { get; set; }
+    }
+
+    public class RoleUpdate
+    {
+        public int UserType { get; set; }   
+    }
+
+    public class ActiveUser
+    {
+        public bool isActive { get; set; }
     }
 }

@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace Services.ViewModels
 {
+    public class SchoolList
+    {
+        public Guid SchoolId { get; set; }
+        public string Address { get; set; } = null!;
+        public string? Province { get; set; }
+        public int Status { get; set; }
+    }
+
     public class SchoolViewModels
     {
         public Guid SchoolId { get; set; }

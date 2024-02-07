@@ -19,7 +19,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "0")] //chỉ 0
+        [Authorize(Roles = "0")] //chỉ 0
         public async Task<IActionResult> GetAll(string? search)
         {
             var users = await _userServices.GetAllUser(search);
@@ -62,7 +62,7 @@ namespace WebAPI.Controllers
 
         [HttpPut("profile")]
         [Authorize]
-        public async Task<IActionResult> UpdateProfile([FromBody] UserUpdate userUpdate)
+        public async Task<IActionResult> UpdateProfile([FromBody] ProfileUpdate userUpdate)
         {
             try
             {
@@ -78,6 +78,38 @@ namespace WebAPI.Controllers
                     return BadRequest(new
                     {
                         Message = "Update Profile thất bại"
+                    });
+                }
+
+                return Ok("Đã cập nhật thông tin cá nhân");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "0")]
+        public async Task<IActionResult> UpdateRoleUser(Guid id, [FromBody] RoleUpdate roleUpdate)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var result = await _userServices.UpdateRoleUser(id, roleUpdate);
+
+                if (!result)
+                {
+                    return BadRequest(new
+                    {
+                        Message = "Update Role thất bại"
                     });
                 }
 
@@ -198,5 +230,32 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
+        [HttpPut("{id}/role")]
+        [Authorize(Roles = "0")]
+        public async Task<IActionResult> ChangeStatusOfUser(Guid id, [FromBody] ActiveUser isActive)
+        {
+            try
+            {
+                var result = await _userServices.ChangeStatusOfUser(id, isActive.isActive);
+                if (!result)
+                {
+                    return BadRequest(new
+                    {
+                        Message = "Change Status thất bại"
+                    });
+                }
+
+                return Ok("Đã cập nhật trạng thái người dùng");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
     }
 }

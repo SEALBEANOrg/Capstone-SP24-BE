@@ -8,24 +8,27 @@ namespace Repositories
     {
         private readonly ExagenContext _context;
 
+        private readonly IDocumentRepo _documentRepo;
         private readonly IPaperRepo _paperRepo;
-        private readonly IQuestionRepo _questionRepo;
         private readonly IPaperExamRepo _paperExamRepo;
         private readonly ISchoolRepo _schoolRepo;
         private readonly IShareRepo _shareRepo;
         private readonly IStudentRepo _studentRepo;
         private readonly IStudentClassRepo _studentClassRepo;
         private readonly ISubjectSectionRepo _subjectSectionRepo;
-        private readonly IQuestionSetRepo _testRepo;
+        private readonly IQuestionRepo _questionRepo;
+        private readonly IQuestionSetRepo _questionSetRepo;
+        private readonly IQuestionMappingRepo _questionMappingRepo;
         private readonly IExamRepo _examRepo;
         private readonly IUserRepo _userRepo;
 
-        public UnitOfWork(ExagenContext context, IPaperRepo paperRepo, IQuestionRepo questionRepo,
+        public UnitOfWork(ExagenContext context, IDocumentRepo documentRepo, IPaperRepo paperRepo, IQuestionRepo questionRepo,
                             IPaperExamRepo paperExamRepo, ISchoolRepo schoolRepo, IShareRepo shareRepo, 
                             IStudentRepo studentRepo, IStudentClassRepo studentClassRepo, ISubjectSectionRepo subjectSectionRepo, 
-                            IQuestionSetRepo testRepo, IExamRepo examRepo, IUserRepo userRepo)
+                            IQuestionSetRepo questionSetRepo, IQuestionMappingRepo questionMappingRepo, IExamRepo examRepo, IUserRepo userRepo)
         {
             _context = context;
+            _documentRepo = documentRepo;
             _paperRepo = paperRepo;
             _questionRepo = questionRepo;
             _paperExamRepo = paperExamRepo;
@@ -34,11 +37,13 @@ namespace Repositories
             _studentRepo = studentRepo;
             _studentClassRepo = studentClassRepo;
             _subjectSectionRepo = subjectSectionRepo;
-            _testRepo = testRepo;
+            _questionSetRepo = questionSetRepo;
+            _questionMappingRepo = questionMappingRepo;
             _examRepo = examRepo;
             _userRepo = userRepo;
         }
 
+        public IDocumentRepo DocumentRepo => _documentRepo;
         public IPaperRepo PaperRepo => _paperRepo;
         public IQuestionRepo QuestionRepo => _questionRepo;
         public ISchoolRepo SchoolRepo => _schoolRepo;
@@ -46,7 +51,8 @@ namespace Repositories
         public IStudentRepo StudentRepo => _studentRepo;
         public IStudentClassRepo StudentClassRepo => _studentClassRepo;
         public ISubjectSectionRepo SubjectSectionRepo => _subjectSectionRepo;
-        public IQuestionSetRepo TestRepo => _testRepo;
+        public IQuestionSetRepo QuestionSetRepo => _questionSetRepo;
+        public IQuestionMappingRepo QuestionMappingRepo => _questionMappingRepo;
         public IUserRepo UserRepo => _userRepo;
         public IPaperExamRepo PaperExamRepo => _paperExamRepo;
         public IExamRepo ExamRepo => _examRepo;

@@ -243,7 +243,7 @@ namespace Services.Services
             }
         }
 
-        public async Task<bool> UpdateProfile(UserUpdate userUpdate)
+        public async Task<bool> UpdateProfile(ProfileUpdate userUpdate)
         {
             try
             {
@@ -344,6 +344,71 @@ namespace Services.Services
             catch(Exception e)
             {
                 throw new Exception("Lỗi ở UserServices - OutSchool: " + e.Message);
+            }
+        }
+
+        public async Task<bool> UpdateRoleUser(Guid id, RoleUpdate roleUpdate)
+        {
+            try 
+            {
+                var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == id);
+                
+                if (user == null)
+                {
+                    return false;
+                }
+
+                if ((roleUpdate.UserType == 3 && user.SchoolId != null) ||
+                    (roleUpdate.UserType == 1 && user.UserType == 2) ||
+                    (roleUpdate.UserType != 3 && roleUpdate.UserType != 1))
+                { 
+                    // k dc doi school admin thanh teacher, tru khi dung chuc nang doi school admin
+                    return false;
+                }
+
+                user.UserType = roleUpdate.UserType;
+                user.ModifiedOn = DateTime.Now;
+                user.ModifiedBy = _claimsService.GetCurrentUser;
+
+                _unitOfWork.UserRepo.Update(user);
+                var result = await _unitOfWork.SaveChangesAsync();
+                return result > 0;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở UserServices - UpdateRoleUser: " + e.Message);
+            }
+        }
+
+        public async Task<bool> ChangeStatusOfUser(Guid id, bool isActive)
+        {
+            try
+            {
+                var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == id);
+                if (user == null)
+                {
+                    return false;
+                }
+
+                if (user.SchoolId == null)
+                {
+                    user.Status = isActive ? 1 : 0;
+                }
+                else
+                {
+                    user.Status = isActive ? 3 : 0;
+                }
+
+                user.ModifiedOn = DateTime.Now;
+                user.ModifiedBy = _claimsService.GetCurrentUser;
+
+                _unitOfWork.UserRepo.Update(user);
+                var result = await _unitOfWork.SaveChangesAsync();
+                return result > 0;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở UserServices - ChangeStatusOfUser: " + e.Message);
             }
         }
     }

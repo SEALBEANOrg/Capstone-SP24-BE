@@ -16,10 +16,12 @@ namespace Repositories.Models
         {
         }
 
+        public virtual DbSet<Document> Documents { get; set; } = null!;
         public virtual DbSet<Exam> Exams { get; set; } = null!;
         public virtual DbSet<Paper> Papers { get; set; } = null!;
         public virtual DbSet<PaperExam> PaperExams { get; set; } = null!;
         public virtual DbSet<Question> Questions { get; set; } = null!;
+        public virtual DbSet<QuestionMapping> QuestionMappings { get; set; } = null!;
         public virtual DbSet<QuestionSet> QuestionSets { get; set; } = null!;
         public virtual DbSet<School> Schools { get; set; } = null!;
         public virtual DbSet<Share> Shares { get; set; } = null!;
@@ -39,6 +41,26 @@ namespace Repositories.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Document>(entity =>
+            {
+                entity.ToTable("Document");
+
+                entity.Property(e => e.DocumentId)
+                    .HasColumnName("DocumentID")
+                    .HasDefaultValueSql("(newsequentialid())");
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.Description).HasMaxLength(500);
+
+                entity.Property(e => e.Name).HasMaxLength(255);
+
+                entity.Property(e => e.Url)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("URL");
+            });
+
             modelBuilder.Entity<Exam>(entity =>
             {
                 entity.HasNoKey();
@@ -139,6 +161,20 @@ namespace Repositories.Models
                     .HasForeignKey(d => d.SectionId);
             });
 
+            modelBuilder.Entity<QuestionMapping>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("QuestionMapping");
+
+                entity.HasIndex(e => e.QuestionSetId, "IX_QuestionMapping_QuestionSetID")
+                    .IsClustered();
+
+                entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
+
+                entity.Property(e => e.QuestionSetId).HasColumnName("QuestionSetID");
+            });
+
             modelBuilder.Entity<QuestionSet>(entity =>
             {
                 entity.HasNoKey();
@@ -208,8 +244,6 @@ namespace Repositories.Models
 
                 entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
 
-                entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
-
                 entity.Property(e => e.QuestionSetId).HasColumnName("QuestionSetID");
 
                 entity.Property(e => e.SchoolId).HasColumnName("SchoolID");
@@ -221,11 +255,6 @@ namespace Repositories.Models
                 entity.Property(e => e.ShareLevel).HasComputedColumnSql("([dbo].[GetShareLevel]([UserID],[SchoolID]))", false);
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
-
-                entity.HasOne(d => d.Question)
-                    .WithMany()
-                    .HasForeignKey(d => d.QuestionId)
-                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(d => d.School)
                     .WithMany()
@@ -259,7 +288,7 @@ namespace Repositories.Models
             modelBuilder.Entity<StudentClass>(entity =>
             {
                 entity.HasKey(e => e.ClassId)
-                    .HasName("PK__StudentC__CB1927A0A27B16BE");
+                    .HasName("PK__StudentC__CB1927A00BFBB72B");
 
                 entity.ToTable("StudentClass");
 
@@ -288,7 +317,7 @@ namespace Repositories.Models
             modelBuilder.Entity<SubjectSection>(entity =>
             {
                 entity.HasKey(e => e.SectionId)
-                    .HasName("PK__SubjectS__80EF0892B9D3AED6");
+                    .HasName("PK__SubjectS__80EF08927DDFAD91");
 
                 entity.ToTable("SubjectSection");
 
@@ -309,7 +338,7 @@ namespace Repositories.Models
             {
                 entity.ToTable("User");
 
-                entity.HasIndex(e => e.Email, "UQ__User__A9D10534D81B3647")
+                entity.HasIndex(e => e.Email, "UQ__User__A9D105346F3B8237")
                     .IsUnique();
 
                 entity.Property(e => e.UserId)
@@ -318,13 +347,17 @@ namespace Repositories.Models
 
                 entity.Property(e => e.CreatedOn).HasColumnType("datetime");
 
-                entity.Property(e => e.Email).HasMaxLength(255);
+                entity.Property(e => e.Email)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.FullName).HasMaxLength(255);
 
                 entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
 
-                entity.Property(e => e.Phone).HasMaxLength(20);
+                entity.Property(e => e.Phone)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.SchoolId).HasColumnName("SchoolID");
 

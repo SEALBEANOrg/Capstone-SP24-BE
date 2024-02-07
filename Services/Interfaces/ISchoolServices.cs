@@ -8,7 +8,7 @@ namespace Services.Interfaces
         Task<bool> ChangeSchoolAdmin(Guid schoolId, string email, Guid currentUserId);
         Task<bool> DeleteSchool(Guid schoolId);
         Task<IEnumerable<StudentClassViewModels>> GetAllClassOfMySchool(Guid currentUserId);
-        Task<IEnumerable<SchoolViewModels>> GetAllSchool();
+        Task<IEnumerable<SchoolList>> GetAllSchool(string? search, int status);
         Task<IEnumerable<ComboSchool>> GetComboSchool();
         Task<SchoolViewModels> GetInfoMySchool(Guid currentUserId);
         Task<SchoolViewModels> GetSchoolById(Guid schoolId);
