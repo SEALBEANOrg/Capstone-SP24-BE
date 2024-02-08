@@ -124,7 +124,6 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("{sectionId}")]
-        [AllowAnonymous]
         public async Task<IActionResult> DeleteSubjectSection(Guid sectionId)
         {
             try

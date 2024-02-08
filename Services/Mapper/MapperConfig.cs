@@ -58,6 +58,16 @@ namespace Services.Mapper
 
             #endregion
 
+            #region Document
+            CreateMap<Document, DocumentViewModels>().ReverseMap();
+            CreateMap<Document, DocumentViewModel>().ReverseMap();
+            CreateMap<Document, DocumentCreate>().ReverseMap();
+
+            #endregion
+
+
+
+
         }
 
     }
