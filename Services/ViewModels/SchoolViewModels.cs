@@ -9,6 +9,7 @@ namespace Services.ViewModels
     public class SchoolList
     {
         public Guid SchoolId { get; set; }
+        public string Name { get; set; } = null!;
         public string Address { get; set; } = null!;
         public string? Province { get; set; }
         public int Status { get; set; }
@@ -17,7 +18,7 @@ namespace Services.ViewModels
     public class SchoolViewModels
     {
         public Guid SchoolId { get; set; }
-        public Guid AdminId { get; set; }
+        public string AdminEmail { get; set; }
         public string Name { get; set; } = null!;
         public string Address { get; set; } = null!;
         public string? Province { get; set; }
@@ -44,6 +45,10 @@ namespace Services.ViewModels
         public string Name { get; set; } = null!;
         public string Address { get; set; } = null!;
         public string? Province { get; set; }
+    }
+
+    public class SchoolActive
+    {
         public int Status { get; set; }
     }
 }

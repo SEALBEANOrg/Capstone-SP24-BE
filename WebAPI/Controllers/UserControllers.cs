@@ -92,7 +92,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}/role")]
         [Authorize(Roles = "0")]
         public async Task<IActionResult> UpdateRoleUser(Guid id, [FromBody] RoleUpdate roleUpdate)
         {
@@ -231,7 +231,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPut("{id}/role")]
+        [HttpPut("{id}")]
         [Authorize(Roles = "0")]
         public async Task<IActionResult> ChangeStatusOfUser(Guid id, [FromBody] ActiveUser isActive)
         {

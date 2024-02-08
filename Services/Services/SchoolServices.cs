@@ -23,20 +23,11 @@ namespace Services.Services
         {
             try
             {
-                var adminSchool = await _unitOfWork.UserRepo.FindByField(user => user.Email == schoolForCreateViewModel.AdminEmail);
+                var adminSchool = await _unitOfWork.UserRepo.FindByField(user => user.Email == schoolForCreateViewModel.AdminEmail 
+                                                                && user.Status == 1 && user.UserType == 1);
                 if (adminSchool == null)
                 {
-                    throw new Exception("Không tìm thấy người dùng này.");
-                }
-
-                if (adminSchool.Status != 1)
-                {
-                      throw new Exception("Người dùng này đã ngưng hoạt động hoặc đã thuộc trường khác.");
-                }
-
-                if (adminSchool.UserType != 1)
-                {
-                    throw new Exception("Phải là giáo viên để được nâng cấp thành Admin trường.");
+                    throw new Exception("Người dùng không hợp lệ để thành School Admin");
                 }
 
                 if (schoolForCreateViewModel.Province != null && schoolForCreateViewModel.Address != null)
@@ -109,20 +100,10 @@ namespace Services.Services
                     throw new Exception("Trường học không tồn tại");
                 }
 
-                var adminSchool = await _unitOfWork.UserRepo.FindByField(user => user.Email == email);
+                var adminSchool = await _unitOfWork.UserRepo.FindByField(user => user.Email == email && user.Status == 1 && user.UserType == 1);
                 if (adminSchool == null)
                 {
-                    throw new Exception("Không tìm thấy người dùng này.");
-                }
-
-                if (adminSchool.Status != 1)
-                {
-                    throw new Exception("Người dùng này đã ngưng hoạt động hoặc đã thuộc trường khác.");
-                }
-
-                if (adminSchool.UserType != 1)
-                {
-                    throw new Exception("Phải là giáo viên để được nâng cấp thành Admin trường.");
+                    throw new Exception("Người dùng không hợp lệ để trở thành School Admin");
                 }
 
                 school.AdminId = newAdmin.UserId;
@@ -149,6 +130,28 @@ namespace Services.Services
             catch (Exception e)
             {
                 throw new Exception("Lỗi ở SchoolServices - ChangeSchoolAdmin: " + e.Message);
+            }
+        }
+
+        public async Task<bool> ChangeStatusOfSchool(Guid schoolId, int status)
+        {
+            try
+            {
+                var school = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == schoolId);
+                if (school == null)
+                {
+                    throw new Exception("Trường học không tồn tại");
+                }
+
+                school.Status = status;
+                _unitOfWork.SchoolRepo.Update(school);
+                var result = await _unitOfWork.SaveChangesAsync();
+
+                return result > 0;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở SchoolServices - ChangeStatusOfSchool: " + e.Message);
             }
         }
 
@@ -248,7 +251,7 @@ namespace Services.Services
 
         public async Task<SchoolViewModels> GetSchoolById(Guid schoolId)
         {
-            var school = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == schoolId);
+            var school = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == schoolId, school => school.Users);
             if (school == null)
             {
                 throw new Exception("Trường học không tồn tại");

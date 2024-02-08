@@ -29,7 +29,7 @@ namespace Services.Mapper
             #region School
             CreateMap<ComboSchool, School>().ReverseMap();
             CreateMap<School, SchoolForCreateViewModel>().ReverseMap();
-            CreateMap<School, SchoolViewModels>().ReverseMap();
+            CreateMap<School, SchoolViewModels>().ForMember(dest => dest.AdminEmail, opt => opt.MapFrom(src => src.Users.FirstOrDefault(u => u.UserId == src.AdminId).Email));
             CreateMap<School, SchoolForUpdateViewModel>().ReverseMap();
             CreateMap<SchoolList, School>().ReverseMap();
 
@@ -53,6 +53,8 @@ namespace Services.Mapper
             #region SubjectSection
             CreateMap<SubjectSection, SubjectSectionViewModels>().ReverseMap();
             CreateMap<SubjectSection, SubjectSectionCreate>().ReverseMap();
+            CreateMap<SubjectSection, SubjectSectionUpdate>().ReverseMap();
+            CreateMap<SubjectSection, SubjectSectionViewModel>().ReverseMap();
 
             #endregion
 

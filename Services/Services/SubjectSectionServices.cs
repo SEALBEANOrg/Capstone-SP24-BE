@@ -48,11 +48,14 @@ namespace Services.Services
             }
         }
 
-        public async Task<IEnumerable<SubjectSectionViewModels>> GetAllBySubjectIdAndGrade(int subjectId, int grade)
+        public async Task<IEnumerable<SubjectSectionViewModels>> GetAllBySubjectIdAndGrade(int? subjectId, int? grade)
         {
             try
             {
-                var subjectSections = await _unitOfWork.SubjectSectionRepo.FindListByField(subjectSection => subjectSection.Subject == subjectId && subjectSection.Grade == grade);
+                var subjectSections = await _unitOfWork.SubjectSectionRepo.GetAllAsync();
+                
+                subjectSections = subjectId != null ? subjectSections.Where(section => section.Subject == subjectId).ToList() : subjectSections;
+                subjectSections = grade != null ? subjectSections.Where(section => section.Grade == grade).ToList() : subjectSections;
 
                 if (subjectSections == null)
                 {
@@ -69,15 +72,15 @@ namespace Services.Services
             }
         }
 
-        public async Task<SubjectSectionViewModels> GetSectionBySectionId(Guid sectionId)
+        public async Task<SubjectSectionViewModel> GetSectionBySectionId(Guid sectionId)
         {
             try
             {
                 var section = await _unitOfWork.SubjectSectionRepo.FindByField(section => section.SectionId == sectionId);
 
-                var sectionViewModels = _mapper.Map<SubjectSectionViewModels>(section);
+                var sectionViewModel = _mapper.Map<SubjectSectionViewModel>(section);
 
-                return sectionViewModels;
+                return sectionViewModel;
             }
             catch (Exception e)
             {

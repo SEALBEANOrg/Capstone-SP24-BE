@@ -8,7 +8,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/v0/subjectsections")]
     [ApiController]
-    [Authorize(Roles = "0,1")] //chỉ 0
+    [Authorize(Roles = "0")] 
     public class SubjectSectionController : ControllerBase
     {
         private readonly ISubjectSectionServices _subjectSectionServices;
@@ -20,10 +20,9 @@ namespace WebAPI.Controllers
             _userServices = userServices;
         }
 
-        [HttpGet("{subjectId}/{grade}")]
-        [Authorize]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetAllBySubjectIdAndGrade(int subjectId, int grade)
+        [HttpGet]
+        [Authorize(Roles = "0,1,2,3")]
+        public async Task<IActionResult> GetAllBySubjectIdAndGrade(int? grade, int? subjectId)
         {
             try
             {
@@ -41,7 +40,6 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{sectionId}")]
-        [Authorize]
         public async Task<IActionResult> GetSectionBySectionId(Guid sectionId)
         {
             try
@@ -93,7 +91,6 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut]
-        [AllowAnonymous]
         public async Task<IActionResult> UpdateSubjectSection(SubjectSectionUpdate subjectSectionUpdate)
         {
             try

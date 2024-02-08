@@ -138,7 +138,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "0")] //chỉ 0 
+        [Authorize(Roles = "0")]
         public async Task<IActionResult> AddNewSchool([FromBody] SchoolForCreateViewModel schoolForCreateViewModel)
         {
             try
@@ -351,7 +351,38 @@ namespace WebAPI.Controllers
             }
         }
 
+        [HttpPut("{schoolId}")]
+        [Authorize(Roles = "0")]
+        public async Task<IActionResult> ChangeStatusOfSchool(Guid schoolId, SchoolActive schoolActive)
+        {
+            try
+            {
 
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var result = await _schoolServices.ChangeStatusOfSchool(schoolId, schoolActive.Status);
+
+                if (result == false)
+                {
+                    return BadRequest(new
+                    {
+                        Message = "Thay đổi trạng thái trường học thất bại"
+                    });
+                }
+
+                return Ok("Đã thay đổi trạng thái trường thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
 
     }
 }
