@@ -20,7 +20,7 @@ namespace WebAPI.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("SendImage")]
+        [HttpPost("send-image")]
         public async Task<IActionResult> SendImage([FromBody] ResultForScanViewModel base64Image)
         {
             if (string.IsNullOrEmpty(base64Image.Base64Image))
@@ -34,7 +34,7 @@ namespace WebAPI.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("SaveResultOfTest")]
+        [HttpPost("save-result")]
         public async Task<IActionResult> SaveResultOfTest([FromBody] string result, string codeExam, Guid testId)
         {
             if (result == null || codeExam == null || testId == null)
@@ -42,14 +42,11 @@ namespace WebAPI.Controllers
                 return BadRequest();
             }
 
-            
-
-
             return Ok();
         }
 
         [AllowAnonymous]
-        [HttpGet("CheckPermissionAccessTest/{testCode}/{email}")]
+        [HttpGet("check-permission/{testCode}/{email}")]
         public async Task<IActionResult> CheckPermissionAccessTest(string testCode, string email)
         {
             if (string.IsNullOrEmpty(testCode) || string.IsNullOrEmpty(email))
@@ -63,7 +60,7 @@ namespace WebAPI.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("GetInfoOfClassInExam/{testCode}/{email}")]
+        [HttpGet("access-exam/{testCode}/{email}")]
         public async Task<IActionResult> GetInfoOfClassInExam(string testCode, string email)
         {
             if (string.IsNullOrEmpty(testCode) || string.IsNullOrEmpty(email))
@@ -71,9 +68,20 @@ namespace WebAPI.Controllers
                 return BadRequest();
             }
 
-            var result = await _testResultServices.GetInfoOfClassInExam(testCode, email);
+            try
+            {
+                var result = await _testResultServices.GetInfoOfClassInExam(testCode, email);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(new
+                {
+                    Message = ex.Message
+                });
+
+            }
         }
 
     }

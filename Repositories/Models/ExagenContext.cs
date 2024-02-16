@@ -18,6 +18,7 @@ namespace Repositories.Models
 
         public virtual DbSet<Document> Documents { get; set; } = null!;
         public virtual DbSet<Exam> Exams { get; set; } = null!;
+        public virtual DbSet<ExamMark> ExamMarks { get; set; } = null!;
         public virtual DbSet<Paper> Papers { get; set; } = null!;
         public virtual DbSet<PaperExam> PaperExams { get; set; } = null!;
         public virtual DbSet<Question> Questions { get; set; } = null!;
@@ -63,14 +64,18 @@ namespace Repositories.Models
 
             modelBuilder.Entity<Exam>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.ExamId)
+                    .HasName("pk_exam")
+                    .IsClustered(false);
 
                 entity.ToTable("Exam");
 
                 entity.HasIndex(e => e.CreatedOn, "IX_Exam_CreatedOn")
                     .IsClustered();
 
-                entity.HasIndex(e => new { e.CreatedOn, e.ExamId }, "IX_Exam_ID");
+                entity.Property(e => e.ExamId)
+                    .HasColumnName("ExamID")
+                    .HasDefaultValueSql("(newsequentialid())");
 
                 entity.Property(e => e.ClassId).HasColumnName("ClassID");
 
@@ -78,37 +83,74 @@ namespace Repositories.Models
 
                 entity.Property(e => e.Description).HasMaxLength(255);
 
-                entity.Property(e => e.ExamId)
-                    .HasColumnName("ExamID")
-                    .HasDefaultValueSql("(newsequentialid())");
-
                 entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
 
                 entity.Property(e => e.TestCode).ValueGeneratedOnAdd();
 
                 entity.HasOne(d => d.Class)
-                    .WithMany()
+                    .WithMany(p => p.Exams)
                     .HasForeignKey(d => d.ClassId);
+            });
+
+            modelBuilder.Entity<ExamMark>(entity =>
+            {
+                entity.HasKey(e => e.ExamMarkId)
+                    .HasName("pk_exammark")
+                    .IsClustered(false);
+
+                entity.ToTable("ExamMark");
+
+                entity.HasIndex(e => e.CreatedOn, "IX_ExamMark_CreatedOn")
+                    .IsClustered();
+
+                entity.Property(e => e.ExamMarkId)
+                    .HasColumnName("ExamMarkID")
+                    .HasDefaultValueSql("(newsequentialid())");
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.ExamId).HasColumnName("ExamID");
+
+                entity.Property(e => e.Mark).HasColumnType("decimal(5, 2)");
+
+                entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.StudentId).HasColumnName("StudentID");
+
+                entity.Property(e => e.StudentNo).HasComputedColumnSql("([dbo].[GetStudentNo]([StudentID]))", false);
+
+                entity.HasOne(d => d.Exam)
+                    .WithMany(p => p.ExamMarks)
+                    .HasForeignKey(d => d.ExamId);
+
+                entity.HasOne(d => d.Student)
+                    .WithMany(p => p.ExamMarks)
+                    .HasForeignKey(d => d.StudentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             modelBuilder.Entity<Paper>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.PaperId)
+                    .HasName("pk_paper")
+                    .IsClustered(false);
 
                 entity.ToTable("Paper");
 
                 entity.HasIndex(e => e.CreatedOn, "IX_Paper_CreatedOn")
                     .IsClustered();
 
-                entity.HasIndex(e => new { e.CreatedOn, e.PaperId }, "IX_Paper_ID");
-
-                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
-
                 entity.Property(e => e.PaperId)
                     .HasColumnName("PaperID")
                     .HasDefaultValueSql("(newsequentialid())");
 
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
                 entity.Property(e => e.QuestionSetId).HasColumnName("QuestionSetID");
+
+                entity.HasOne(d => d.QuestionSet)
+                    .WithMany(p => p.Papers)
+                    .HasForeignKey(d => d.QuestionSetId);
             });
 
             modelBuilder.Entity<PaperExam>(entity =>
@@ -123,6 +165,16 @@ namespace Repositories.Models
                 entity.Property(e => e.ExamId).HasColumnName("ExamID");
 
                 entity.Property(e => e.PaperId).HasColumnName("PaperID");
+
+                entity.HasOne(d => d.Exam)
+                    .WithMany()
+                    .HasForeignKey(d => d.ExamId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(d => d.Paper)
+                    .WithMany()
+                    .HasForeignKey(d => d.PaperId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Question>(entity =>
@@ -140,6 +192,11 @@ namespace Repositories.Models
                     .HasColumnName("QuestionID")
                     .HasDefaultValueSql("(newsequentialid())");
 
+                entity.Property(e => e.CorrectAnswer)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
                 entity.Property(e => e.CreatedOn).HasColumnType("datetime");
 
                 entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
@@ -154,11 +211,13 @@ namespace Repositories.Models
 
                 entity.HasOne(d => d.School)
                     .WithMany(p => p.Questions)
-                    .HasForeignKey(d => d.SchoolId);
+                    .HasForeignKey(d => d.SchoolId)
+                    .OnDelete(DeleteBehavior.SetNull);
 
                 entity.HasOne(d => d.Section)
                     .WithMany(p => p.Questions)
-                    .HasForeignKey(d => d.SectionId);
+                    .HasForeignKey(d => d.SectionId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<QuestionMapping>(entity =>
@@ -173,18 +232,32 @@ namespace Repositories.Models
                 entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
 
                 entity.Property(e => e.QuestionSetId).HasColumnName("QuestionSetID");
+
+                entity.HasOne(d => d.Question)
+                    .WithMany()
+                    .HasForeignKey(d => d.QuestionId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(d => d.QuestionSet)
+                    .WithMany()
+                    .HasForeignKey(d => d.QuestionSetId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<QuestionSet>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.QuestionSetId)
+                    .HasName("pk_questionset")
+                    .IsClustered(false);
 
                 entity.ToTable("QuestionSet");
 
                 entity.HasIndex(e => e.CreatedOn, "IX_QuestionSet_CreatedOn")
                     .IsClustered();
 
-                entity.HasIndex(e => new { e.CreatedOn, e.QuestionSetId }, "IX_QuestionSet_ID");
+                entity.Property(e => e.QuestionSetId)
+                    .HasColumnName("QuestionSetID")
+                    .HasDefaultValueSql("(newsequentialid())");
 
                 entity.Property(e => e.CreatedOn).HasColumnType("datetime");
 
@@ -194,14 +267,10 @@ namespace Repositories.Models
 
                 entity.Property(e => e.Name).HasMaxLength(255);
 
-                entity.Property(e => e.QuestionSetId)
-                    .HasColumnName("QuestionSetID")
-                    .HasDefaultValueSql("(newsequentialid())");
-
                 entity.Property(e => e.SchoolId).HasColumnName("SchoolID");
 
                 entity.HasOne(d => d.School)
-                    .WithMany()
+                    .WithMany(p => p.QuestionSets)
                     .HasForeignKey(d => d.SchoolId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
@@ -256,14 +325,18 @@ namespace Repositories.Models
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
+                entity.HasOne(d => d.QuestionSet)
+                    .WithMany()
+                    .HasForeignKey(d => d.QuestionSetId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
                 entity.HasOne(d => d.School)
                     .WithMany()
                     .HasForeignKey(d => d.SchoolId);
 
                 entity.HasOne(d => d.User)
                     .WithMany()
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .HasForeignKey(d => d.UserId);
             });
 
             modelBuilder.Entity<Student>(entity =>
@@ -288,7 +361,7 @@ namespace Repositories.Models
             modelBuilder.Entity<StudentClass>(entity =>
             {
                 entity.HasKey(e => e.ClassId)
-                    .HasName("PK__StudentC__CB1927A00BFBB72B");
+                    .HasName("PK__StudentC__CB1927A06EA00E60");
 
                 entity.ToTable("StudentClass");
 
@@ -310,14 +383,13 @@ namespace Repositories.Models
 
                 entity.HasOne(d => d.School)
                     .WithMany(p => p.StudentClasses)
-                    .HasForeignKey(d => d.SchoolId)
-                    .OnDelete(DeleteBehavior.SetNull);
+                    .HasForeignKey(d => d.SchoolId);
             });
 
             modelBuilder.Entity<SubjectSection>(entity =>
             {
                 entity.HasKey(e => e.SectionId)
-                    .HasName("PK__SubjectS__80EF08927DDFAD91");
+                    .HasName("PK__SubjectS__80EF0892F3B1F0DC");
 
                 entity.ToTable("SubjectSection");
 
@@ -338,7 +410,7 @@ namespace Repositories.Models
             {
                 entity.ToTable("User");
 
-                entity.HasIndex(e => e.Email, "UQ__User__A9D105346F3B8237")
+                entity.HasIndex(e => e.Email, "UQ__User__A9D105347555FA61")
                     .IsUnique();
 
                 entity.Property(e => e.UserId)

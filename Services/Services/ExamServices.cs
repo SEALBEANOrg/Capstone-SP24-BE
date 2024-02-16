@@ -66,62 +66,31 @@ namespace Services.Services
 
                 List<ComboStudent> studentInExam = new List<ComboStudent>();
                
-                var testResult = await _unitOfWork.ExamRepo.FindByField(testResult => testResult.TestCode == testCodeInt && testResult.CreatedBy == user.UserId);
+                var exam = await _unitOfWork.ExamRepo.FindByField(exams => exams.TestCode == testCodeInt && exams.CreatedBy == user.UserId, includes => includes.ExamMarks);
 
-                if (testResult == null)
+                if (exam == null)
                 {
                     throw new Exception("Không tìm thấy kết quả thi");
                 }
 
                 var infoClassInExam = new InfoClassInExam { 
-                    DescriptionOfTest = testResult.Description,
-                    TestCode = testResult.TestCode,
+                    DescriptionOfTest = exam.Description,
+                    TestCode = exam.TestCode,
                 };
-
-                if (testResult.Marks == null)
-                {
-                    var student = await _unitOfWork.StudentRepo.FindListByField(student => student.ClassId == testResult.ClassId);
-                    
-                    if (student == null)
+                
+                if (exam.ExamMarks.Count > 0)
+                {                    
+                    foreach (var item in exam.ExamMarks)
                     {
-                        return null;
-                    }
-
-                    foreach (var item in student)
-                    {
+                        var student = await _unitOfWork.StudentRepo.FindByField(student => student.StudentId == item.StudentId);
+                        
                         var comboStudent = new ComboStudent
                         {
                             StudentId = item.StudentId,
-                            Name = item.FullName,
-                            Mark = null,
-                            No = item.StudentNo
+                            Name = student.FullName,
+                            Mark = item.Mark,
+                            No = student.StudentNo
                         };
-                        studentInExam.Add(comboStudent);
-                    }
-
-                    infoClassInExam.StudentInExam = studentInExam;
-                }
-                else 
-                { 
-                    var marks = JsonSerializer.Deserialize<List<string>>(testResult.Marks);
-                    
-                    foreach (var item in marks)
-                    {
-                        // StudentName - No | 4
-                        string[] parts = item.Split(new[] { " | " }, StringSplitOptions.None);
-                        var comboStudent = new ComboStudent
-                        {
-                            Name = parts[0],
-                            StudentId = Guid.Parse(parts[1]),
-                        };
-                        if (parts.Length == 3)
-                        {
-                            comboStudent.Mark = int.Parse(parts[2]);
-                        }
-                        else
-                        {
-                            comboStudent.Mark = null;
-                        }
                         studentInExam.Add(comboStudent);
                     }
 

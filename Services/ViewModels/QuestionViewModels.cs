@@ -16,10 +16,16 @@ namespace Services.ViewModels
         public int? Grade { get; set; }
         public int? Subject { get; set; }
         public int Status { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public Guid CreatedBy { get; set; }
-        public DateTime ModifiedOn { get; set; }
-        public Guid ModifiedBy { get; set; }
+    }
+
+    public class QuestionViewModel
+    {
+        public Guid QuestionId { get; set; }
+        public Guid? SectionId { get; set; }
+        public Guid? SchoolId { get; set; }
+        public string QuestionContent { get; set; } = null!;
+        public int Difficulty { get; set; }
+        public int Status { get; set; }
     }
 
     public class QuestionCreate
@@ -28,8 +34,12 @@ namespace Services.ViewModels
         public Guid? SchoolId { get; set; }
         public string Content { get; set; } = null!;
         public int Difficulty { get; set; }
-        public List<string> Answers { get; set; } // dạng đáp án: A. content
-        public List<string> CorrectAnswers { get; set; } // dạng correct: A, B, C, D
+        public string QuestionPart { get; set; } = null!;
+        public string Answer1 { get; set; } = null!;
+        public string Answer2 { get; set; } = null!;
+        public string Answer3 { get; set; } = null!;
+        public string Answer4 { get; set; } = null!;
+        public string CorrectAnswer { get; set; } = null!;
         public int? Grade { get; set; }
         public int? Subject { get; set; }
     }
@@ -52,5 +62,19 @@ namespace Services.ViewModels
         public string Content { get; set; } = null!;
         public List<string> Answers { get; set; }
         public List<string> CorrectAnswers { get; set; }
+    }
+
+    public class QuestionSetViewModel
+    {
+        public Guid QuestionSetId { get; set; }
+        public string Name { get; set; } = null!;
+        public string? Description { get; set; }
+        public int Type { get; set; }
+        public int Subject { get; set; }
+        public int Grade { get; set; }
+        public int Status { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public Guid CreatedBy { get; set; }
+        public List<QuestionViewModel> Questions { get; set; }
     }
 }

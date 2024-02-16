@@ -7,5 +7,8 @@ namespace Repositories.Models
     {
         public Guid? QuestionId { get; set; }
         public Guid? QuestionSetId { get; set; }
+
+        public virtual Question? Question { get; set; }
+        public virtual QuestionSet? QuestionSet { get; set; }
     }
 }

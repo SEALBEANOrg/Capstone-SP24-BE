@@ -53,6 +53,6 @@ namespace Services.ViewModels
         public Guid StudentId { get; set; }
         public int No { get; set; }
         public string Name { get; set; }
-        public int? Mark { get; set;}
+        public decimal? Mark { get; set;}
     }
 }

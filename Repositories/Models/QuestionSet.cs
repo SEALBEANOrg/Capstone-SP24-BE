@@ -5,6 +5,11 @@ namespace Repositories.Models
 {
     public partial class QuestionSet
     {
+        public QuestionSet()
+        {
+            Papers = new HashSet<Paper>();
+        }
+
         public Guid QuestionSetId { get; set; }
         public Guid? SchoolId { get; set; }
         public string Name { get; set; } = null!;
@@ -20,5 +25,6 @@ namespace Repositories.Models
         public Guid ModifiedBy { get; set; }
 
         public virtual School? School { get; set; }
+        public virtual ICollection<Paper> Papers { get; set; }
     }
 }

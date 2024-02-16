@@ -16,6 +16,7 @@ namespace Repositories
         public IQuestionSetRepo QuestionSetRepo { get; }
         public IQuestionMappingRepo QuestionMappingRepo { get; }
         public IExamRepo ExamRepo { get; }
+        public IExamMarkRepo ExamMarkRepo { get; }
         public IUserRepo UserRepo { get; }
 
         public Task<int> SaveChangesAsync();

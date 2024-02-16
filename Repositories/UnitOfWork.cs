@@ -20,10 +20,11 @@ namespace Repositories
         private readonly IQuestionSetRepo _questionSetRepo;
         private readonly IQuestionMappingRepo _questionMappingRepo;
         private readonly IExamRepo _examRepo;
+        private readonly IExamMarkRepo _examMarkRepo;
         private readonly IUserRepo _userRepo;
 
         public UnitOfWork(ExagenContext context, IDocumentRepo documentRepo, IPaperRepo paperRepo, IQuestionRepo questionRepo,
-                            IPaperExamRepo paperExamRepo, ISchoolRepo schoolRepo, IShareRepo shareRepo, 
+                            IPaperExamRepo paperExamRepo, ISchoolRepo schoolRepo, IShareRepo shareRepo, IExamMarkRepo examMarkRepo,
                             IStudentRepo studentRepo, IStudentClassRepo studentClassRepo, ISubjectSectionRepo subjectSectionRepo, 
                             IQuestionSetRepo questionSetRepo, IQuestionMappingRepo questionMappingRepo, IExamRepo examRepo, IUserRepo userRepo)
         {
@@ -40,6 +41,7 @@ namespace Repositories
             _questionSetRepo = questionSetRepo;
             _questionMappingRepo = questionMappingRepo;
             _examRepo = examRepo;
+            _examMarkRepo = examMarkRepo;
             _userRepo = userRepo;
         }
 
@@ -56,6 +58,7 @@ namespace Repositories
         public IUserRepo UserRepo => _userRepo;
         public IPaperExamRepo PaperExamRepo => _paperExamRepo;
         public IExamRepo ExamRepo => _examRepo;
+        public IExamMarkRepo ExamMarkRepo => _examMarkRepo;
 
         public async Task<int> SaveChangesAsync()
         {

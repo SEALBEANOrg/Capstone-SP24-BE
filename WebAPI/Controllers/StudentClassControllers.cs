@@ -232,7 +232,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost("ImportExcelToAddStudent/{classId}")]
+        [HttpPost("import-students/{classId}")]
         [Authorize(Roles = "1")]
         public async Task<IActionResult> ImportExcelToAddStudent(IFormFile file, Guid classId)
         {

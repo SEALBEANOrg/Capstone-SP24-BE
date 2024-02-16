@@ -1,9 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Repositories.Models
+namespace Services.ViewModels
 {
-    public partial class Share
+    public class ShareViewModels
+    {
+        public Guid ShareId { get; set; }
+        public Guid QuestionSetId { get; set; }
+        public int Type { get; set; }
+        public string? Note { get; set; }
+        public int Status { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public Guid CreatedBy { get; set; }
+    }
+
+    public class ShareViewModel
     {
         public Guid ShareId { get; set; }
         public Guid? QuestionSetId { get; set; }
@@ -18,9 +32,13 @@ namespace Repositories.Models
         public DateTime ModifiedOn { get; set; }
         public Guid ModifiedBy { get; set; }
         public int? ShareLevel { get; set; }
-
-        public virtual QuestionSet? QuestionSet { get; set; }
-        public virtual School? School { get; set; }
-        public virtual User? User { get; set; }
     }
+
+    public class ResponseRequest
+    {
+        public bool IsAccept { get; set; }
+        public string? Note { get; set; }
+
+    }
+
 }

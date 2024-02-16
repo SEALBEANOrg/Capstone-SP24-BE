@@ -8,7 +8,12 @@ namespace Repositories.Models
         public Guid QuestionId { get; set; }
         public Guid? SectionId { get; set; }
         public Guid? SchoolId { get; set; }
-        public string QuestionContent { get; set; } = null!;
+        public string QuestionPart { get; set; } = null!;
+        public string Answer1 { get; set; } = null!;
+        public string Answer2 { get; set; } = null!;
+        public string Answer3 { get; set; } = null!;
+        public string Answer4 { get; set; } = null!;
+        public string CorrectAnswer { get; set; } = null!;
         public int Difficulty { get; set; }
         public int? Grade { get; set; }
         public int? Subject { get; set; }

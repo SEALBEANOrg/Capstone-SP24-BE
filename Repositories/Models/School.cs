@@ -7,6 +7,7 @@ namespace Repositories.Models
     {
         public School()
         {
+            QuestionSets = new HashSet<QuestionSet>();
             Questions = new HashSet<Question>();
             StudentClasses = new HashSet<StudentClass>();
             Users = new HashSet<User>();
@@ -23,6 +24,7 @@ namespace Repositories.Models
         public DateTime ModifiedOn { get; set; }
         public Guid ModifiedBy { get; set; }
 
+        public virtual ICollection<QuestionSet> QuestionSets { get; set; }
         public virtual ICollection<Question> Questions { get; set; }
         public virtual ICollection<StudentClass> StudentClasses { get; set; }
         public virtual ICollection<User> Users { get; set; }

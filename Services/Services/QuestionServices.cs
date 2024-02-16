@@ -24,71 +24,72 @@ namespace Services.Services
 
         public async Task<bool> AddQuestions(QuestionCreate questionCreate, Guid currentUser)
         {            
-            try
-            {
-                // check if answers contains correct answer
-                if (!questionCreate.CorrectAnswers.Any(answer => questionCreate.Answers.Contains(answer)))
-                {
-                    throw new Exception("Câu trả lời đúng không hợp lệ vì không nằm trong các đáp án được đưa ra.");
-                } 
+            //try
+            //{
+            //    // check if answers contains correct answer
+            //    if (!questionCreate.CorrectAnswers.Any(answer => questionCreate.Answers.Contains(answer)))
+            //    {
+            //        throw new Exception("Câu trả lời đúng không hợp lệ vì không nằm trong các đáp án được đưa ra.");
+            //    } 
 
-                QuestionJson questionJson = new QuestionJson
-                {
-                    Content = questionCreate.Content,
-                    Answers = questionCreate.Answers,
-                    CorrectAnswers = questionCreate.CorrectAnswers
-                };
+            //    QuestionJson questionJson = new QuestionJson
+            //    {
+            //        Content = questionCreate.Content,
+            //        Answers = questionCreate.Answers,
+            //        CorrectAnswers = questionCreate.CorrectAnswers
+            //    };
 
 
-                if (questionCreate.SectionId != null)
-                {
-                    var section = await _unitOfWork.SubjectSectionRepo.FindByField(subjectSection => subjectSection.SectionId == questionCreate.SectionId);
-                    if (section == null)
-                    {
-                        throw new Exception("Section không tồn tại");
-                    }
-                }
+            //    if (questionCreate.SectionId != null)
+            //    {
+            //        var section = await _unitOfWork.SubjectSectionRepo.FindByField(subjectSection => subjectSection.SectionId == questionCreate.SectionId);
+            //        if (section == null)
+            //        {
+            //            throw new Exception("Section không tồn tại");
+            //        }
+            //    }
 
-                if (questionCreate.SchoolId != null)
-                {
-                    var subject = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == questionCreate.SchoolId);
-                    if (subject == null)
-                    {
-                        throw new Exception("School không tồn tại");
-                    }
-                }
+            //    if (questionCreate.SchoolId != null)
+            //    {
+            //        var subject = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == questionCreate.SchoolId);
+            //        if (subject == null)
+            //        {
+            //            throw new Exception("School không tồn tại");
+            //        }
+            //    }
 
-                if (questionCreate.Subject != null && (questionCreate.Subject < 1 || questionCreate.Subject > 3))
-                {
-                    throw new Exception("Môn học không hợp lệ");
-                }
+            //    if (questionCreate.Subject != null && (questionCreate.Subject < 1 || questionCreate.Subject > 3))
+            //    {
+            //        throw new Exception("Môn học không hợp lệ");
+            //    }
 
-                var question = _mapper.Map<Question>(questionCreate);
-                question.QuestionContent = JsonSerializer.Serialize(questionJson, new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                });
-                question.CreatedOn = DateTime.Now;
-                question.ModifiedOn = DateTime.Now;
-                question.CreatedBy = currentUser;
-                question.ModifiedBy = currentUser;
-                question.Status = 0;
+            //    var question = _mapper.Map<Question>(questionCreate);
+            //    question.QuestionContent = JsonSerializer.Serialize(questionJson, new JsonSerializerOptions
+            //    {
+            //        WriteIndented = true,
+            //        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            //    });
+            //    question.CreatedOn = DateTime.Now;
+            //    question.ModifiedOn = DateTime.Now;
+            //    question.CreatedBy = currentUser;
+            //    question.ModifiedBy = currentUser;
+            //    question.Status = 0;
 
-                _unitOfWork.QuestionRepo.AddAsync(question);
-                var result = await _unitOfWork.SaveChangesAsync();
-                if (result <= 0)
-                {
-                    return false;
-                }
+            //    _unitOfWork.QuestionRepo.AddAsync(question);
+            //    var result = await _unitOfWork.SaveChangesAsync();
+            //    if (result <= 0)
+            //    {
+            //        return false;
+            //    }
 
-                return true;
+            //    return true;
 
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Lỗi ở QuestionServices - AddQuestion: " + e.Message);
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    throw new Exception("Lỗi ở QuestionServices - AddQuestion: " + e.Message);
+            //}
+            throw new NotImplementedException();
         }
 
         public async Task<bool> DeleteQuestion(Guid questionId, Guid currentUserId, int grade)
@@ -254,63 +255,64 @@ namespace Services.Services
         public async Task<bool> UpdateQuestion(QuestionUpdate questionUpdate, Guid currentUser, int grade)
         {
 
-            try
-            {
-                if (!questionUpdate.CorrectAnswers.Any(answer => questionUpdate.Answers.Contains(answer)))
-                {
-                    throw new Exception("Câu trả lời đúng không hợp lệ vì không nằm trong các đáp án được đưa ra.");
-                }
+            //try
+            //{
+            //    if (!questionUpdate.CorrectAnswers.Any(answer => questionUpdate.Answers.Contains(answer)))
+            //    {
+            //        throw new Exception("Câu trả lời đúng không hợp lệ vì không nằm trong các đáp án được đưa ra.");
+            //    }
 
-                QuestionJson questionJson = new QuestionJson
-                {
-                    Content = questionUpdate.Content,
-                    Answers = questionUpdate.Answers,
-                    CorrectAnswers = questionUpdate.CorrectAnswers
-                };
+            //    QuestionJson questionJson = new QuestionJson
+            //    {
+            //        Content = questionUpdate.Content,
+            //        Answers = questionUpdate.Answers,
+            //        CorrectAnswers = questionUpdate.CorrectAnswers
+            //    };
 
-                var question = await _unitOfWork.QuestionRepo.FindByField(question => question.QuestionId == questionUpdate.QuestionId && question.Grade == grade);
-                if (question == null)
-                {
-                    throw new Exception("Câu hỏi không tồn tại.");
-                }
+            //    var question = await _unitOfWork.QuestionRepo.FindByField(question => question.QuestionId == questionUpdate.QuestionId && question.Grade == grade);
+            //    if (question == null)
+            //    {
+            //        throw new Exception("Câu hỏi không tồn tại.");
+            //    }
 
-                if (questionUpdate.SectionId != null)
-                {
-                    var section = await _unitOfWork.SubjectSectionRepo.FindByField(subjectSection => subjectSection.SectionId == questionUpdate.SectionId);
-                    if (section == null)
-                    {
-                        throw new Exception("Section không tồn tại");
-                    }
-                }
+            //    if (questionUpdate.SectionId != null)
+            //    {
+            //        var section = await _unitOfWork.SubjectSectionRepo.FindByField(subjectSection => subjectSection.SectionId == questionUpdate.SectionId);
+            //        if (section == null)
+            //        {
+            //            throw new Exception("Section không tồn tại");
+            //        }
+            //    }
 
-                if (questionUpdate.SchoolId != null)
-                {
-                    var subject = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == questionUpdate.SchoolId);
-                    if (subject == null)
-                    {
-                        throw new Exception("School không tồn tại");
-                    }
-                }
+            //    if (questionUpdate.SchoolId != null)
+            //    {
+            //        var subject = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == questionUpdate.SchoolId);
+            //        if (subject == null)
+            //        {
+            //            throw new Exception("School không tồn tại");
+            //        }
+            //    }
 
 
-                question = _mapper.Map(questionUpdate, question);
-                question.QuestionContent = JsonSerializer.Serialize((questionJson));
-                question.ModifiedOn = DateTime.Now;
-                question.ModifiedBy = currentUser;
+            //    question = _mapper.Map(questionUpdate, question);
+            //    question.QuestionContent = JsonSerializer.Serialize((questionJson));
+            //    question.ModifiedOn = DateTime.Now;
+            //    question.ModifiedBy = currentUser;
 
-                _unitOfWork.QuestionRepo.AddAsync(question);
-                var result = await _unitOfWork.SaveChangesAsync();
-                if (result <= 0)
-                {
-                    return false;
-                }
+            //    _unitOfWork.QuestionRepo.AddAsync(question);
+            //    var result = await _unitOfWork.SaveChangesAsync();
+            //    if (result <= 0)
+            //    {
+            //        return false;
+            //    }
 
-                return true;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Lỗi ở QuestionServices - UpdateQuestion: " + e.Message);
-            }
+            //    return true;
+            //}
+            //catch (Exception e)
+            //{
+            //    throw new Exception("Lỗi ở QuestionServices - UpdateQuestion: " + e.Message);
+            //}
+            throw new NotImplementedException();
         }
 
         private async Task<bool> CheckPermissionForQuestion(Guid questionId, int permissionType, Guid userId, Guid? schoolId)

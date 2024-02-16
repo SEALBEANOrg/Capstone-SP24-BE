@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Repositories;
+using Repositories.Models;
 using Services.Interfaces;
+using Services.ViewModels;
 
 namespace Services.Services
 {
@@ -15,31 +17,26 @@ namespace Services.Services
             _mapper = mapper;
         }
 
-        //public async Task<bool> CheckPermissionAccessTest(string testCode, string email)
-        //{
-        //    var user = await _unitOfWork.UserRepo.FindByField(user => user.Email == email);
-        //    if (user == null)
-        //    {
-        //        return false;
-        //    }
+        public async Task<QuestionSetViewModel> GetQuestionByQuestionSetId (Guid questionSetId)
+        {
+            try
+            {
+                var questionSet = await _unitOfWork.QuestionSetRepo.FindByField(questionSet => questionSet.QuestionSetId == questionSetId);
+                var questionIds = (await _unitOfWork.QuestionMappingRepo.GetAllAsync(questionMapping => questionMapping.QuestionSetId == questionSetId)).Select(questionMapping => questionMapping.QuestionId);
+                var questions = await _unitOfWork.QuestionRepo.GetAllAsync(question => questionIds.Contains(question.QuestionId));
+                if (questionSet == null)
+                {
+                    return null;
+                }
 
-        //    int testCodeInt = int.Parse(testCode);
-        //    var test = await _unitOfWork.ExamRepo.FindByField(test => test.TestCode == testCodeInt);
-        //    if (user == null)
-        //    {
-        //        return false;
-        //    }
+                var questionSetViewModel = _mapper.Map<QuestionSetViewModel>(questionSet);
 
-        //    bool isShare = false;
-
-        //    var share = await _unitOfWork.ShareRepo.FindByField(share => share.TestId == test.TestId && 
-        //                                                                (share.UserId == user.UserId || (user.SchoolId != null && share.SchoolId == user.SchoolId)));
-        //    if (test.CreatedBy != user.UserId && isShare)
-        //    {
-        //        return false;
-        //    }
-
-        //    return true;
-        //}
+                return questionSetViewModel;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở QuestionSetServices - GetQuestionByQuestionSetId: " + e.Message);
+            }
+        }
     }
 }

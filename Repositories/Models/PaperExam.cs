@@ -7,5 +7,8 @@ namespace Repositories.Models
     {
         public Guid? PaperId { get; set; }
         public Guid? ExamId { get; set; }
+
+        public virtual Exam? Exam { get; set; }
+        public virtual Paper? Paper { get; set; }
     }
 }

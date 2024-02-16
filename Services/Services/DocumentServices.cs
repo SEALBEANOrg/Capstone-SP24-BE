@@ -58,7 +58,7 @@ namespace Services.Services
             }
         }
 
-        public async Task<DocumentViewModels> GetAllDocument(int? type)
+        public async Task<IEnumerable<DocumentViewModels>> GetAllDocument(int? type)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace Services.Services
                     return null;
                 }
 
-                var documentViewModels = _mapper.Map<DocumentViewModels>(documents);
+                var documentViewModels = _mapper.Map<IEnumerable<DocumentViewModels>>(documents);
 
                 return documentViewModels;
             }

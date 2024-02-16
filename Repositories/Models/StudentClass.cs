@@ -7,6 +7,7 @@ namespace Repositories.Models
     {
         public StudentClass()
         {
+            Exams = new HashSet<Exam>();
             Students = new HashSet<Student>();
         }
 
@@ -22,6 +23,7 @@ namespace Repositories.Models
         public Guid ModifiedBy { get; set; }
 
         public virtual School? School { get; set; }
+        public virtual ICollection<Exam> Exams { get; set; }
         public virtual ICollection<Student> Students { get; set; }
     }
 }

@@ -11,5 +11,7 @@ namespace Repositories.Models
         public string PaperContent { get; set; } = null!;
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }
+
+        public virtual QuestionSet QuestionSet { get; set; } = null!;
     }
 }
