@@ -50,6 +50,7 @@ namespace Services.ViewModels
 
     public class  ComboStudent 
     {
+        public Guid ExamMarkId { get; set; }
         public Guid StudentId { get; set; }
         public int No { get; set; }
         public string Name { get; set; }

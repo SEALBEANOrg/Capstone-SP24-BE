@@ -6,6 +6,6 @@ namespace Services.Interfaces
     {
         Task<bool> CheckPermissionAccessTest(string testCode, string email);
         Task<InfoClassInExam> GetInfoOfClassInExam(string testCode, string email);
-
+        Task<int> SaveResult(ResultToSave resultToSave);
     }
 }

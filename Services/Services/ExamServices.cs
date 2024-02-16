@@ -86,6 +86,7 @@ namespace Services.Services
                         
                         var comboStudent = new ComboStudent
                         {
+                            ExamMarkId = item.ExamMarkId,
                             StudentId = item.StudentId,
                             Name = student.FullName,
                             Mark = item.Mark,
@@ -103,6 +104,49 @@ namespace Services.Services
             catch (Exception e)
             {
                 throw new Exception("Lỗi ở TestResultServices - GetInfoOfClassInExam: " + e.Message);
+            }
+        }
+
+        public async Task<int> SaveResult(ResultToSave resultToSave)
+        {
+            try
+            {
+                var examMark = await _unitOfWork.ExamMarkRepo.FindByField(exam => exam.ExamMarkId == resultToSave.ExamMarkId);
+                if (examMark == null)
+                {
+                    throw new Exception("Không tìm thấy kết quả thi");
+                }
+
+                //join exam and paper exam and paper and select paper content
+                var paperExam = await _unitOfWork.PaperExamRepo.FindByField(exam => exam.ExamId == examMark.ExamId, includes => includes.Paper);
+
+                var anwserSheet = JsonSerializer.Deserialize<PaperContentViewModel>(paperExam.Paper.PaperContent).Answer;
+                
+                List<string> correctAnswers = anwserSheet.Split('|').ToList();
+                List<string> studentAnswers = resultToSave.AnswersSelected.Split('|').ToList();
+                
+                int mark = 0;
+                int maxAnswer = correctAnswers.Count < studentAnswers.Count ? correctAnswers.Count : studentAnswers.Count;
+                for (int i = 0; i < maxAnswer; i++)
+                {
+                    if (correctAnswers[i] == studentAnswers[i])
+                    {
+                        mark += 10/correctAnswers.Count;
+                    }
+                }
+                
+
+                examMark.Answer = resultToSave.AnswersSelected;
+                examMark.Mark = mark;
+                examMark.ModifiedOn = DateTime.Now;
+                _unitOfWork.ExamMarkRepo.Update(examMark);
+                var result = await _unitOfWork.SaveChangesAsync();
+                
+                return result > 0 ? mark : -1;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở TestResultServices - SaveResult: " + e.Message);
             }
         }
     }

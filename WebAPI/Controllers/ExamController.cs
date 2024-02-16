@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FirebaseAdmin.Messaging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
@@ -35,11 +36,22 @@ namespace WebAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("save-result")]
-        public async Task<IActionResult> SaveResultOfTest([FromBody] string result, string codeExam, Guid testId)
+        public async Task<IActionResult> SaveResultOfTest([FromBody] ResultToSave resultToSave)
         {
-            if (result == null || codeExam == null || testId == null)
+            try
             {
-                return BadRequest();
+                var result = await _testResultServices.SaveResult(resultToSave);
+                if (result < 0)
+                {
+                    throw new Exception("Lưu điểm thất bại!");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
             }
 
             return Ok();
