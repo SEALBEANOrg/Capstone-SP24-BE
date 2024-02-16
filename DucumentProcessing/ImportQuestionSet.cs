@@ -75,7 +75,7 @@ namespace DucumentProcessing
                 XslCompiledTransform xslt = new XslCompiledTransform();
                 XsltSettings sets = new XsltSettings(true, true);
                 var resolver = new XmlUrlResolver();
-                xslt.Load("D:\\mmltex\\mmltex.xsl", sets, resolver);
+                xslt.Load("D:\\Capstone SP24\\backend\\DucumentProcessing\\mmltex\\mmltex.xsl", sets, resolver);
 
                 // Transform the MathML to LaTeX
                 StringWriter latex = new StringWriter();
