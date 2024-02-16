@@ -521,6 +521,9 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
+# exclude all .docx files
+*.docx
+
 # JetBrains Rider
 
 ### VisualStudio Patch ###
