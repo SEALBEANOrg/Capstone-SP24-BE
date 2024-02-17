@@ -16,9 +16,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dockerfile", "Dockerfile", 
 		ExagenSharedProject\Dockerfile = ExagenSharedProject\Dockerfile
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DucumentProcessing", "DucumentProcessing\DucumentProcessing.csproj", "{0F5F705C-269B-4F87-A9A9-02C84AAD8AEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DucumentProcessing", "DucumentProcessing\DucumentProcessing.csproj", "{0F5F705C-269B-4F87-A9A9-02C84AAD8AEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClass", "TestClass\TestClass.csproj", "{7BB7876A-042D-45F7-AD7B-C7BED61C230E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestClass", "TestClass\TestClass.csproj", "{7BB7876A-042D-45F7-AD7B-C7BED61C230E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +54,7 @@ Global
 		SolutionGuid = {B0DA8E77-59FC-4956-8551-CDFCD2F4C7A8}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		ExagenSharedProject\ExagenSharedProject.projitems*{0f5f705c-269b-4f87-a9a9-02c84aad8aef}*SharedItemsImports = 5
 		ExagenSharedProject\ExagenSharedProject.projitems*{3d789341-c32c-4b20-aff0-b65a4081aa8b}*SharedItemsImports = 5
 		ExagenSharedProject\ExagenSharedProject.projitems*{e606a442-d8a3-4086-bb27-d145dd694d73}*SharedItemsImports = 13
 	EndGlobalSection

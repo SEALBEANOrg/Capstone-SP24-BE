@@ -10,4 +10,34 @@
     <PackageReference Include="Spire.Doc" Version="12.2.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="mmltex\cmarkup.xsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="mmltex\entities.xsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="mmltex\glayout.xsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="mmltex\mmltex.xsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="mmltex\scripts.xsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="mmltex\tables.xsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="mmltex\tokens.xsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Import Project="..\ExagenSharedProject\ExagenSharedProject.projitems" Label="Shared" />
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /Y /E &quot;$(ProjectDir)mmltex&quot; &quot;$(TargetDir)mmltex&quot;" />
+  </Target>
+
 </Project>

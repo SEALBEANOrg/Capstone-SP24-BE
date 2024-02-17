@@ -12,12 +12,12 @@
      copyright and other information                                        -->
 <!-- ====================================================================== -->
 
-<xsl:include href="D:\Capstone SP24\backend\DucumentProcessing\mmltex\tokens.xsl"/>
-<xsl:include href="D:\Capstone SP24\backend\DucumentProcessing\mmltex\glayout.xsl"/>
-<xsl:include href="D:\Capstone SP24\backend\DucumentProcessing\mmltex\scripts.xsl"/>
-<xsl:include href="D:\Capstone SP24\backend\DucumentProcessing\mmltex\tables.xsl"/>
-<xsl:include href="D:\Capstone SP24\backend\DucumentProcessing\mmltex\entities.xsl"/>
-<xsl:include href="D:\Capstone SP24\backend\DucumentProcessing\mmltex\cmarkup.xsl"/>
+<xsl:include href="./tokens.xsl"/>
+<xsl:include href="./glayout.xsl"/>
+<xsl:include href="./scripts.xsl"/>
+<xsl:include href="./tables.xsl"/>
+<xsl:include href="./entities.xsl"/>
+<xsl:include href="./cmarkup.xsl"/>
 
 <xsl:strip-space elements="m:*"/>
 
