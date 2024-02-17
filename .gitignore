@@ -522,7 +522,7 @@ FodyWeavers.xsd
 *.msp
 
 # exclude all .docx files
-*.docx
+# *.docx
 
 # JetBrains Rider
 
