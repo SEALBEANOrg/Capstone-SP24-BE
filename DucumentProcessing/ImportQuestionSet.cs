@@ -9,6 +9,7 @@ using System.Xml.Xsl;
 using System.Xml;
 using System.Linq;
 using ExagenSharedProject;
+using System.Text.RegularExpressions;
 
 namespace DucumentProcessing
 {
@@ -98,69 +99,55 @@ namespace DucumentProcessing
                 endOfQuestion = strDocxContent.IndexOf("A/ ");
             }
             question.QuestionPart = strDocxContent.Substring(0, endOfQuestion);
-            if (questionType == 0)
+            string[] answerDelimiters = questionType == 0 ? new[] { "A. ", "B. ", "C. ", "D. " } : new[] { "A/ ", "B/ ", "C/ ", "D/ " };
+            int startOfAnswer = endOfQuestion + 3;
+            for (int i = 1; i < answerDelimiters.Length; i++)
             {
-                // question.Answer1 = text between "A. " and "B. "
-                int endOf1stAnswer = strDocxContent.IndexOf("B. ");
-                question.Answer1 = strDocxContent.Substring(endOfQuestion + 3, endOf1stAnswer - endOfQuestion - 3).Trim();
-
-                // question.Answer2 = text between "B. " and "C. "
-                int endOf2ndAnswer = strDocxContent.IndexOf("C. ");
-                question.Answer2 = strDocxContent.Substring(endOf1stAnswer + 3, endOf2ndAnswer - endOf1stAnswer - 3).Trim();
-
-                // question.Answer3 = text between "C. " and "D. "
-                int endOf3rdAnswer = strDocxContent.IndexOf("D. ");
-                question.Answer3 = strDocxContent.Substring(endOf2ndAnswer + 3, endOf3rdAnswer - endOf2ndAnswer - 3).Trim();
-
-                // question.Answer4 = text between "D. " and ("Đáp án" or "Độ khó")
-                int endOf4thAnswer = strDocxContent.IndexOf("Đáp án");
-                if (endOf4thAnswer > strDocxContent.IndexOf("Độ khó"))
+                int endOfAnswer = strDocxContent.IndexOf(answerDelimiters[i]);
+                if (endOfAnswer == -1)
                 {
-                    endOf4thAnswer = strDocxContent.IndexOf("Độ khó");
+                    endOfAnswer = strDocxContent.Length;
                 }
-                if (endOf4thAnswer == -1)
+                string answer = strDocxContent.Substring(startOfAnswer, endOfAnswer - startOfAnswer).Trim();
+                switch (i)
                 {
-                    endOf4thAnswer = strDocxContent.Length;
+                    case 1:
+                        question.Answer1 = answer;
+                        break;
+                    case 2:
+                        question.Answer2 = answer;
+                        break;
+                    case 3:
+                        question.Answer3 = answer;
+                        break;
                 }
-                question.Answer4 = strDocxContent.Substring(endOf3rdAnswer + 3, endOf4thAnswer - endOf3rdAnswer - 3).Trim();
-
-                question.CorrectAnswer = GetAnswer(strDocxContent.Substring(endOf4thAnswer));
-
-                question.Difficulty = GetDifficulty(strDocxContent.Substring(endOf4thAnswer));
+                startOfAnswer = endOfAnswer + 3;
             }
+            int endOfAnswer4;
+            if (strDocxContent.IndexOf("Độ khó")*strDocxContent.IndexOf("Đáp án") > 1) // Both Độ khó and Đáp án are found
+                endOfAnswer4 = Math.Min(strDocxContent.IndexOf("Độ khó"), strDocxContent.IndexOf("Đáp án"));
             else
             {
-                // question.Answer1 = text between "A/ " and "B/ "
-                int endOf1stAnswer = strDocxContent.IndexOf("B/ ");
-                question.Answer1 = strDocxContent.Substring(endOfQuestion + 3, endOf1stAnswer - endOfQuestion - 3).Trim();
-
-                // question.Answer2 = text between "B/ " and "C/ "
-                int endOf2ndAnswer = strDocxContent.IndexOf("C/ ");
-                question.Answer2 = strDocxContent.Substring(endOf1stAnswer + 3, endOf2ndAnswer - endOf1stAnswer - 3).Trim();
-
-                // question.Answer3 = text between "C/ " and "D/ "
-                int endOf3rdAnswer = strDocxContent.IndexOf("D/ ");
-                question.Answer3 = strDocxContent.Substring(endOf2ndAnswer + 3, endOf3rdAnswer - endOf2ndAnswer - 3).Trim();
-
-                // question.Answer4 = text between "D/ " and "Đáp án"
-                int endOf4thAnswer = strDocxContent.IndexOf("Đáp án");
-                if (endOf4thAnswer == -1)
+                endOfAnswer4 = Math.Max(strDocxContent.IndexOf("Độ khó"), strDocxContent.IndexOf("Đáp án"));
+                //=1 if Độ khó is not found, =0 if Đáp án is not found then endOfAnswer4 = strDocxContent.Length
+                if (endOfAnswer4 == -1)
                 {
-                    endOf4thAnswer = strDocxContent.Length;
+                    endOfAnswer4 = strDocxContent.Length;
                 }
-                question.Answer4 = strDocxContent.Substring(endOf3rdAnswer + 3, endOf4thAnswer - endOf3rdAnswer - 3).Trim();
-
-                question.CorrectAnswer = GetAnswer(strDocxContent.Substring(endOf4thAnswer));
-
-                question.Difficulty = GetDifficulty(strDocxContent.Substring(endOf4thAnswer));
             }
+
+            question.Answer4 = strDocxContent.Substring(startOfAnswer, endOfAnswer4 - startOfAnswer).Trim();
+
+
+            question.CorrectAnswer = GetAnswer(strDocxContent.Substring(endOfAnswer4));
+            question.Difficulty = GetDifficulty(strDocxContent.Substring(endOfAnswer4));
 
             return question;
         }
 
         private static int? GetDifficulty(string strQuestionContext)
         {
-            strQuestionContext= strQuestionContext.ToLower();
+            strQuestionContext = strQuestionContext.ToLower();
             //find in strDocxContent if there is a "NB" return 0, "TH" return 1, "VD" return 2, "VDC" return 3
             if (strQuestionContext.Contains("nb") || strQuestionContext.Contains("nhận biết"))
             {
@@ -174,25 +161,25 @@ namespace DucumentProcessing
             {
                 return 2;
             }
-            else if (strQuestionContext.Contains("th") || strQuestionContext.Contains("thông hiểu"))
+            else if (Regex.IsMatch(strQuestionContext, @"[^a-zA-Z]th(?![a-zA-Z])") || strQuestionContext.Contains("thông hiểu"))
             {
                 return 1;
             }
             return null;
         }
 
-        private static string GetAnswer(string str)
+        private static string GetAnswer(string strAnswer)
         {
             try
             {
                 //loop from the back to find the first letter is the Answer
-                for (int i = str.Length - 1; i >= 0; i--)
+                for (int i = strAnswer.Length - 1; i >= 0; i--)
                 {
-                    if (char.IsLetter(str[i]))
+                    if (char.IsLetter(strAnswer[i]))
                     {
                         //Check if the letter is A, B, C, D
-                        if ((str[i] == 'A' || str[i] == 'B' || str[i] == 'C' || str[i] == 'D') && !char.IsLetter(str[i - 1]))
-                            return str[i].ToString();
+                        if ((strAnswer[i] == 'A' || strAnswer[i] == 'B' || strAnswer[i] == 'C' || strAnswer[i] == 'D') && !char.IsLetter(strAnswer[i - 1]))
+                            return strAnswer[i].ToString();
                     }
                 }
                 return "";
