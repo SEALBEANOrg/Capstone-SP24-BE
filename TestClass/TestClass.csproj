@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DucumentProcessing\DucumentProcessing.csproj" />
+    <ProjectReference Include="..\WebAPI\WebAPI.csproj" />
   </ItemGroup>
 
 </Project>
