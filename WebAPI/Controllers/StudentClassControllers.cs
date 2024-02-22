@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Services.ViewModels;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebAPI.Controllers
 {
@@ -20,7 +21,8 @@ namespace WebAPI.Controllers
             _studentServices = studentServices;
         }
 
-        [HttpGet("GetClassByCreator/{teacherId}")]
+        [HttpGet("own-class/{teacherId}")]
+        [SwaggerResponse(200, "List of sample student classes", typeof(IEnumerable<StudentClassViewModels>))]
         public async Task<IActionResult> GetAllByCreator(Guid teacherId)
         {
             var studentClasses = await _studentClassServices.GetAllStudentClass(teacherId.ToString());
@@ -29,6 +31,8 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "2")]
+        [SwaggerResponse(200, "List of sample student classes", typeof(IEnumerable<StudentClassViewModels>))]
         public async Task<IActionResult> GetAll()
         {
             try
@@ -46,7 +50,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpGet("GetStudentsOfClass")]
+        [HttpGet("{classId}/students")]
+        [SwaggerResponse(200, "List of sample student", typeof(IEnumerable<StudentViewModels>))]
         public async Task<IActionResult> GetStudentsOfMyClass(Guid classId)
         {
             try
@@ -65,7 +70,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpGet("GetClassByClassId/{classId}")]
+        [HttpGet("{classId}")]
+        [SwaggerResponse(200, "Sample student classes", typeof(StudentClassViewModels))]
         public async Task<IActionResult> GetById(Guid classId)
         {
             try
@@ -89,9 +95,9 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost("AddStudentIntoClass")]
-        [Authorize(Roles = "1")]
-        public async Task<IActionResult> AddStudentIntoClass([FromBody] StudentCreate studentClassCreate)
+        [HttpPost("{classId}/students")]
+        [SwaggerResponse(200, "Is success", typeof(bool))]
+        public async Task<IActionResult> AddStudentIntoClass(Guid classId, [FromBody] StudentCreate studentClassCreate)
         {
             try
             {
@@ -100,7 +106,7 @@ namespace WebAPI.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var result = await _studentClassServices.AddStudentIntoClass(studentClassCreate);
+                var result = await _studentClassServices.AddStudentIntoClass(classId, studentClassCreate);
 
                 return Ok(result);
             }
@@ -113,8 +119,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpDelete("RemoveStudentFromClass/{studentId}")]
-        [Authorize(Roles = "1")]
+        [HttpDelete("students/{studentId}")]
+        [SwaggerResponse(200, "Is success", typeof(bool))]
         public async Task<IActionResult> RemoveStudentFromClass(Guid studentId)
         {
             try
@@ -137,8 +143,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost("CreateClass")]
-        [Authorize(Roles = "1")]
+        [HttpPost]
+        [SwaggerResponse(200, "Is success", typeof(bool))]
         public async Task<IActionResult> CreateClass([FromBody] StudentClassCreate studentClassCreate)
         {
             try
@@ -161,9 +167,9 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPut("UpdateClass")]
-        [Authorize(Roles = "1")]
-        public async Task<IActionResult> UpdateClass([FromBody] StudentClassUpdate studentClassUpdate)
+        [HttpPut("{classId}")]
+        [SwaggerResponse(200, "Is success", typeof(bool))]
+        public async Task<IActionResult> UpdateClass(Guid classId, [FromBody] StudentClassUpdate studentClassUpdate)
         {
             try
             {
@@ -172,7 +178,7 @@ namespace WebAPI.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var result = await _studentClassServices.UpdateStudentClass(studentClassUpdate);
+                var result = await _studentClassServices.UpdateStudentClass(classId, studentClassUpdate);
 
                 return Ok(result);
             }
@@ -185,8 +191,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpDelete("DeleteClass/{classId}")]
-        [Authorize(Roles = "1")]
+        [HttpDelete("{classId}")]
+        [SwaggerResponse(200, "Is success", typeof(bool))]
         public async Task<IActionResult> DeleteClass(Guid classId)
         {
             try
@@ -209,8 +215,9 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPut("UpdateStatusOfClass/{classId}")]
-        public async Task<IActionResult> UpdateStatusOfClass(Guid classId, [FromBody] int status)
+        [HttpPut("{classId}/status")]
+        [SwaggerResponse(200, "Is success", typeof(bool))]
+        public async Task<IActionResult> UpdateStatusOfClass(Guid classId, int status)
         {
             try
             {
@@ -232,8 +239,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost("import-students/{classId}")]
-        [Authorize(Roles = "1")]
+        [HttpPost("{classId}/import-students")]
+        [SwaggerResponse(200, "Is success", typeof(IEnumerable<StudentViewModels>))]
         public async Task<IActionResult> ImportExcelToAddStudent(IFormFile file, Guid classId)
         {
             try
