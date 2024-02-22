@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Services.ViewModels;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebAPI.Controllers
 {
@@ -22,6 +23,7 @@ namespace WebAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("send-image")]
+        [SwaggerResponse(200, "sample result", typeof(ResultForScan))]
         public async Task<IActionResult> SendImage([FromBody] ResultForScanViewModel base64Image)
         {
             if (string.IsNullOrEmpty(base64Image.Base64Image))
@@ -36,6 +38,7 @@ namespace WebAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("save-result")]
+        [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> SaveResultOfTest([FromBody] ResultToSave resultToSave)
         {
             try
@@ -45,6 +48,7 @@ namespace WebAPI.Controllers
                 {
                     throw new Exception("Lưu điểm thất bại!");
                 }
+                return Ok("Lưu điểm thành công");
             }
             catch (Exception ex)
             {
@@ -53,12 +57,11 @@ namespace WebAPI.Controllers
                     Message = ex.Message
                 });
             }
-
-            return Ok();
         }
 
         [AllowAnonymous]
         [HttpGet("check-permission/{testCode}/{email}")]
+        [SwaggerResponse(200, "Permission", typeof(bool))]
         public async Task<IActionResult> CheckPermissionAccessTest(string testCode, string email)
         {
             if (string.IsNullOrEmpty(testCode) || string.IsNullOrEmpty(email))
@@ -73,6 +76,7 @@ namespace WebAPI.Controllers
 
         [AllowAnonymous]
         [HttpGet("access-exam/{testCode}/{email}")]
+        [SwaggerResponse(200, "sample info of class in exam", typeof(InfoClassInExam))]
         public async Task<IActionResult> GetInfoOfClassInExam(string testCode, string email)
         {
             if (string.IsNullOrEmpty(testCode) || string.IsNullOrEmpty(email))
