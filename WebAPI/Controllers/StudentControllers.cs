@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Services.ViewModels;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebAPI.Controllers
 {
@@ -20,7 +21,8 @@ namespace WebAPI.Controllers
             _userServices = userServices;
         }
 
-        [HttpGet("GetStudentById/{studentId}")]
+        [HttpGet("{studentId}")]
+        [SwaggerResponse(200, "Sample student", typeof(StudentViewModels))]
         public async Task<IActionResult> GetStudentById(Guid studentId)
         {
             try
@@ -38,7 +40,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPut("UpdateStudent")]
+        [HttpPut]
+        [SwaggerResponse(200, "Is success", typeof(bool))]
         public async Task<IActionResult> UpdateStudent(StudentUpdate studentUpdate)
         {
             try
@@ -63,7 +66,8 @@ namespace WebAPI.Controllers
         /// <param name="studentId"></param>
         /// <returns></returns>
         [Authorize(Roles = "2")]
-        [HttpGet("MoveOutStudent")]
+        [HttpGet("Move-Out-Student")]
+        [SwaggerResponse(200, "Is success", typeof(bool))]
         public async Task<IActionResult> MoveOutStudent(Guid studentId)
         {
             try
