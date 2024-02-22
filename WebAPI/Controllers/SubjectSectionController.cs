@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Services.ViewModels;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebAPI.Controllers
 {
@@ -22,6 +23,7 @@ namespace WebAPI.Controllers
 
         [HttpGet]
         [Authorize(Roles = "0,1,2,3")]
+        [SwaggerResponse(200, "List sample section", typeof(IEnumerable<SubjectSectionViewModels>))]
         public async Task<IActionResult> GetAllBySubjectIdAndGrade(int? grade, int? subjectId)
         {
             try
@@ -40,6 +42,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{sectionId}")]
+        [SwaggerResponse(200, "Sample section", typeof(SubjectSectionViewModel))]
         public async Task<IActionResult> GetSectionBySectionId(Guid sectionId)
         {
             try
@@ -58,6 +61,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
+        [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> AddSubjectSection(SubjectSectionCreate subjectSectionCreate)
         {
             try
@@ -91,6 +95,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut]
+        [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> UpdateSubjectSection(SubjectSectionUpdate subjectSectionUpdate)
         {
             try
@@ -124,6 +129,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("{sectionId}")]
+        [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> DeleteSubjectSection(Guid sectionId)
         {
             try
