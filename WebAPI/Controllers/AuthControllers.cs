@@ -16,6 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Net.Sockets;
 using Google.Apis.Auth;
 using System.Linq.Expressions;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebAPI.Controllers
 {
@@ -31,6 +32,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("login")]
+        [SwaggerResponse(200, "token", typeof(LoginResponse))]
         public async Task<IActionResult> Login([FromBody] AuthToken authToken)
         {
             try
@@ -115,7 +117,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("refresh-token")]
-
+        [SwaggerResponse(200, "token", typeof(LoginResponse))]
         public async Task<IActionResult> refreshToken([FromBody] AuthToken tokenRequest)
         {
             if (!ValidateToken(tokenRequest.Token))
