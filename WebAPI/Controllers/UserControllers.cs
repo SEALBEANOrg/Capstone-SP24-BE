@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Services.ViewModels;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Data;
+using static Google.Apis.Requests.BatchRequest;
 
 namespace WebAPI.Controllers
 {
@@ -20,6 +22,7 @@ namespace WebAPI.Controllers
 
         [HttpGet]
         [Authorize(Roles = "0")] //chỉ 0
+        [SwaggerResponse(200, "List of sample users", typeof(IEnumerable<UserViewModels>))]
         public async Task<IActionResult> GetAll(string? search)
         {
             var users = await _userServices.GetAllUser(search);
@@ -29,6 +32,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Roles = "0,2")] //chỉ 0, 2
+        [SwaggerResponse(200, "Sample user", typeof(UserViewModels))]
         public async Task<IActionResult> GetUserById(Guid id)
         {
             try
@@ -53,6 +57,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("profile")]
         [Authorize]
+        [SwaggerResponse(200, "Sample profile", typeof(UserViewModels))]
         public async Task<IActionResult> GetProfile()
         {
             var user = await _userServices.GetProfile();
@@ -62,6 +67,7 @@ namespace WebAPI.Controllers
 
         [HttpPut("profile")]
         [Authorize]
+        [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> UpdateProfile([FromBody] ProfileUpdate userUpdate)
         {
             try
@@ -94,6 +100,7 @@ namespace WebAPI.Controllers
 
         [HttpPut("{id}/role")]
         [Authorize(Roles = "0")]
+        [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> UpdateRoleUser(Guid id, [FromBody] RoleUpdate roleUpdate)
         {
             try
@@ -126,6 +133,7 @@ namespace WebAPI.Controllers
 
         [HttpPut("/api/v0/schools/out-school")]
         [Authorize(Roles = "1,2")]
+        [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> OutSchool()
         {
             try
@@ -158,6 +166,7 @@ namespace WebAPI.Controllers
 
         [HttpPut("/api/v0/requests/join-school")]
         [Authorize(Roles = "1")]
+        [SwaggerResponse(200, "Is success", typeof(bool))]
         public async Task<IActionResult> RequestJoinSchool([FromBody] Guid schoolId)
         {
             try
@@ -183,6 +192,7 @@ namespace WebAPI.Controllers
 
         [HttpPut("/api/v0/requests/response/{userId}")]
         [Authorize(Roles = "2")]
+        [SwaggerResponse(200, "Is success", typeof(bool))]
         public async Task<IActionResult> ResponseRequest(Guid userId, [FromBody] bool isAccept)
         {
             try
@@ -208,6 +218,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("/api/v0/requests")]
         [Authorize(Roles = "2")]
+        [SwaggerResponse(200, "List of request", typeof(IEnumerable<Request>))]
         public async Task<IActionResult> GetListRequestToMySchool()
         {
             try
@@ -233,6 +244,7 @@ namespace WebAPI.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "0")]
+        [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> ChangeStatusOfUser(Guid id, [FromBody] ActiveUser isActive)
         {
             try
