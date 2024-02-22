@@ -10,7 +10,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/v0/exams")]
     [ApiController]
-    [Authorize(Roles = "1")]
+    [Authorize(Roles = "")]
     public class ExamController : ControllerBase
     {
         private readonly IExamServices _testResultServices;
@@ -100,5 +100,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        //[HttpGet("own-exam")]
+        //[SwaggerResponse(200, "sample result", typeof(IEnumerable<ExamViewModels>))]
     }
 }

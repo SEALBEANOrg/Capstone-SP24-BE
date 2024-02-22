@@ -59,6 +59,7 @@ namespace DucumentProcessing
                                 {
                                     string mathML = math.ToMathMLCode();
                                     mathML = "<latex>" + ConvertMathMLToLatex(mathML).Replace("$ ", "").Replace("$", "") + "</latex>";
+                                    //mathML = "<latex>" + mathML + "</latex>";
                                     sb.Append(mathML);
                                 }
                                 break;

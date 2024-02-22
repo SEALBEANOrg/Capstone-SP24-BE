@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Services.Services;
 using Services.ViewModels;
+using Swashbuckle.AspNetCore.Annotations;
 using static System.Collections.Specialized.BitVector32;
 
 namespace WebAPI.Controllers
@@ -23,6 +24,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
+        [SwaggerResponse(200, "sample document", typeof(IEnumerable<DocumentViewModels>))]
         public async Task<IActionResult> GetAllDocument(int? type)
         {
             try
@@ -41,6 +43,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{documentId}")]
+        [SwaggerResponse(200, "sample document", typeof(DocumentViewModel))]
         public async Task<IActionResult> GetDocumentById(Guid documentId)
         {
             try
@@ -60,6 +63,7 @@ namespace WebAPI.Controllers
 
         [HttpPost]
         [Authorize(Roles = "0")]
+        [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> AddDocument([FromBody] DocumentCreate documentCreate)
         {
             try
@@ -92,8 +96,30 @@ namespace WebAPI.Controllers
             }
         }
 
+        [HttpPost("test/create-test-paper")]
+        [AllowAnonymous]
+        [SwaggerResponse(200, "Is success", typeof(File))]
+        public async Task<IActionResult> CreateTestPaper(Guid? examId, [FromBody] DetailOfPaper detailOfPaper)
+        {
+            try
+            {
+                var currentUserId = await _userServices.GetCurrentUser();
+                var result = await _documentServices.CreateTestPaper(examId, currentUserId, detailOfPaper);
+                return File(result, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "ModifiedFile.docx");
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
         [HttpDelete("{documentId}")]
         [Authorize(Roles = "0")]
+        [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> DeleteDocument(Guid documentId)
         {
             try

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
+using Services.ViewModels;
 
 namespace WebAPI.Controllers
 {
@@ -35,5 +36,31 @@ namespace WebAPI.Controllers
             }
         }
 
+        [HttpPut("{questionSetId}/change-status")]
+        public async Task<IActionResult> ChangeStatusQuestionSet(Guid questionSetId, [FromBody] StatusQuestionSet statusQuestionSet)
+        {
+            try
+            {
+                var currentUser = await _userServices.GetCurrentUser();
+                var result = await _questionSetServices.ChangeStatusQuestionSet(questionSetId, statusQuestionSet.IsActive, currentUser);
+
+                if (!result)
+                {
+                    return NotFound(new
+                    {
+                        Message = "Thay đổi trạng thái thất bại"
+                    });
+                }
+
+                return Ok("Thay đổi trạng thái thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
     }
 }

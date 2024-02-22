@@ -526,6 +526,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 
+#yml
+*.yml
+
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 

@@ -17,6 +17,11 @@ namespace Services.Services
             _mapper = mapper;
         }
 
+        public Task<bool> ChangeStatusQuestionSet(Guid questionSetId, bool isActive, Guid currentUser)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<QuestionSetViewModel> GetQuestionByQuestionSetId (Guid questionSetId)
         {
             try
