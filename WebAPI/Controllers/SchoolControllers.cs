@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Services.ViewModels;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebAPI.Controllers
 {
@@ -25,6 +26,7 @@ namespace WebAPI.Controllers
         /// <returns></returns>
         [HttpGet("combo-school")]
         [Authorize]
+        [SwaggerResponse(200, "Sample Combo School", typeof(IEnumerable<ComboSchool>))]
         public async Task<IActionResult> GetComboSchool()
         {
             try
@@ -53,6 +55,7 @@ namespace WebAPI.Controllers
         /// </summary>
         [HttpGet("teachers")]
         [Authorize(Roles = "2")]
+        [SwaggerResponse(200, "List of sample teachers", typeof(IEnumerable<UserViewModels>))]
         public async Task<IActionResult> GetTeacherOfMySchool()
         {
             try
@@ -83,6 +86,7 @@ namespace WebAPI.Controllers
         /// </summary>
         [HttpGet("classes")]
         [Authorize(Roles = "1,2")]
+        [SwaggerResponse(200, "List of sample classes", typeof(IEnumerable<StudentClassViewModels>))]
         public async Task<IActionResult> GetAllClassOfMySchool()
         {
             try
@@ -113,6 +117,7 @@ namespace WebAPI.Controllers
         /// </summary>
         [HttpPut("teachers/{teacherId}/move-out-school")]
         [Authorize(Roles = "2")]
+        [SwaggerResponse(200, "Is success", typeof(bool))]
         public async Task<IActionResult> RemoveTeacherFromSchool(Guid teacherId)
         {
             try
@@ -139,6 +144,7 @@ namespace WebAPI.Controllers
 
         [HttpPost]
         [Authorize(Roles = "0")]
+        [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> AddNewSchool([FromBody] SchoolForCreateViewModel schoolForCreateViewModel)
         {
             try
@@ -174,6 +180,7 @@ namespace WebAPI.Controllers
 
         [HttpGet]
         [Authorize(Roles = "0")] //chỉ 0
+        [SwaggerResponse(200, "List of sample schools", typeof(IEnumerable<SchoolList>))]
         public async Task<IActionResult> GetAllSchool(string? search, int status = 1)
         {
             try
@@ -200,6 +207,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("{schoolId}")]
         [Authorize(Roles = "0,1,2")] //chỉ 0
+        [SwaggerResponse(200, "Sample school", typeof(SchoolViewModels))]
         public async Task<IActionResult> GetSchoolById(Guid schoolId)
         {
             try
@@ -252,6 +260,7 @@ namespace WebAPI.Controllers
 
         [HttpPut]
         [Authorize(Roles = "0")] //chỉ 0
+        [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> UpdateSchool([FromBody] SchoolForUpdateViewModel schoolForUpdateViewModel)
         {
             try
@@ -285,6 +294,7 @@ namespace WebAPI.Controllers
 
         [HttpDelete("{schoolId}")]
         [Authorize(Roles = "0")] //chỉ 0
+        [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> DeleteSchool(Guid schoolId)
         {
             try
@@ -318,6 +328,7 @@ namespace WebAPI.Controllers
 
         [HttpPut("{schoolId}/admin/{email}")]
         [Authorize(Roles = "0")] //chỉ 0
+        [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> ChangeSchoolAdmin(Guid schoolId, string email)
         {
             try
@@ -353,6 +364,7 @@ namespace WebAPI.Controllers
 
         [HttpPut("{schoolId}")]
         [Authorize(Roles = "0")]
+        [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> ChangeStatusOfSchool(Guid schoolId, SchoolActive schoolActive)
         {
             try
