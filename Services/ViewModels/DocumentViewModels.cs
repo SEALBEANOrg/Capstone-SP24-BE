@@ -33,7 +33,13 @@ namespace Services.ViewModels
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
         public string Url { get; set; } = null!;
-        public int Type { get; set; }
+        public int Type { get; set; } // 0: template answer, 1: template question, 2: document
     }
 
+    public class DetailOfPaper
+    {
+        public List<Guid> QuestionIds { get; set; }
+        public decimal TimeOfTest  { get; set; } 
+        
+    }
 }

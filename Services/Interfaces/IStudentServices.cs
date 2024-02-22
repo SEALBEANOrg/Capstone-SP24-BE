@@ -7,6 +7,6 @@ namespace Services.Interfaces
         Task<StudentViewModels> GetStudentById(Guid studentId);
         Task<IEnumerable<StudentViewModels>> GetStudentsOfClass(Guid classId, Guid currentUser);
         Task<bool> MoveOutStudent(Guid studentId, Guid currentUser);
-        Task<StudentViewModels> UpdateStudent(StudentUpdate studentUpdate, Guid currentUser);
+        Task<bool> UpdateStudent(StudentUpdate studentUpdate, Guid currentUser);
     }
 }

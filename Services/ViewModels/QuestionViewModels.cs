@@ -28,6 +28,12 @@ namespace Services.ViewModels
         public int Status { get; set; }
     }
 
+    public class ParagraphProcessing
+    {
+        public int Type { get; set; } //0: text, 1: image
+        public string Content { get; set; } = null!;
+    }
+
     public class QuestionCreate
     {
         public Guid? SectionId { get; set; }
@@ -76,5 +82,10 @@ namespace Services.ViewModels
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }
         public List<QuestionViewModel> Questions { get; set; }
+    }
+
+    public class StatusQuestionSet
+    {
+        public bool IsActive { get; set; }
     }
 }

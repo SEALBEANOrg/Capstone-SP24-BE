@@ -22,6 +22,12 @@ namespace Services.ViewModels
         public Guid ModifiedBy { get; set; }
     }
 
+    public class ClassInfo
+    {
+        public List<StudentViewModels> Students { get; set; }
+        public List<ExamViewModels> ExamViews { get; set; }
+    }
+
     public class StudentClassCreate
     {
         public Guid? SchoolId { get; set; }

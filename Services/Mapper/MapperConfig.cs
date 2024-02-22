@@ -23,6 +23,10 @@ namespace Services.Mapper
             CreateMap<StudentClassViewModels, StudentClass>().ReverseMap();
             CreateMap<StudentClass, StudentClassCreate>().ReverseMap();
             CreateMap<StudentClass, StudentClassUpdate>().ReverseMap();
+            CreateMap<StudentClass, InfoClassInExam>().ReverseMap();
+            CreateMap<StudentClass, ClassInfo>().ReverseMap();
+            CreateMap<StudentClass, ClassModel>().ReverseMap();
+
 
             #endregion
 

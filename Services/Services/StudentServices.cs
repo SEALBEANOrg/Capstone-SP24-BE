@@ -58,7 +58,7 @@ namespace Services.Services
             throw new NotImplementedException();
         }
 
-        public async Task<StudentViewModels> UpdateStudent(StudentUpdate studentUpdate, Guid currentUser)
+        public async Task<bool> UpdateStudent(StudentUpdate studentUpdate, Guid currentUser)
         {
             var student = await _unitOfWork.StudentRepo.FindByField(student => student.StudentId == studentUpdate.StudentId);
             if (student == null)
@@ -79,12 +79,7 @@ namespace Services.Services
             {
                 _unitOfWork.StudentRepo.Update(student);
                 var result = await _unitOfWork.SaveChangesAsync();
-                if (result <= 0)
-                {
-                    throw new Exception("Cập nhật học sinh thất bại.");
-                }
-                var studentViewModels = _mapper.Map<StudentViewModels>(student);
-                return studentViewModels;
+                return result > 0;
             }
             catch (Exception e)
             {

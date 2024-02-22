@@ -10,6 +10,13 @@ namespace Services.ViewModels
 {
     public class ExamViewModels
     {
+        public string? Description { get; set; } //name of exam
+        public int Subject { get; set; }
+        public ClassModel Class { get; set; }
+        public Guid ExamId { get; set; }
+        public int TestCode { get; set; }
+        public int Status { get; set; }
+        public DateTime CreatedOn { get; set; }
     }
 
     public class ResultForScan
@@ -30,5 +37,10 @@ namespace Services.ViewModels
         public Guid ExamMarkId { get; set; }
     }
 
+    public class  ClassModel
+    {
+        public Guid ClassId { get; set; }
+        public string Name { get; set; }
+    }
 }
 

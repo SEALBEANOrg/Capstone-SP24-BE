@@ -11,7 +11,7 @@ namespace Services.ViewModels
         public Guid StudentId { get; set; }
         public Guid ClassId { get; set; }
         public string FullName { get; set; } = null!;
-
+        public int StudentNo { get; set; }
     }
 
     public class StudentCreate
