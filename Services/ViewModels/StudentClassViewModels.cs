@@ -38,8 +38,6 @@ namespace Services.ViewModels
 
     public class StudentClassUpdate
     {
-        [Required]
-        public Guid ClassId { get; set; } // không update id
         public Guid? SchoolId { get; set; }
         public string Name { get; set; } = null!;
         public int? Grade { get; set; }

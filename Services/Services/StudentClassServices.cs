@@ -24,7 +24,7 @@ namespace Services.Services
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         }
 
-        public async Task<StudentClassViewModels?> CreateStudentClass(StudentClassCreate studentClassCreate)
+        public async Task<bool> CreateStudentClass(StudentClassCreate studentClassCreate)
         {
             var currentUserId = await GetCurrentUser();
             var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
@@ -67,12 +67,7 @@ namespace Services.Services
                 }
 
                 var result = await _unitOfWork.SaveChangesAsync();
-                if (result <= 0)
-                {
-                    throw new Exception("Lỗi trong quá trình lưu lớp học");
-                }
-
-                return _mapper.Map<StudentClassViewModels>(studentClass);
+                return result > 0;
             }
             catch (Exception e)
             {
@@ -175,9 +170,9 @@ namespace Services.Services
             }
         }
 
-        public async Task<StudentClassViewModels?> UpdateStudentClass(StudentClassUpdate studentClassUpdate)
+        public async Task<bool> UpdateStudentClass(Guid classId, StudentClassUpdate studentClassUpdate)
         {
-            var studentClass = await _unitOfWork.StudentClassRepo.FindByField(studentClass => studentClass.ClassId == studentClassUpdate.ClassId);
+            var studentClass = await _unitOfWork.StudentClassRepo.FindByField(studentClass => studentClass.ClassId == classId);
             if (studentClass == null)
             {
                 throw new Exception("Lớp học không tồn tại");
@@ -199,18 +194,14 @@ namespace Services.Services
             studentClass.ModifiedOn = DateTime.Now;
 
             studentClass = _mapper.Map(studentClassUpdate, studentClass);
+            studentClass.ClassId = classId; 
 
             try 
             {
                 _unitOfWork.StudentClassRepo.Update(studentClass);
                 var result = await _unitOfWork.SaveChangesAsync();
                 
-                if (result <= 0)
-                {
-                    throw new Exception("Lỗi trong quá trình lưu lớp học");
-                }
-
-                return _mapper.Map<StudentClassViewModels>(studentClass);
+                return result > 0;
             }
             catch (Exception e)
             {
@@ -223,11 +214,12 @@ namespace Services.Services
             return _claimsService.GetCurrentUser;
         }
 
-        public async Task<StudentViewModels> AddStudentIntoClass(StudentCreate studentClassCreate)
+        public async Task<bool> AddStudentIntoClass(Guid classId, StudentCreate studentClassCreate)
         {
             var student = _mapper.Map<Student>(studentClassCreate);
+            student.ClassId = classId;
 
-            var studentClass = await _unitOfWork.StudentClassRepo.FindByField(studentClass => studentClass.ClassId == studentClassCreate.ClassId);
+            var studentClass = await _unitOfWork.StudentClassRepo.FindByField(studentClass => studentClass.ClassId == classId);
             
             if (studentClass == null)
             {
@@ -255,12 +247,7 @@ namespace Services.Services
                 _unitOfWork.StudentClassRepo.Update(studentClass);
 
                 var result = await _unitOfWork.SaveChangesAsync();
-                if (result <= 0)
-                {
-                    throw new Exception("Lỗi trong quá trình lưu lớp học");
-                }
-
-                return _mapper.Map<StudentViewModels>(student);
+                return result > 0;
             }
             catch (Exception e)
             {

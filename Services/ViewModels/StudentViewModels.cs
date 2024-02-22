@@ -16,7 +16,6 @@ namespace Services.ViewModels
 
     public class StudentCreate
     {
-        public Guid ClassId { get; set; }
         public string FullName { get; set; } = null!;
         
     }
