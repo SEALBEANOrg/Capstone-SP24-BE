@@ -34,13 +34,9 @@ namespace Services.Services
                 throw new Exception("Khối không hợp lệ");
             }
 
-            if (studentClassCreate.SchoolId != null && studentClassCreate.SchoolId != user.SchoolId) 
-            {
-                throw new Exception("Bạn không có quyền tạo lớp học cho trường này");
-            }   
-
             var studentClass = _mapper.Map<StudentClass>(studentClassCreate);
             studentClass.Status = 1;
+            studentClass.SchoolId = user.SchoolId;
             studentClass.CreatedBy = currentUserId;
             studentClass.ModifiedBy = currentUserId;
             studentClass.CreatedOn = DateTime.Now;
@@ -324,46 +320,46 @@ namespace Services.Services
 
         public async Task<IEnumerable<StudentViewModels>> ImportExcelToAddStudent(Guid classId, IFormFile file)
         {
-            var studentClass = await _unitOfWork.StudentClassRepo.FindByField(studentClass => studentClass.ClassId == classId);
-
-            if (studentClass == null)
-            {
-                throw new Exception("Lớp không tồn tại.");
-            }
-
-            if (studentClass.Status == 0)
-            {
-                throw new Exception("Lớp đã ngừng hoạt động");
-            }
-
-            var list = new List<Student>();
-
-            using (var stream = new MemoryStream())
-            {
-                await file.CopyToAsync(stream);
-                using (var package = new ExcelPackage(stream))
-                {
-                    ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
-                    var rowCount = worksheet.Dimension.Rows;
-                    var columnCount = worksheet.Dimension.Columns;
-
-                    for (int row = 2; row <= rowCount; row++)
-                    {
-                        string name = "";
-
-                        for (int column = 1;  column <= columnCount; column++)
-                        {
-                            name += worksheet.Cells[row, column].Value.ToString().Trim() + " ";
-                        }
-
-                        list.Add(new Student { ClassId = classId, FullName = name.Trim()});
-                    }
-                }
-
-            }
-
+            
             try
             {
+                var studentClass = await _unitOfWork.StudentClassRepo.FindByField(studentClass => studentClass.ClassId == classId);
+
+                if (studentClass == null)
+                {
+                    throw new Exception("Lớp không tồn tại.");
+                }
+
+                if (studentClass.Status == 0)
+                {
+                    throw new Exception("Lớp đã ngừng hoạt động");
+                }
+
+                var list = new List<Student>();
+
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    using (var package = new ExcelPackage(stream))
+                    {
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                        var rowCount = worksheet.Dimension.Rows;
+                        var columnCount = worksheet.Dimension.Columns;
+
+                        for (int row = 2; row <= rowCount; row++)
+                        {
+                            string name = "";
+
+                            for (int column = 1; column <= columnCount; column++)
+                            {
+                                name += worksheet.Cells[row, column].Value.ToString().Trim() + " ";
+                            }
+
+                            list.Add(new Student { ClassId = classId, FullName = name.Trim() });
+                        }
+                    }
+
+                }
 
                 foreach (var item in list)
                 {

@@ -42,5 +42,17 @@ namespace Services.ViewModels
         public Guid ClassId { get; set; }
         public string Name { get; set; }
     }
+
+    public class ExamInfo
+    {
+        public Guid ExamId { get; set; }
+        public string? Description { get; set; } //name of exam
+        public int TestCode { get; set; }
+        public string ClassName { get; set; }
+        public string HasMark { get; set; }
+        public int Status { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public IEnumerable<ResultOfStudent> Students { get; set; }
+    }
 }
 

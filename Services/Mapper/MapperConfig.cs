@@ -75,10 +75,15 @@ namespace Services.Mapper
 
             #region Exam
             CreateMap<Exam, ExamViewModels>().ReverseMap();
+            CreateMap<Exam, ExamInfo>().ReverseMap();
 
             #endregion
 
+            #region ExamMark
+            CreateMap<ExamMark, ExamMarkViewModels>().ReverseMap();
+            CreateMap<ExamMark, ResultOfStudent>().ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Student.FullName));
 
+            #endregion
 
         }
 

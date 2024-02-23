@@ -25,7 +25,6 @@ namespace Services.ViewModels
 
     public class StudentClassCreate
     {
-        public Guid? SchoolId { get; set; }
         [Required]
         public string Name { get; set; }
         public int? Grade { get; set; }
