@@ -44,6 +44,7 @@ namespace Services.Mapper
             CreateMap<Student, StudentViewModels>().ReverseMap();
             CreateMap<Student, StudentUpdate>().ReverseMap();
             CreateMap<Student, StudentMoveOut>().ReverseMap();
+            CreateMap<Student, StudentInfo>().ReverseMap();
 
             #endregion
 
@@ -72,6 +73,10 @@ namespace Services.Mapper
 
             #endregion
 
+            #region Exam
+            CreateMap<Exam, ExamViewModels>().ReverseMap();
+
+            #endregion
 
 
 

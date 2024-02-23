@@ -10,11 +10,11 @@ namespace Services.ViewModels
 {
     public class ExamViewModels
     {
-        public string? Description { get; set; } //name of exam
-        public int Subject { get; set; }
-        public ClassModel Class { get; set; }
         public Guid ExamId { get; set; }
+        public string? Description { get; set; } //name of exam
         public int TestCode { get; set; }
+        public string ClassName { get; set; }
+        public string HasMark { get; set; }
         public int Status { get; set; }
         public DateTime CreatedOn { get; set; }
     }

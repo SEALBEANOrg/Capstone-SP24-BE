@@ -122,24 +122,48 @@ namespace Services.Services
             
         }
 
-        public async Task<IEnumerable<StudentClassViewModels>> GetAllStudentClass(string teacherId = null)
+        public async Task<IEnumerable<StudentClassViewModels>> GetAllStudentClass(Guid? teacherId = null)
         {
             var studentClasses = await _unitOfWork.StudentClassRepo.GetAllAsync();
 
             if (teacherId != null)
             {
-                studentClasses = studentClasses.Where(studentClass => studentClass.CreatedBy.ToString() == teacherId).ToList();
+                studentClasses = studentClasses.Where(studentClass => studentClass.CreatedBy == teacherId).ToList();
             }
 
             var studentClassViewModels = _mapper.Map<IEnumerable<StudentClassViewModels>>(studentClasses);
             return studentClassViewModels;
         }
 
-        public async Task<StudentClassViewModels> GetStudentClassById(Guid id)
+        public async Task<ClassInfo> GetStudentClassById(Guid id)
         {
             var studentClass = await _unitOfWork.StudentClassRepo.FindByField(studentClass => studentClass.ClassId == id);
-            var studentClassViewModels = _mapper.Map<StudentClassViewModels>(studentClass);
-            return studentClassViewModels;
+            var students = await _unitOfWork.StudentRepo.FindListByField(student => student.ClassId == id);
+            var studentInfo =  students != null ? _mapper.Map<List<StudentInfo>>(students) : null;
+
+            var examOfClass = await _unitOfWork.ExamRepo.FindListByField(examOfClass => examOfClass.ClassId == id);
+            List<ExamViewModels> examInfo = examOfClass != null ? new List<ExamViewModels>() : null;
+
+            if (examOfClass != null)
+            {
+                foreach (var exam in examOfClass)
+                {
+                    var examViewModel = _mapper.Map<ExamViewModels>(exam);
+                    examViewModel.ClassName = studentClass.Name;
+                    var examMark = await _unitOfWork.ExamMarkRepo.FindListByField(examMark => examMark.ExamId == exam.ExamId);
+                    var count = examMark.Count(examMark => examMark.Mark != null);
+                    examViewModel.HasMark = count +  "/" + examMark.Count;
+                    examInfo.Add(examViewModel);
+                }
+            }
+    
+            var classInfo = new ClassInfo
+            {
+                ExamViews  = examInfo,
+                Students = studentInfo,
+            };
+
+            return classInfo;
         }
 
         public async Task<bool> UpdateStatusOfStudentClass(Guid id, int status)

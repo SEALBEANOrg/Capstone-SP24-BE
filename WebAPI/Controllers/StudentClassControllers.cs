@@ -21,11 +21,12 @@ namespace WebAPI.Controllers
             _studentServices = studentServices;
         }
 
-        [HttpGet("own-class/{teacherId}")]
+        [HttpGet("own-class")]
         [SwaggerResponse(200, "List of sample student classes", typeof(IEnumerable<StudentClassViewModels>))]
-        public async Task<IActionResult> GetAllByCreator(Guid teacherId)
+        public async Task<IActionResult> GetAllByCreator()
         {
-            var studentClasses = await _studentClassServices.GetAllStudentClass(teacherId.ToString());
+            var currentUserId = await _studentClassServices.GetCurrentUser();
+            var studentClasses = await _studentClassServices.GetAllStudentClass(currentUserId);
 
             return Ok(studentClasses);
         }
@@ -33,13 +34,38 @@ namespace WebAPI.Controllers
         [HttpGet]
         [Authorize(Roles = "2")]
         [SwaggerResponse(200, "List of sample student classes", typeof(IEnumerable<StudentClassViewModels>))]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(Guid? teacherId)
         {
             try
             {
-                var studentClasses = await _studentClassServices.GetAllStudentClass();
+                var studentClasses = await _studentClassServices.GetAllStudentClass(teacherId);
 
                 return Ok(studentClasses);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+        
+        [HttpGet("{classId}")]
+        [SwaggerResponse(200, "Sample student classes", typeof(ClassInfo))]
+        public async Task<IActionResult> GetById(Guid classId)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var studentClass = await _studentClassServices.GetStudentClassById(classId);
+
+                return Ok(studentClass);
+
             }
             catch (Exception ex)
             {
@@ -69,32 +95,7 @@ namespace WebAPI.Controllers
                 });
             }
         }
-
-        [HttpGet("{classId}")]
-        [SwaggerResponse(200, "Sample student classes", typeof(StudentClassViewModels))]
-        public async Task<IActionResult> GetById(Guid classId)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                var studentClass = await _studentClassServices.GetStudentClassById(classId);
-
-                return Ok(studentClass);
-
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    Message = ex.Message
-                });
-            }
-        }
-
+        
         [HttpPost("{classId}/students")]
         [SwaggerResponse(200, "Is success", typeof(bool))]
         public async Task<IActionResult> AddStudentIntoClass(Guid classId, [FromBody] StudentCreate studentClassCreate)

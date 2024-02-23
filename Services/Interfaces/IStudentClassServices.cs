@@ -5,8 +5,8 @@ namespace Services.Interfaces
 {
     public interface IStudentClassServices
     {
-        Task<IEnumerable<StudentClassViewModels>> GetAllStudentClass(string teacherId = null);
-        Task<StudentClassViewModels> GetStudentClassById(Guid id);
+        Task<IEnumerable<StudentClassViewModels>> GetAllStudentClass(Guid? teacherId = null);
+        Task<ClassInfo> GetStudentClassById(Guid id);
         Task<bool> CreateStudentClass(StudentClassCreate studentClassCreate);
         Task<bool> UpdateStudentClass(Guid classId, StudentClassUpdate studentClassUpdate);
         Task<bool> DeleteStudentClass(Guid id);
