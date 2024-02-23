@@ -39,17 +39,14 @@ namespace WebAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("save-result")]
-        [SwaggerResponse(200, "Is success", typeof(string))]
+        [SwaggerResponse(200, "Sample mark", typeof(decimal))]
         public async Task<IActionResult> SaveResultOfTest([FromBody] ResultToSave resultToSave)
         {
             try
             {
                 var result = await _testResultServices.SaveResult(resultToSave);
-                if (result < 0)
-                {
-                    throw new Exception("Lưu điểm thất bại!");
-                }
-                return Ok("Lưu điểm thành công");
+
+                return Ok(result);
             }
             catch (Exception ex)
             {

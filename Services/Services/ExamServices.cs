@@ -135,7 +135,7 @@ namespace Services.Services
             }
         }
 
-        public async Task<int> SaveResult(ResultToSave resultToSave)
+        public async Task<decimal?> SaveResult(ResultToSave resultToSave)
         {
             try
             {
@@ -146,20 +146,26 @@ namespace Services.Services
                 }
 
                 //join exam and paper exam and paper and select paper content
-                var paperExam = await _unitOfWork.PaperExamRepo.FindByField(exam => exam.ExamId == examMark.ExamId, includes => includes.Paper);
+                var paperIds = (await _unitOfWork.PaperExamRepo.FindListByField(exam => exam.ExamId == examMark.ExamId, includes => includes.Paper)).Select(x => x.PaperId);
+                var paperExam = await _unitOfWork.PaperRepo.FindByField(paper => paperIds.Contains(paper.PaperId) && paper.PaperCode == resultToSave.PaperCode);
+                if (paperExam == null)
+                {
+                    throw new Exception("Không tìm thấy đề thi");
+                }
 
-                var anwserSheet = JsonSerializer.Deserialize<PaperContentViewModel>(paperExam.Paper.PaperContent).Answer;
-                
-                List<string> correctAnswers = anwserSheet.Split('|').ToList();
+                var paperContentViewModel = JsonSerializer.Deserialize<PaperContentViewModel>(paperExam.PaperContent);
+                var answerSheet = paperContentViewModel.Answer;
+
+                List<string> correctAnswers = answerSheet.Split('|').ToList();
                 List<string> studentAnswers = resultToSave.AnswersSelected.Split('|').ToList();
                 
-                int mark = 0;
+                decimal? mark = 0;
                 int maxAnswer = correctAnswers.Count < studentAnswers.Count ? correctAnswers.Count : studentAnswers.Count;
                 for (int i = 0; i < maxAnswer; i++)
                 {
                     if (correctAnswers[i] == studentAnswers[i])
                     {
-                        mark += 10/correctAnswers.Count;
+                        mark += (decimal)10/(decimal)correctAnswers.Count;
                     }
                 }
                 
@@ -174,7 +180,7 @@ namespace Services.Services
             }
             catch (Exception e)
             {
-                throw new Exception("Lỗi ở TestResultServices - SaveResult: " + e.Message);
+                throw new Exception("Lỗi ở SaveResultServices - SaveResult: " + e.Message);
             }
         }
     }

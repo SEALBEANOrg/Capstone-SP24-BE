@@ -32,6 +32,7 @@ namespace Services.ViewModels
 
     public class ResultToSave
     {
+        public int PaperCode { get; set; }
         public string AnswersSelected { get; set; }
         [Required]
         public Guid ExamMarkId { get; set; }
