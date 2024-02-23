@@ -25,16 +25,16 @@ namespace WebAPI.Controllers
         [AllowAnonymous]
         [HttpPost("send-image")]
         [SwaggerResponse(200, "sample result", typeof(ResultForScan))]
-        public async Task<IActionResult> SendImage([FromBody] ResultForScanViewModel base64Image)
+        public async Task<IActionResult> SendImage([FromBody] ResultForScanViewModel resultScan)
         {
-            if (string.IsNullOrEmpty(base64Image.Base64Image))
+            if (string.IsNullOrEmpty(resultScan.Base64Image))
             {
                 return BadRequest();
             }
 
             string base64String = base64;
 
-            return Ok(new ResultForScan { Base64Image = base64String, ResultString = "1:A|2:B|3:D|4:|5:B,C|6:A,B,C,D" });
+            return Ok(new ResultForScan { Base64Image = base64String, PaperCode = resultScan.PaperCode, ResultString = "1:A|2:B|3:D|4:|5:B,C|6:A,B,C,D" });
         }
 
         [AllowAnonymous]
