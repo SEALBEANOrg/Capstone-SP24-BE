@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Services.ViewModels;
+using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebAPI.Controllers
 {
     [Route("api/v0/questionsets")]
     [ApiController]
+    [Authorize]
     public class QuestionSetController : ControllerBase
     {
         private readonly IQuestionSetServices _questionSetServices;
@@ -18,7 +22,59 @@ namespace WebAPI.Controllers
             _userServices = userServices;
         }
 
+        [HttpGet("own-questionset")]
+        [SwaggerResponse(200, "List of question set", typeof(IEnumerable<OwnQuestionSet>))]
+        [Authorize(Roles = "1,3")]
+        public async Task<IActionResult> GetOwnQuestionSet(int? grade, int? subject, [Required]int year)
+        {
+            try
+            {
+                var currentUser = await _userServices.GetCurrentUser();
+                var result = await _questionSetServices.GetOwnQuestionSet(currentUser, grade, subject, year);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpDelete("{questionSetId}")]
+        [SwaggerResponse(200, "Is success", typeof(string))]
+        [Authorize(Roles = "1,3")]
+        public async Task<IActionResult> DeleteQuestionSet(Guid questionSetId)
+        {
+            try
+            {
+                var currentUser = await _userServices.GetCurrentUser();
+                var result = await _questionSetServices.DeleteQuestionSet(questionSetId, currentUser);
+
+                if (!result)
+                {
+                    return NotFound(new
+                    {
+                        Message = "Xóa thất bại"
+                    });
+                }
+
+                return Ok("Xóa thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
         [HttpGet("{questionSetId}")]
+        [SwaggerResponse(200, "Question set sample", typeof(QuestionSetViewModel))]
+        [AllowAnonymous]
         public async Task<IActionResult> GetQuestionByQuestionSetId(Guid questionSetId)
         {
             try
@@ -62,5 +118,7 @@ namespace WebAPI.Controllers
                 });
             }
         }
+    
+        
     }
 }

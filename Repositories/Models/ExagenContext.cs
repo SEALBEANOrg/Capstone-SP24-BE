@@ -233,7 +233,7 @@ namespace Repositories.Models
 
             modelBuilder.Entity<QuestionMapping>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.QuestionId, e.QuestionSetId });
 
                 entity.ToTable("QuestionMapping");
 
