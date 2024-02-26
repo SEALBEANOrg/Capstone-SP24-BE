@@ -99,5 +99,21 @@ namespace Services.Services
                 throw new Exception("Lỗi ở QuestionSetServices - GetQuestionByQuestionSetId: " + e.Message);
             }
         }
+
+        public async Task<QuestionReturn> GetQuestionSetFromFile(ImportQuestionSet importQuestionSet)
+        {
+            try
+            {
+                var questionSet = _mapper.Map<QuestionReturn>(importQuestionSet);
+                
+                questionSet.Questions = DucumentProcessing.ImportQuestionSet.ImportQuestions(importQuestionSet.File);
+
+                return questionSet;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở QuestionSetServices - GetQuestionSetFromFile: " + e.Message);
+            }
+        }
     }
 }

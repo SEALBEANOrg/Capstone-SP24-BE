@@ -74,7 +74,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("{questionSetId}")]
         [SwaggerResponse(200, "Question set sample", typeof(QuestionSetViewModel))]
-        [AllowAnonymous]
+        [Authorize(Roles = "1,3")]
         public async Task<IActionResult> GetQuestionByQuestionSetId(Guid questionSetId)
         {
             try
@@ -91,6 +91,28 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
+        [HttpPost("import-questionset")]
+        [SwaggerResponse(200, "Detail question set from import", typeof(QuestionReturn))]
+        [Authorize(Roles = "1,3")]
+        public async Task<IActionResult> GetQuestionSetFromFile([FromForm] ImportQuestionSet importQuestionSet)
+        {
+            try
+            {
+                var result = await _questionSetServices.GetQuestionSetFromFile(importQuestionSet);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+
+        }
+
 
         [HttpPut("{questionSetId}/change-status")]
         public async Task<IActionResult> ChangeStatusQuestionSet(Guid questionSetId, [FromBody] StatusQuestionSet statusQuestionSet)
@@ -118,7 +140,7 @@ namespace WebAPI.Controllers
                 });
             }
         }
-    
+
         
     }
 }

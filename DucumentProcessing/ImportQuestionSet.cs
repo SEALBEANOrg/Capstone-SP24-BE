@@ -10,64 +10,62 @@ using System.Xml;
 using System.Linq;
 using ExagenSharedProject;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 
 namespace DucumentProcessing
 {
     public class ImportQuestionSet
     {
-        public static string ReadDocx(string filePath)
+        public static string ReadDocx(IFormFile file)
         {
-            // Load the document
-            Document document = new Document();
-            document.LoadFromFile(filePath);
-
-            StringBuilder sb = new StringBuilder();
-
-            // Iterate through sections
-            foreach (Section section in document.Sections)
+            using (MemoryStream ms = new MemoryStream())
             {
-                // Iterate through paragraphs
-                foreach (Paragraph paragraph in section.Paragraphs)
-                {
-                    // Iterate through document objects in paragraph
-                    foreach (DocumentObject docObject in paragraph.ChildObjects)
-                    {
-                        switch (docObject.DocumentObjectType)
-                        {
-                            case DocumentObjectType.TextRange:
-                                TextRange? textRange = docObject as TextRange;
-                                if (textRange != null)
-                                {
-                                    sb.Append(textRange.Text);
-                                }
-                                break;
-                            case DocumentObjectType.Picture:
-                                DocPicture? pic = docObject as DocPicture;
-                                if (pic != null && pic.Image != null)
-                                {
-                                    ImageConverter converter = new ImageConverter();
-                                    byte[] imageBytes = (byte[])converter.ConvertTo(pic.Image, typeof(byte[]));
+                file.CopyTo(ms);
+                Document document = new Document();
+                document.LoadFromStream(ms, FileFormat.Docx);
 
-                                    // Convert byte array to Base64 String
-                                    string base64String = "<img>" + Convert.ToBase64String(imageBytes) + "</img>";
-                                    sb.Append(base64String);
-                                }
-                                break;
-                            case DocumentObjectType.OfficeMath:
-                                OfficeMath? math = docObject as OfficeMath;
-                                if (math != null)
-                                {
-                                    string mathML = math.ToMathMLCode();
-                                    mathML = "<latex>" + ConvertMathMLToLatex(mathML).Replace("$ ", "").Replace("$", "") + "</latex>";
-                                    //mathML = "<latex>" + mathML + "</latex>";
-                                    sb.Append(mathML);
-                                }
-                                break;
+                StringBuilder sb = new StringBuilder();
+
+                foreach (Section section in document.Sections)
+                {
+                    foreach (Paragraph paragraph in section.Paragraphs)
+                    {
+                        foreach (DocumentObject docObject in paragraph.ChildObjects)
+                        {
+                            switch (docObject.DocumentObjectType)
+                            {
+                                case DocumentObjectType.TextRange:
+                                    TextRange? textRange = docObject as TextRange;
+                                    if (textRange != null)
+                                    {
+                                        sb.Append(textRange.Text);
+                                    }
+                                    break;
+                                case DocumentObjectType.Picture:
+                                    DocPicture? pic = docObject as DocPicture;
+                                    if (pic != null && pic.Image != null)
+                                    {
+                                        ImageConverter converter = new ImageConverter();
+                                        byte[] imageBytes = (byte[])converter.ConvertTo(pic.Image, typeof(byte[]));
+                                        string base64String = "<img>" + Convert.ToBase64String(imageBytes) + "</img>";
+                                        sb.Append(base64String);
+                                    }
+                                    break;
+                                case DocumentObjectType.OfficeMath:
+                                    OfficeMath? math = docObject as OfficeMath;
+                                    if (math != null)
+                                    {
+                                        string mathML = math.ToMathMLCode();
+                                        mathML = "<latex>" + ConvertMathMLToLatex(mathML).Replace("$ ", "").Replace("$", "") + "</latex>";
+                                        sb.Append(mathML);
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
+                return sb.ToString();
             }
-            return sb.ToString();
         }
 
         public static string ConvertMathMLToLatex(string mathML)
@@ -191,10 +189,10 @@ namespace DucumentProcessing
             }
         }
 
-        public static List<Question> ImportQuestions(string filePath)
+        public static List<Question> ImportQuestions(IFormFile file)
         {
             List<Question> questions = new List<Question>();
-            string strDocxContent = ReadDocx(filePath);
+            string strDocxContent = ReadDocx(file);
 
             //Delete before "Câu"
             int index = strDocxContent.IndexOf("Câu");
@@ -217,7 +215,7 @@ namespace DucumentProcessing
                     }
                 }
                 arrDocxContent[i] = arrDocxContent[i].Substring(index1);
-                Console.WriteLine(SplitQuestionAndAnswer(arrDocxContent[i]).ToString() + '\n');
+                //Console.WriteLine(SplitQuestionAndAnswer(arrDocxContent[i]).ToString() + '\n');
                 questions.Add(SplitQuestionAndAnswer(arrDocxContent[i]));
             }
 
@@ -245,3 +243,61 @@ namespace DucumentProcessing
         }
     }
 }
+
+
+
+
+//public static string ReadDocx(string filePath)
+//{
+//    // Load the document
+//    Document document = new Document();
+//    document.LoadFromFile(filePath);
+
+//    StringBuilder sb = new StringBuilder();
+
+//    // Iterate through sections
+//    foreach (Section section in document.Sections)
+//    {
+//        // Iterate through paragraphs
+//        foreach (Paragraph paragraph in section.Paragraphs)
+//        {
+//            // Iterate through document objects in paragraph
+//            foreach (DocumentObject docObject in paragraph.ChildObjects)
+//            {
+//                switch (docObject.DocumentObjectType)
+//                {
+//                    case DocumentObjectType.TextRange:
+//                        TextRange? textRange = docObject as TextRange;
+//                        if (textRange != null)
+//                        {
+//                            sb.Append(textRange.Text);
+//                        }
+//                        break;
+//                    case DocumentObjectType.Picture:
+//                        DocPicture? pic = docObject as DocPicture;
+//                        if (pic != null && pic.Image != null)
+//                        {
+//                            ImageConverter converter = new ImageConverter();
+//                            byte[] imageBytes = (byte[])converter.ConvertTo(pic.Image, typeof(byte[]));
+
+//                            // Convert byte array to Base64 String
+//                            string base64String = "<img>" + Convert.ToBase64String(imageBytes) + "</img>";
+//                            sb.Append(base64String);
+//                        }
+//                        break;
+//                    case DocumentObjectType.OfficeMath:
+//                        OfficeMath? math = docObject as OfficeMath;
+//                        if (math != null)
+//                        {
+//                            string mathML = math.ToMathMLCode();
+//                            mathML = "<latex>" + ConvertMathMLToLatex(mathML).Replace("$ ", "").Replace("$", "") + "</latex>";
+//                            //mathML = "<latex>" + mathML + "</latex>";
+//                            sb.Append(mathML);
+//                        }
+//                        break;
+//                }
+//            }
+//        }
+//    }
+//    return sb.ToString();
+//}

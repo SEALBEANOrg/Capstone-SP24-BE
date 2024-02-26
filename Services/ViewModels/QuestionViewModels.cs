@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DucumentProcessing;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -117,4 +119,23 @@ namespace Services.ViewModels
         public int VDT { get; set; }
         public int VDC { get; set; }
     }
+
+    public class ImportQuestionSet
+    {
+        public string Name { get; set; } = null!;
+        public string? Description { get; set; }
+        public int? Grade { get; set; }
+        public int? Subject { get; set; }
+        public IFormFile File { get; set; } = null!;
+    }
+
+    public class QuestionReturn
+    {
+        public string Name { get; set; } = null!;
+        public string? Description { get; set; }
+        public int? Grade { get; set; }
+        public int? Subject { get; set; }
+        public List<Question> Questions { get; set; }
+    }
+
 }
