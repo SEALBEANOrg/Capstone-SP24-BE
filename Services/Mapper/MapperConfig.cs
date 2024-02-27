@@ -55,6 +55,7 @@ namespace Services.Mapper
             CreateMap<Question, QuestionSetViewModel>().ReverseMap();
             CreateMap<Question, QuestionJson>().ReverseMap();
             CreateMap<Question, QuestionViewModel>().ReverseMap();
+            CreateMap<QuestionSave, Question>().ReverseMap();
 
             #endregion
 
@@ -65,6 +66,7 @@ namespace Services.Mapper
             CreateMap<QuestionSet, QuestionReturn>().ReverseMap();
             CreateMap<ImportQuestionSet, QuestionReturn>().ReverseMap();
             CreateMap<QuestionSet, ImportQuestionSet>().ReverseMap();
+            CreateMap<QuestionSet, QuestionSetSave>().ReverseMap();
 
             #endregion
 

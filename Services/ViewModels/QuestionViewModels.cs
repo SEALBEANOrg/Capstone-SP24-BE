@@ -1,4 +1,5 @@
 ﻿using DucumentProcessing;
+using ExagenSharedProject;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -137,5 +138,28 @@ namespace Services.ViewModels
         public int? Subject { get; set; }
         public List<Question> Questions { get; set; }
     }
+
+    public class QuestionSetSave
+    {
+        public string Name { get; set; } = null!;
+        public string? Description { get; set; }
+        public int? Grade { get; set; }
+        public int? Subject { get; set; }
+        public List<QuestionSave> Questions { get; set; }
+    }
+
+    public class QuestionSave
+    {
+        public string QuestionPart { get; set; } = null!;
+        public string Answer1 { get; set; } = null!;
+        public string Answer2 { get; set; } = null!;
+        public string Answer3 { get; set; } = null!;
+        public string Answer4 { get; set; } = null!;
+        public string CorrectAnswer { get; set; } = null!;
+        public int Difficulty { get; set; }
+        public Guid? SectionId { get; set; }
+    }
+
+
 
 }

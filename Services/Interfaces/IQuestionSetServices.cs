@@ -9,5 +9,6 @@ namespace Services.Interfaces
         Task<IEnumerable<OwnQuestionSet>> GetOwnQuestionSet(Guid currentUser, int? grade, int? subject, int year);
         Task<QuestionSetViewModel> GetQuestionByQuestionSetId(Guid id);
         Task<QuestionReturn> GetQuestionSetFromFile(ImportQuestionSet importQuestionSet);
+        Task<bool> SaveQuestionSet(QuestionSetSave questionSetViewModel, Guid currentUser);
     }
 }
