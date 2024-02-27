@@ -84,7 +84,7 @@ namespace Services.Mapper
             #endregion
 
             #region Exam
-            CreateMap<Exam, ExamViewModels>().ReverseMap();
+            CreateMap<Exam, ExamViewModels>().ForMember(dest => dest.ClassName, opt => opt.MapFrom(src => src.Class != null ? src.Class.Name : null)).ReverseMap();
             CreateMap<Exam, ExamInfo>().ReverseMap();
 
             #endregion

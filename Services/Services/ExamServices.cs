@@ -135,6 +135,36 @@ namespace Services.Services
             }
         }
 
+        public async Task<IEnumerable<ExamViewModels>> GetOwnExam(Guid currentUserId, int? grade)
+        {
+            try
+            {
+                var exams = await _unitOfWork.ExamRepo.FindListByField(exam => exam.CreatedBy == currentUserId, includes => includes.Class);
+                if (exams == null)
+                {
+                    return null;
+                }
+
+                if (grade != null)
+                {
+                    exams = exams.Where(exam => exam.Class.Grade == grade).ToList();
+                }
+
+                var examViewModels = _mapper.Map<IEnumerable<ExamViewModels>>(exams);
+                foreach (var exam in examViewModels)
+                {
+                    var examMark = await _unitOfWork.ExamMarkRepo.FindListByField(examMark => examMark.ExamId == exam.ExamId);
+                    var count = examMark.Count(examMark => examMark.Mark != null);
+                    exam.HasMark = count + "/" + examMark.Count;
+                }
+                return examViewModels;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở TestResultServices - GetOwnExam: " + e.Message);
+            }
+        }
+
         public async Task<decimal?> SaveResult(ResultToSave resultToSave)
         {
             try
