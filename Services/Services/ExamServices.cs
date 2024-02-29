@@ -4,6 +4,7 @@ using Repositories;
 using Repositories.Models;
 using Services.Interfaces;
 using Services.ViewModels;
+using System.ComponentModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -13,11 +14,112 @@ namespace Services.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IDocumentServices _documentServices;
 
-        public ExamServices(IUnitOfWork unitOfWork, IMapper mapper)
+        public ExamServices(IUnitOfWork unitOfWork, IMapper mapper, IDocumentServices documentServices)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _documentServices = documentServices;
+        }
+
+        public async Task<bool> AddExamByMatrixIntoClass(ExamCreate examCreate, Guid currentUserId)
+        {
+            try
+            {
+                Guid templatePaperId = Guid.Parse("0332d2d1-dcd6-ee11-90df-e848b8c82000");
+                //add exam
+                var exam = _mapper.Map<Exam>(examCreate);
+                exam.CreatedOn = DateTime.Now;
+                exam.CreatedBy = currentUserId;
+                exam.Status = 1;
+                exam.ModifiedOn = DateTime.Now;
+                exam.ModifiedBy = currentUserId;
+                _unitOfWork.ExamRepo.AddAsync(exam);
+                var result = await _unitOfWork.SaveChangesAsync();
+                if (result <= 0)
+                {
+                    return false;
+                }
+
+                //add exam mark
+                var students = await _unitOfWork.StudentRepo.FindListByField(student => student.ClassId == examCreate.ClassId);
+                var examMarks = new List<ExamMark>();
+                foreach (var student in students)
+                {
+                    var examMark = new ExamMark
+                    {
+                        ExamId = exam.ExamId,
+                        StudentId = student.StudentId,
+                        CreatedOn = DateTime.Now,
+                        CreatedBy = currentUserId,
+                        ModifiedOn = DateTime.Now,
+                        ModifiedBy = currentUserId
+                    };
+                    examMarks.Add(examMark);
+                }
+                _unitOfWork.ExamMarkRepo.AddRangeAsync(examMarks);                           
+                
+                //get questions from question set
+                List<List<Guid>> questionSets = new List<List<Guid>>();
+                int paperCode = 1;
+                List<Guid> paperIds = new List<Guid>();
+                for (int i = 0; i < examCreate.NumOfDiffPaper; i++)
+                {
+                    var questionIdsUse = new List<Guid>();
+                    foreach (var sectionUse in examCreate.Sections)
+                    {
+                        var questions = (await _unitOfWork.QuestionRepo.FindListByField(questionSet => questionSet.SectionId == sectionUse.SectionId)).OrderBy(order => Guid.NewGuid());
+
+                        if (sectionUse.CHCN > 0)
+                        {
+                            questionIdsUse.AddRange(questions.Where(question => question.CreatedBy == currentUserId).Select(question => question.QuestionId).Take(sectionUse.CHCN));
+                        }
+                        if (sectionUse.NHD > 0)
+                        {
+                            questionIdsUse.AddRange(questions.Where(question => question.CreatedBy != currentUserId && question.IsPublic).Select(question => question.QuestionId).Take(sectionUse.NHD));
+                        }
+                    }
+
+                    var detailOfPaper = new DetailOfPaper
+                    {
+                        QuestionIds = questionIdsUse,
+                        TimeOfTest = examCreate.Duration,
+                        PaperCode = paperCode,
+                        NameOfTest = examCreate.NameOfExam
+                    };
+
+                    for (int j = 0; j < examCreate.NumOfPaperCode; j++)
+                    {
+                        Guid id = await _documentServices.CreateTestPaper(currentUserId, detailOfPaper, templatePaperId, Guid.Parse("00000000-0000-0000-0000-000000000001"));
+                        paperIds.Add(id);
+                    }
+                }
+
+                await _unitOfWork.SaveChangesAsync();
+
+                // add paper exam
+                var paperExams = new List<PaperExam>();
+                foreach (var paperId in paperIds)
+                {
+                    var paperExam = new PaperExam
+                    {
+                        ExamId = exam.ExamId,
+                        PaperId = paperId,
+                    };
+                    paperExams.Add(paperExam);
+                }
+
+                _unitOfWork.PaperExamRepo.AddRangeAsync(paperExams);
+                result = await _unitOfWork.SaveChangesAsync();
+
+                //if any save fail return false
+                return result > 0 ? true : false;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở ExamServices - AddExamIntoClass: " + e.Message);
+            }
         }
 
         public async Task<bool> CheckPermissionAccessTest(string testCode, string email)
@@ -176,7 +278,7 @@ namespace Services.Services
                 }
 
                 //join exam and paper exam and paper and select paper content
-                var paperIds = (await _unitOfWork.PaperExamRepo.FindListByField(exam => exam.ExamId == examMark.ExamId, includes => includes.Paper)).Select(x => x.PaperId);
+                var paperIds = (await _unitOfWork.PaperExamRepo.FindListByField(exam => exam.ExamId == examMark.ExamId)).Select(x => x.PaperId);
                 var paperExam = await _unitOfWork.PaperRepo.FindByField(paper => paperIds.Contains(paper.PaperId) && paper.PaperCode == resultToSave.PaperCode);
                 if (paperExam == null)
                 {

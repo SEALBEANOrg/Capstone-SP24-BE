@@ -117,7 +117,7 @@ namespace Services.Services
         }
 
         public async Task<bool> SaveQuestionSet(QuestionSetSave questionSetViewModel, Guid currentUserId)
-        { // chua xong... question co section 
+        { 
             try
             {
                 var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
@@ -194,8 +194,28 @@ namespace Services.Services
                         QuestionId = question.QuestionId,
                         QuestionSetId = questionSet.QuestionSetId
                     });
+                    questionMappings.Add(new QuestionMapping
+                    {
+                        QuestionId = question.QuestionId,  // add vào ngân hàng chung
+                        QuestionSetId = Guid.Parse("00000000-0000-0000-0000-000000000001")
+                    });
                 }
                 _unitOfWork.QuestionMappingRepo.AddRangeAsync(questionMappings);
+
+                var allSet = await _unitOfWork.QuestionSetRepo.FindByField(set => set.QuestionSetId == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+                var setConfig = JsonSerializer.Deserialize<SetConfig>(allSet.SetConfig);
+                allSet.SetConfig = JsonSerializer.Serialize(new SetConfig
+                {
+                    NB = setConfig.NB + nb,
+                    TH = setConfig.TH + th,
+                    VDT = setConfig.VDT + vdt,
+                    VDC = setConfig.VDC + vdc
+                });
+                allSet.ModifiedBy = currentUserId;
+                allSet.ModifiedOn = DateTime.Now;
+                allSet.NumOfQuestion += questionSet.NumOfQuestion;
+                _unitOfWork.QuestionSetRepo.Update(allSet);
+
                 result = await _unitOfWork.SaveChangesAsync();
 
                 return result > 0 ? true : false;
@@ -205,5 +225,8 @@ namespace Services.Services
                 throw new Exception("Lỗi ở QuestionSetServices - SaveQuestionSet: " + e.Message);
             }
         }
+
+
+
     }
 }

@@ -19,6 +19,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddInfrastructure();
 builder.Services.AddServices();
+builder.Services.AddHttpClient("AI_Services", u => u.BaseAddress = new Uri(builder.Configuration["AI_Services"]));
 
 #region JWT(use)
 

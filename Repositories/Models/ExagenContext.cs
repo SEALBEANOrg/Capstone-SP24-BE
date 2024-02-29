@@ -67,10 +67,10 @@ namespace Repositories.Models
 
                 entity.Property(e => e.Name).HasMaxLength(255);
 
-                entity.Property(e => e.Url)
-                    .HasMaxLength(255)
+                entity.Property(e => e.Data)
+                    .HasMaxLength(int.MaxValue)
                     .IsUnicode(false)
-                    .HasColumnName("URL");
+                    .HasColumnName("Data");
             });
 
             modelBuilder.Entity<Exam>(entity =>
@@ -166,7 +166,7 @@ namespace Repositories.Models
 
             modelBuilder.Entity<PaperExam>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.ExamId, e.PaperId });
 
                 entity.ToTable("PaperExam");
 

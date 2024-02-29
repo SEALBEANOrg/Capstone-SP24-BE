@@ -24,7 +24,6 @@ namespace Services
             {
                 Credential = GoogleCredential.FromFile("firebase.json")
             });
-
             return services;
         }
     }

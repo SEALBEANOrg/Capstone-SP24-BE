@@ -94,7 +94,8 @@ namespace WebAPI.Controllers
 
         [HttpPost("import-questionset")]
         [SwaggerResponse(200, "Detail question set from import", typeof(QuestionReturn))]
-        [Authorize(Roles = "1,2,3")]
+        //[Authorize(Roles = "1,2,3")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetQuestionSetFromFile([FromForm] ImportQuestionSet importQuestionSet)
         {
             try
@@ -115,7 +116,8 @@ namespace WebAPI.Controllers
 
         [HttpPost("save")]
         [SwaggerResponse(200, "Is success", typeof(string))]
-        [Authorize(Roles = "1,2,3")]
+        //[Authorize(Roles = "1,2,3")]
+        [AllowAnonymous]
         public async Task<IActionResult> SaveQuestionSet([FromBody] QuestionSetSave questionSetSave)
         {
             try
