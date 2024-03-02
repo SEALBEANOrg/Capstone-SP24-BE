@@ -39,7 +39,7 @@ namespace Services.Services
                 var stream = file.OpenReadStream();
                 var bytes = new byte[stream.Length];
                 stream.Read(bytes, 0, bytes.Length);
-                document.Data = Convert.ToBase64String(bytes);
+                document.Data = bytes;
 
                 document.CreatedBy = currentUser;           
                 document.CreatedOn = DateTime.Now;
@@ -131,7 +131,7 @@ namespace Services.Services
                     CreatedOn = DateTime.Now,
                     CreatedBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
                     Description = documentCreate.Description,
-                    Data = stream.ToArray().ToString(),
+                    Data = stream.ToArray(),
                 };
 
                 _unitOfWork.DocumentRepo.AddAsync(document);
@@ -162,7 +162,7 @@ namespace Services.Services
                 string correctAnswer = "";
 
                 //read file
-                var binaryTemplate = Convert.FromBase64String((await _unitOfWork.DocumentRepo.FindByField(document => document.DocumentId == templatePaperId)).Data);
+                var binaryTemplate = (await _unitOfWork.DocumentRepo.FindByField(document => document.DocumentId == templatePaperId)).Data;
                 
                 using (var stream = new MemoryStream(binaryTemplate))
                 {

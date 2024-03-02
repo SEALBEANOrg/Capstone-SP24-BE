@@ -27,12 +27,12 @@ namespace Services.Services
         {
             try
             {
-                Guid templatePaperId = Guid.Parse("0332d2d1-dcd6-ee11-90df-e848b8c82000");
+                Guid templatePaperId = Guid.Parse("2fc0e6e6-edd7-ee11-90e0-90610ca5f0a3");
                 //add exam
                 var exam = _mapper.Map<Exam>(examCreate);
                 exam.CreatedOn = DateTime.Now;
                 exam.CreatedBy = currentUserId;
-                exam.Status = 1;
+                exam.Status = 0;  // mới tạo exam nên chưa chốt kq
                 exam.ModifiedOn = DateTime.Now;
                 exam.ModifiedBy = currentUserId;
                 _unitOfWork.ExamRepo.AddAsync(exam);

@@ -15,4 +15,10 @@ namespace Services.ViewModels
         public string Content { get; set; } = null!;
         public string Answer { get; set; } = null!;
     }
+
+    public class PaperToDownload
+    {
+        public string PaperCode { get; set; } = null!;
+        public byte[] Content { get; set; } = null!;
+    }
 }
