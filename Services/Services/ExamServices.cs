@@ -1,12 +1,17 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Repositories;
 using Repositories.Models;
 using Services.Interfaces;
 using Services.ViewModels;
 using System.ComponentModel;
+using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Services.Services
 {
@@ -15,12 +20,38 @@ namespace Services.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IDocumentServices _documentServices;
+        private readonly HttpClient _httpClient;
 
-        public ExamServices(IUnitOfWork unitOfWork, IMapper mapper, IDocumentServices documentServices)
+        public ExamServices(IUnitOfWork unitOfWork, IMapper mapper, IDocumentServices documentServices, HttpClient httpClient)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _documentServices = documentServices;
+            _httpClient = httpClient;
+        }
+
+        public async Task<Response> SendImage(ResultForScanViewModel Image)
+        {
+            try
+            { 
+                var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", true, true)
+                .Build();
+
+                var url = configuration["AI_Services"];
+                string jsonString = JsonConvert.SerializeObject(Image);
+                var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync($"{url}/ai-service/answer_base64", content);
+                var apiContent = await response.Content.ReadAsStringAsync();
+                var resp = JsonConvert.DeserializeObject<Response>(apiContent);
+
+                return resp;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở ExamServices - CallExternalApi: " + e.Message);
+            }
         }
 
         public async Task<bool> AddExamByMatrixIntoClass(ExamCreate examCreate, Guid currentUserId)

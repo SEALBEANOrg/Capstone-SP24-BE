@@ -39,19 +39,11 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest();
                 }
-                var client = _httpClientFactory.CreateClient("AI_Services");
-
-
-                string jsonString = JsonConvert.SerializeObject(Image);
-                var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-
-                var response = await client.PostAsync($"/ai-service/answer_base64", content);
-                var apiContent = await response.Content.ReadAsStringAsync();
-                var resp = JsonConvert.DeserializeObject<Response>(apiContent);
+                var resp = await _testResultServices.SendImage(Image);
 
                 if (resp != null)
                 {
-                    return Ok(new ResultForScan { image = resp.image, result = resp.result, paperCode = 1, studentNo = 1}); ;
+                    return Ok(new ResultForScan { image = resp.image, result = resp.result, paperCode = 1, studentNo = 1});
                 }
                 else
                 {

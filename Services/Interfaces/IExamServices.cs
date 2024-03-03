@@ -10,5 +10,6 @@ namespace Services.Interfaces
         Task<InfoClassInExam> GetInfoOfClassInExam(string testCode, string email);
         Task<IEnumerable<ExamViewModels>> GetOwnExam(Guid currentUserId, int? grade);
         Task<decimal?> SaveResult(ResultToSave resultToSave);
+        Task<Response> SendImage(ResultForScanViewModel Image);
     }
 }
