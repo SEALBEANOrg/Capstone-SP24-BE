@@ -43,7 +43,7 @@ namespace WebAPI.Controllers
 
                 if (resp != null)
                 {
-                    return Ok(new ResultForScan { image = resp.image, result = resp.result, paperCode = 1, studentNo = 1});
+                    return Ok(new ResultForScan { image = resp.image, result = resp.result, paperCode = resp.paper_code, studentNo = resp.student_no});
                 }
                 else
                 {

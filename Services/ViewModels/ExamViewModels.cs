@@ -27,27 +27,28 @@ namespace Services.ViewModels
         [JsonPropertyName("Result")]
         public string result { get; set; }
         [JsonPropertyName("PaperCode")]
-        public int paperCode { get; set; }
+        public string paperCode { get; set; }
         [JsonPropertyName("StudentNo")]
-        public int studentNo { get; set; }
+        public string studentNo { get; set; }
     }
 
     public class Response
     {
-        [JsonPropertyName("Image")]
+        [JsonPropertyName("image")]
         public string image { get; set; }
-        [JsonPropertyName("Result")]
+        [JsonPropertyName("result")]
         public string result { get; set; }
-        //[JsonPropertyName("PaperCode")]
-        //public int paperCode { get; set; }
-        //[JsonPropertyName("StudentNo")]
-        //public int studentNo { get; set; }
+        [JsonPropertyName("paper_code")]
+        public string paper_code { get; set; }
+        [JsonPropertyName("student_no")]
+        public string student_no { get; set; }
     }
 
     public class ResultForScanViewModel
     {
         [JsonPropertyName("Image")]
         public string image { get; set; }
+
     }
 
 

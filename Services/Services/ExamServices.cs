@@ -42,9 +42,10 @@ namespace Services.Services
                 var url = configuration["AI_Services"];
                 string jsonString = JsonConvert.SerializeObject(Image);
                 var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync($"{url}/ai-service/answer_base64", content);
+                var response = await _httpClient.PostAsync($"{url}/answer_base64", content);
                 var apiContent = await response.Content.ReadAsStringAsync();
                 var resp = JsonConvert.DeserializeObject<Response>(apiContent);
+                resp.result = EliminateMultipleChoice(resp.result);
 
                 return resp;
             }
@@ -345,6 +346,19 @@ namespace Services.Services
             {
                 throw new Exception("Lỗi ở SaveResultServices - SaveResult: " + e.Message);
             }
+        }
+
+        private string EliminateMultipleChoice(string answer)
+        {
+            var listAnswer = answer.Split('|').ToList();
+            for (int i = 0; i < listAnswer.Count; i++)
+            {
+                if (listAnswer[i].Contains(","))
+                {
+                    listAnswer[i] = $"{i+1}:";
+                }
+            }
+            return string.Join("|", listAnswer);
         }
     }
 }
