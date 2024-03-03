@@ -38,8 +38,9 @@
 
   <Import Project="..\ExagenSharedProject\ExagenSharedProject.projitems" Label="Shared" />
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /Y /E &quot;$(ProjectDir)mmltex&quot; &quot;$(TargetDir)mmltex&quot;" />
-  </Target>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="xcopy /Y /E &quot;$(ProjectDir)mmltex&quot; &quot;$(TargetDir)mmltex&quot;" Condition="'$(OS)' == 'Windows_NT'" />
+		<Exec Command="cp -r &quot;$(ProjectDir)mmltex&quot; &quot;$(TargetDir)mmltex&quot;" Condition="'$(OS)' != 'Windows_NT'" />
+	</Target>
 
 </Project>
