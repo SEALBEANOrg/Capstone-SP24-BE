@@ -45,7 +45,7 @@ namespace WebAPI.Controllers
                 string jsonString = JsonConvert.SerializeObject(Image);
                 var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
 
-                var response = await client.PostAsync($"/ai-service/answer_base64", content);
+                var response = await client.PostAsync($"/answer_base64", content);
                 var apiContent = await response.Content.ReadAsStringAsync();
                 var resp = JsonConvert.DeserializeObject<Response>(apiContent);
 
