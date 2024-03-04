@@ -96,7 +96,7 @@ namespace Services.Mapper
 
             #region ExamMark
             CreateMap<ExamMark, ExamMarkViewModels>().ReverseMap();
-            CreateMap<ExamMark, ResultOfStudent>().ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Student.FullName));
+            CreateMap<ExamMark, ResultOfStudent>().ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Student.FullName)).ReverseMap();
 
             #endregion
 

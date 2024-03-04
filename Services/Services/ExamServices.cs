@@ -200,7 +200,7 @@ namespace Services.Services
                 var count = examMark.Count(examMark => examMark.Mark != null);
                 examInfo.HasMark = count + "/" + examMark.Count;
 
-                var studentInExam = await _unitOfWork.ExamMarkRepo.FindByField(examMark => examMark.ExamId == examId, includes => includes.Student);
+                var studentInExam = await _unitOfWork.ExamMarkRepo.FindListByField(examMark => examMark.ExamId == examId, includes => includes.Student);
 
                 var students = _mapper.Map<IEnumerable<ResultOfStudent>>(studentInExam);
                 examInfo.Students = students;   
