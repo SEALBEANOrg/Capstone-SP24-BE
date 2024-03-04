@@ -45,6 +45,7 @@ namespace Services.Mapper
             CreateMap<Student, StudentUpdate>().ReverseMap();
             CreateMap<Student, StudentMoveOut>().ReverseMap();
             CreateMap<Student, StudentInfo>().ReverseMap();
+            CreateMap<Student, ResultOfStudent>().ReverseMap();
 
             #endregion
 
