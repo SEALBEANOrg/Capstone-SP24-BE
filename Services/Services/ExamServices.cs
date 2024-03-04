@@ -336,6 +336,7 @@ namespace Services.Services
 
                 examMark.Answer = resultToSave.AnswersSelected;
                 examMark.Mark = mark;
+                examMark.PaperCode = resultToSave.PaperCode;
                 examMark.ModifiedOn = DateTime.Now;
                 _unitOfWork.ExamMarkRepo.Update(examMark);
                 var result = await _unitOfWork.SaveChangesAsync();
