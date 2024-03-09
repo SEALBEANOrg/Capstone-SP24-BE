@@ -59,6 +59,7 @@ namespace Services.Mapper
             CreateMap<ImportQuestionSet, QuestionReturn>().ReverseMap();
             CreateMap<QuestionSet, ImportQuestionSet>().ReverseMap();
             CreateMap<QuestionSet, QuestionSetSave>().ReverseMap();
+            
 
             #endregion
 
@@ -84,13 +85,14 @@ namespace Services.Mapper
             CreateMap<Exam, ExamInfo>().ReverseMap();
             CreateMap<Exam, ExamCreate>().ReverseMap();
             CreateMap<Exam, ExamSourceViewModel>().ReverseMap();
-
+            
 
             #endregion
 
             #region ExamMark
             CreateMap<ExamMark, ExamMarkViewModels>().ReverseMap();
             CreateMap<ExamMark, ResultOfStudent>().ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Student.FullName)).ReverseMap();
+            
 
             #endregion
 
@@ -98,9 +100,15 @@ namespace Services.Mapper
             CreateMap<Paper,PaperOfExam>().ReverseMap();
             CreateMap<Paper, PaperViewModels>().ReverseMap();
             CreateMap<Paper, PaperContentViewModel>().ReverseMap();
+            CreateMap<Paper, PaperToDownload>().ReverseMap();
 
             #endregion
 
+
+            #region Transaction
+            CreateMap<Transaction, TransactionViewModels>().ReverseMap();
+
+            #endregion
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Services.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,7 @@ namespace Services.Interfaces
 {
     public interface ITransactionServices
     {
+        Task<IEnumerable<TransactionViewModels>> GetAll();
+        Task<IEnumerable<TransactionViewModels>> GetMyTransactions(Guid currentUser);
     }
 }

@@ -39,6 +39,7 @@ namespace Services.Services
                 };
                 int price = (setConfig.NB * 200 + setConfig.TH * 500 + setConfig.VDT * 1000 + setConfig.VDC * 3000) / 5;
                 
+                var creator = await _unitOfWork.UserRepo.FindByField(u => u.UserId == share.CreatedBy);
                 var currentUserInfo = await _unitOfWork.UserRepo.FindByField(u => u.UserId == currentUser);
                 if (currentUserInfo.Point < price)
                 {
@@ -61,17 +62,34 @@ namespace Services.Services
 
                 // tru tien
                 currentUserInfo.Point = currentUserInfo.Point - price;
+                currentUserInfo.ModifiedOn = DateTime.Now;
+
+                creator.Point = creator.Point + price;
+                creator.ModifiedOn = DateTime.Now;
+
                 _unitOfWork.UserRepo.Update(currentUserInfo);
+                _unitOfWork.UserRepo.Update(creator);
 
                 // them transaction
-                var  transaction = new Transaction
+                List<Transaction> transactions = new List<Transaction>()
                 {
-                    UserId = currentUser,
-                    Type = 3,
-                    PointValue = price,
-                    CreatedOn = DateTime.Now,
+                    new Transaction
+                    {
+                        UserId = currentUser,
+                        Type = 3,
+                        PointValue = -price,
+                        CreatedOn = DateTime.Now,
+                    },  
+                    new Transaction
+                    {
+                        UserId = share.CreatedBy,
+                        Type = 4,
+                        PointValue = price,
+                        CreatedOn = DateTime.Now,
+                    },
                 };
-                _unitOfWork.TransactionRepo.AddAsync(transaction);
+
+                _unitOfWork.TransactionRepo.AddRangeAsync(transactions);
 
                 var result = await _unitOfWork.SaveChangesAsync();
 
