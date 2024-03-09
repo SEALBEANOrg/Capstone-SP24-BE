@@ -19,6 +19,70 @@ namespace Services.Services
             _mapper = mapper;
         }
 
+        public async Task<bool> BuyQuestionSet(BuyQuestionSet buyQuestionSet, Guid currentUser)
+        {
+            try 
+            {
+                var share = await _unitOfWork.ShareRepo.FindByField(s => s.QuestionSetId == buyQuestionSet.ShareId);
+                if (share == null)
+                {
+                    return false;
+                }
+                var questions = await _unitOfWork.QuestionRepo.FindListByField(q => q.QuestionSetId == share.QuestionSetId);
+
+                var setConfig = new SetConfig
+                {
+                    NB = questions.Count(q => q.Difficulty == 0),
+                    TH = questions.Count(q => q.Difficulty == 1),
+                    VDT = questions.Count(q => q.Difficulty == 2),
+                    VDC = questions.Count(q => q.Difficulty == 3)
+                };
+                int price = (setConfig.NB * 200 + setConfig.TH * 500 + setConfig.VDT * 1000 + setConfig.VDC * 3000) / 5;
+                
+                var currentUserInfo = await _unitOfWork.UserRepo.FindByField(u => u.UserId == currentUser);
+                if (currentUserInfo.Point < price)
+                {
+                    throw new Exception("Không đủ điểm");
+                }
+
+                // them share
+                var shareNew = new Share
+                {
+                    QuestionSetId = share.QuestionSetId,
+                    UserId = currentUser,
+                    Type = 0,
+                    Status = 1,
+                    CreatedBy = currentUser,
+                    CreatedOn = DateTime.Now,
+                    ModifiedBy = currentUser,
+                    ModifiedOn = DateTime.Now
+                };
+                _unitOfWork.ShareRepo.AddAsync(share);
+
+                // tru tien
+                currentUserInfo.Point = currentUserInfo.Point - price;
+                _unitOfWork.UserRepo.Update(currentUserInfo);
+
+                // them transaction
+                var  transaction = new Transaction
+                {
+                    UserId = currentUser,
+                    Type = 3,
+                    PointValue = price,
+                    CreatedOn = DateTime.Now,
+                };
+                _unitOfWork.TransactionRepo.AddAsync(transaction);
+
+                var result = await _unitOfWork.SaveChangesAsync();
+
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Lỗi ở ShareServices - BuyQuestionSet: " + ex.Message);
+            }
+        }
+
         public async Task<IEnumerable<ShareViewModels>> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, int year)
         {
             try

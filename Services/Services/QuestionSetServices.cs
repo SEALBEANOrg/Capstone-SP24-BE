@@ -54,7 +54,8 @@ namespace Services.Services
                 }
 
                 var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == questionSet.QuestionSetId, includes => includes.QuestionInExams, include => include.QuestionInPapers);
-                if (questions.Any(question => question.QuestionInExams.Count > 0) || questions.Any(questions => questions.QuestionInPapers.Count > 0))
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.QuestionSetId == questionSetId && (share.Type == 0));
+                if (questions.Any(question => question.QuestionInExams.Count > 0) || questions.Any(questions => questions.QuestionInPapers.Count > 0) || shares.Count > 0)
                 {
                     throw new Exception("Nội dung này đã được sử dụng, không thể xóa");
                 }

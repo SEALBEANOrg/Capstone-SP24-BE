@@ -40,6 +40,10 @@ namespace WebAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Authorize(Roles = "1")]
+        [SwaggerResponse(200, "List of shared question set", typeof(IEnumerable<ShareViewModels>))]
+
         [HttpPut("response/{shareId}")]
         [Authorize(Roles = "2")]
         [SwaggerResponse(200, "Response request to share", typeof(string))]
@@ -157,6 +161,40 @@ namespace WebAPI.Controllers
                 });
             }
 
+        }
+
+        [HttpPost("buy")]
+        [Authorize(Roles = "1")]
+        [SwaggerResponse(200, "Is success", typeof(string))]
+        public async Task<IActionResult> BuyQuestionSet([FromBody] BuyQuestionSet buyQuestionSet)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var currentUser = await _userServices.GetCurrentUser();
+                var result = await _shareServices.BuyQuestionSet(buyQuestionSet, currentUser);
+
+                if (!result)
+                {
+                    return NotFound(new
+                    {
+                        Message = "Mua thất bại"
+                    });
+                }
+
+                return Ok("Mua thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
         }
     }
 }

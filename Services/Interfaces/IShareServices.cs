@@ -4,6 +4,7 @@ namespace Services.Interfaces
 {
     public interface IShareServices
     {
+        Task<bool> BuyQuestionSet(BuyQuestionSet buyQuestionSet, Guid currentUser);
         Task<IEnumerable<ShareViewModels>> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, int year);
         Task<ShareViewModel> GetRequestToShareById(Guid id);
         Task<List<string>> GetUserEmailOfSharedQuestionSet(Guid questionSetId, Guid currentUserId, int? type);
