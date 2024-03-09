@@ -38,10 +38,6 @@ namespace Services.Services
                 throw new Exception("Lớp không tồn tại.");
             }
 
-            if (studentClass.SchoolId != null && studentClass.SchoolId != user.SchoolId)
-            {
-                throw new Exception("Lớp này thuộc phận sự của trường, bạn không phải giáo viên trường này.");
-            }
             var students = await _unitOfWork.StudentRepo.FindListByField(students => students.ClassId == classId);
 
             if (students == null)

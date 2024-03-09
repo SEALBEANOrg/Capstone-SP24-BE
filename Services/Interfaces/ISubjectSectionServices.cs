@@ -6,7 +6,8 @@ namespace Services.Interfaces
     {
         Task<bool> AddSubjectSection(SubjectSectionCreate subjectSectionCreate, Guid currentUser);
         Task<bool> DeleteSubjectSection(Guid sectionId);
-        Task<IEnumerable<SubjectSectionViewModels>> GetAllBySubjectIdAndGrade(int? subjectId, int? grade);
+        Task<IEnumerable<SubjectSectionViewModels>> GetAllBySubjectId(Guid? subjectId);
+        Task<IEnumerable<SubjectSectionNav>> GetAllBySubjectIdForNav(Guid? subjectId, Guid currentUserId);
         Task<SubjectSectionViewModel> GetSectionBySectionId(Guid sectionId);
         Task<bool> UpdateSubjectSection(SubjectSectionUpdate subjectSectionUpdate, Guid currentUser);
     }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Bibliography;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -7,6 +8,7 @@ using Repositories.Models;
 using Services.Interfaces;
 using Services.ViewModels;
 using System.ComponentModel;
+using System.Linq;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -60,11 +62,29 @@ namespace Services.Services
             try
             {
                 Guid templatePaperId = Guid.Parse("2fc0e6e6-edd7-ee11-90e0-90610ca5f0a3");
+                // create paper set
+                var paperSet = new PaperSet();
+                _unitOfWork.PaperSetRepo.AddAsync(paperSet);
+                await _unitOfWork.SaveChangesAsync();
+
+                // add section config
+                foreach (var section in examCreate.Sections)
+                {
+                    var sectionConfig = new SectionPaperSetConfig
+                    {
+                        PaperSetId = paperSet.PaperSetId,
+                        Difficulty = section.Difficulty,
+                        NumberOfUse = section.CHCN + section.NHD,
+                        SectionId = section.SectionId,
+                        NumInPaper = section.Use
+                    };
+                }
+
                 //add exam
                 var exam = _mapper.Map<Exam>(examCreate);
+                exam.Status = 0;  // mới tạo exam nên chưa chốt kq
                 exam.CreatedOn = DateTime.Now;
                 exam.CreatedBy = currentUserId;
-                exam.Status = 0;  // mới tạo exam nên chưa chốt kq
                 exam.ModifiedOn = DateTime.Now;
                 exam.ModifiedBy = currentUserId;
                 _unitOfWork.ExamRepo.AddAsync(exam);
@@ -72,6 +92,159 @@ namespace Services.Services
                 if (result <= 0)
                 {
                     return false;
+                }
+
+                // create paper
+                List<SourceUse> src = new List<SourceUse>();
+                int paperCode = 1;
+                List<Guid> paperIds = new List<Guid>();
+
+                // lay src chung cho moi section
+                foreach (var sectionUse in examCreate.Sections)
+                {
+                    var questionIdsUse = new List<Guid>();
+                    var questions = (await _unitOfWork.QuestionRepo.FindListByField(question => question.SectionId == sectionUse.SectionId,
+                                                                                    includes => includes.QuestionSet));
+
+                    if (sectionUse.CHCN > 0 && sectionUse.NHD > 0)
+                    {
+                        // CHCN là được createdBy currentUserId
+                        questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
+                        // NHD là được public và được share (hiện chưa tính share)
+                        questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy != currentUserId && question.QuestionSet.Status == 2).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.NHD));
+                    }
+                    else if (sectionUse.NHD > 0)
+                    {
+                        // NHD là được public và được share (hiện chưa tính share)
+                        questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy != currentUserId && question.QuestionSet.Status == 2).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.NHD));
+                    }
+                    else if (sectionUse.CHCN > 0)
+                    {
+                        // CHCN là được createdBy currentUserId
+                        questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
+                    }
+
+                    src.Add(new SourceUse
+                    {
+                        QuestionIds = questionIdsUse,
+                        Difficulty = sectionUse.Difficulty,
+                        Use = sectionUse.Use
+                    });
+                }
+                
+                // moi de thi lay src rieng
+                var questionIdsInPaper = new List<Guid>();
+                for (int i = 0; i < examCreate.NumOfDiffPaper; i++)
+                {
+                    List<Guid> nb = new List<Guid>();
+                    List<Guid> th = new List<Guid>();
+                    List<Guid> vdt = new List<Guid>();
+                    List<Guid> vdc = new List<Guid>();
+
+                    //lay cac cau se su dung
+                    if (examCreate.ConfigArrange.ArrangeDifficulty)
+                    {
+                        foreach (var s in src)
+                        {
+                            if (s.Difficulty == 0)
+                            {
+                                nb.AddRange(s.QuestionIds.OrderBy(o => new Guid()).Take(s.Use));
+                            }
+                            else if (s.Difficulty == 1)
+                            {
+                                th.AddRange(s.QuestionIds.OrderBy(o => new Guid()).Take(s.Use));
+                            }
+                            else if (s.Difficulty == 2)
+                            {
+                                vdt.AddRange(s.QuestionIds.OrderBy(o => new Guid()).Take(s.Use));
+                            }
+                            else if (s.Difficulty == 3)
+                            {
+                                vdc.AddRange(s.QuestionIds.OrderBy(o => new Guid()).Take(s.Use));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var s in src)
+                        {
+                            questionIdsInPaper.AddRange(s.QuestionIds.OrderBy(o => new Guid()).Take(s.Use));
+                        }
+                    }
+
+                    var detailOfPaper = new DetailOfPaper
+                    {
+                        TimeOfTest = examCreate.Duration,
+                        PaperCode = paperCode,
+                        NameOfTest = examCreate.Name,
+                    };
+
+                    // shuffle moi ma de thi
+                    if (examCreate.ConfigArrange.ShuffleQuestions && !examCreate.ConfigArrange.ArrangeDifficulty)
+                    {
+                        for (int j = 0; j < examCreate.NumOfPaperCode; j++)
+                        {
+                            detailOfPaper.QuestionIds = questionIdsInPaper.OrderBy(o => new Guid()).ToList();
+                            Guid id = await _documentServices.CreateTestPaper(currentUserId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
+                            paperIds.Add(id);
+                            paperCode++;
+                        }
+                    }
+                    else if (examCreate.ConfigArrange.ShuffleQuestions && examCreate.ConfigArrange.ArrangeDifficulty)
+                    {
+                        for (int j = 0; j < examCreate.NumOfPaperCode; j++)
+                        {
+                            detailOfPaper.QuestionIds = new List<Guid>();
+                            detailOfPaper.QuestionIds.AddRange(nb.OrderBy(x => new Guid()));
+                            detailOfPaper.QuestionIds.AddRange(th.OrderBy(x => new Guid()));
+                            detailOfPaper.QuestionIds.AddRange(vdt.OrderBy(x => new Guid()));
+                            detailOfPaper.QuestionIds.AddRange(vdc.OrderBy(x => new Guid()));
+                            Guid id = await _documentServices.CreateTestPaper(currentUserId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
+                            paperIds.Add(id);
+                            paperCode++;
+                        }
+                    }
+                    else if (!examCreate.ConfigArrange.ShuffleQuestions && examCreate.ConfigArrange.ArrangeDifficulty)
+                    {
+                        detailOfPaper.QuestionIds = new List<Guid>();
+                        detailOfPaper.QuestionIds.AddRange(nb.OrderBy(o => new Guid()));
+                        detailOfPaper.QuestionIds.AddRange(th.OrderBy(o => new Guid()));
+                        detailOfPaper.QuestionIds.AddRange(vdt.OrderBy(o => new Guid()));
+                        detailOfPaper.QuestionIds.AddRange(vdc.OrderBy(o => new Guid()));
+                        for (int j = 0; j < examCreate.NumOfPaperCode; j++)
+                        {
+                            Guid id = await _documentServices.CreateTestPaper(currentUserId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
+                            paperIds.Add(id);
+                            paperCode++;
+                        }
+                    }
+                    else
+                    {
+                        detailOfPaper.QuestionIds = questionIdsInPaper.OrderBy(o => new Guid()).ToList();
+                        for (int j = 0; j < examCreate.NumOfPaperCode; j++)
+                        {
+                            Guid id = await _documentServices.CreateTestPaper(currentUserId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
+                            paperIds.Add(id);
+                            paperCode++;
+                        }
+                    }
+
+                    //add questioninexam
+                    foreach (var questionId in detailOfPaper.QuestionIds)
+                    {
+                        if ((await _unitOfWork.QuestionInExamRepo.FindByField(qie => qie.ExamId == exam.ExamId && qie.QuestionId == questionId)) == null)
+                        {
+                            var qie = new QuestionInExam
+                            {
+                                ExamId = exam.ExamId,
+                                QuestionId = questionId,
+                                CorrectCount = 0,
+                                UseCount = 0
+                            };
+
+                            _unitOfWork.QuestionInExamRepo.AddAsync(qie);
+                        }
+                    }
                 }
 
                 //add exam mark
@@ -83,75 +256,27 @@ namespace Services.Services
                     {
                         ExamId = exam.ExamId,
                         StudentId = student.StudentId,
+                        StudentNo = student.StudentNo,
                         CreatedOn = DateTime.Now,
-                        CreatedBy = currentUserId,
                         ModifiedOn = DateTime.Now,
-                        ModifiedBy = currentUserId
                     };
                     examMarks.Add(examMark);
                 }
-                _unitOfWork.ExamMarkRepo.AddRangeAsync(examMarks);                           
-                
-                //get questions from question set
-                List<List<Guid>> questionSets = new List<List<Guid>>();
-                int paperCode = 1;
-                List<Guid> paperIds = new List<Guid>();
-                for (int i = 0; i < examCreate.NumOfDiffPaper; i++)
-                {
-                    var questionIdsUse = new List<Guid>();
-                    foreach (var sectionUse in examCreate.Sections)
-                    {
-                        var questions = (await _unitOfWork.QuestionRepo.FindListByField(questionSet => questionSet.SectionId == sectionUse.SectionId)).OrderBy(order => Guid.NewGuid());
-
-                        if (sectionUse.CHCN > 0)
-                        {
-                            questionIdsUse.AddRange(questions.Where(question => question.CreatedBy == currentUserId).Select(question => question.QuestionId).Take(sectionUse.CHCN));
-                        }
-                        if (sectionUse.NHD > 0)
-                        {
-                            questionIdsUse.AddRange(questions.Where(question => question.CreatedBy != currentUserId && question.IsPublic).Select(question => question.QuestionId).Take(sectionUse.NHD));
-                        }
-                    }
-
-                    var detailOfPaper = new DetailOfPaper
-                    {
-                        QuestionIds = questionIdsUse,
-                        TimeOfTest = examCreate.Duration,
-                        PaperCode = paperCode,
-                        NameOfTest = examCreate.NameOfExam
-                    };
-
-                    for (int j = 0; j < examCreate.NumOfPaperCode; j++)
-                    {
-                        Guid id = await _documentServices.CreateTestPaper(currentUserId, detailOfPaper, templatePaperId, Guid.Parse("00000000-0000-0000-0000-000000000001"));
-                        paperIds.Add(id);
-                    }
-                }
+                _unitOfWork.ExamMarkRepo.AddRangeAsync(examMarks);
 
                 await _unitOfWork.SaveChangesAsync();
 
-                // add paper exam
-                var paperExams = new List<PaperExam>();
-                foreach (var paperId in paperIds)
-                {
-                    var paperExam = new PaperExam
-                    {
-                        ExamId = exam.ExamId,
-                        PaperId = paperId,
-                    };
-                    paperExams.Add(paperExam);
-                }
-
-                _unitOfWork.PaperExamRepo.AddRangeAsync(paperExams);
+                
                 result = await _unitOfWork.SaveChangesAsync();
 
-                //if any save fail return false
                 return result > 0 ? true : false;
             }
             catch (Exception e)
             {
                 throw new Exception("Lỗi ở ExamServices - AddExamIntoClass: " + e.Message);
             }
+
+            throw new NotImplementedException();
         }
 
         public async Task<bool> CheckPermissionAccessTest(string testCode, string email)
@@ -236,7 +361,7 @@ namespace Services.Services
                 }
 
                 var infoClassInExam = new InfoClassInExam { 
-                    DescriptionOfTest = exam.Description,
+                    DescriptionOfTest = exam.Name,
                     TestCode = exam.TestCode,
                 };
                 
@@ -303,50 +428,49 @@ namespace Services.Services
         {
             try
             {
-                var examMark = await _unitOfWork.ExamMarkRepo.FindByField(exam => exam.ExamMarkId == resultToSave.ExamMarkId);
+                var examMark = await _unitOfWork.ExamMarkRepo.FindByField(exam => exam.ExamMarkId == resultToSave.ExamMarkId, includes => includes.Exam);
                 if (examMark == null)
                 {
                     throw new Exception("Không tìm thấy kết quả thi");
                 }
 
                 //join exam and paper exam and paper and select paper content
-                var paperIds = (await _unitOfWork.PaperExamRepo.FindListByField(exam => exam.ExamId == examMark.ExamId)).Select(x => x.PaperId);
-                var paperExam = await _unitOfWork.PaperRepo.FindByField(paper => paperIds.Contains(paper.PaperId) && paper.PaperCode == resultToSave.PaperCode);
+                var paperExam = await _unitOfWork.PaperRepo.FindByField(paper => paper.PaperSetId == examMark.Exam.PaperSetId && paper.PaperCode == resultToSave.PaperCode);
                 if (paperExam == null)
                 {
                     throw new Exception("Không tìm thấy đề thi");
                 }
 
-                var paperContentViewModel = JsonSerializer.Deserialize<PaperContentViewModel>(paperExam.PaperContent);
-                var answerSheet = paperContentViewModel.Answer;
+                var answerSheet = paperExam.PaperAnswer;
 
                 List<string> correctAnswers = answerSheet.Split('|').ToList();
                 List<string> studentAnswers = resultToSave.AnswersSelected.Split('|').ToList();
-                
+
                 decimal? mark = 0;
                 int maxAnswer = correctAnswers.Count < studentAnswers.Count ? correctAnswers.Count : studentAnswers.Count;
                 for (int i = 0; i < maxAnswer; i++)
                 {
                     if (correctAnswers[i] == studentAnswers[i])
                     {
-                        mark += (decimal)10/(decimal)correctAnswers.Count;
+                        mark += (decimal)10 / (decimal)correctAnswers.Count;
                     }
                 }
-                
 
-                examMark.Answer = resultToSave.AnswersSelected;
+                examMark.AnswersSelected = resultToSave.AnswersSelected;
                 examMark.Mark = mark;
                 examMark.PaperCode = resultToSave.PaperCode;
                 examMark.ModifiedOn = DateTime.Now;
                 _unitOfWork.ExamMarkRepo.Update(examMark);
                 var result = await _unitOfWork.SaveChangesAsync();
-                
+
                 return result > 0 ? mark : -1;
             }
             catch (Exception e)
             {
                 throw new Exception("Lỗi ở SaveResultServices - SaveResult: " + e.Message);
             }
+
+            throw new NotImplementedException();
         }
 
         private string EliminateMultipleChoice(string answer)
@@ -360,6 +484,29 @@ namespace Services.Services
                 }
             }
             return string.Join("|", listAnswer);
+        }
+
+        public async Task<ExamSourceViewModel> GetAllExamSource(Guid examId)
+        {
+            try
+            {
+                var exam = await _unitOfWork.ExamRepo.FindByField(exam => exam.ExamId == examId);
+                if (exam == null)
+                {
+                    throw new Exception("Không tìm thấy đề thi");
+                }
+                var papers = _unitOfWork.PaperRepo.FindListByField(paper => paper.PaperSetId == exam.PaperSetId);
+                var result = new ExamSourceViewModel
+                {
+                    paperOfExams = _mapper.Map<List<PaperOfExam>>(papers),
+                    anserSheets = null //can fix
+                };
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở TestResultServices - GetAllExamSource: " + e.Message);
+            }
         }
     }
 }

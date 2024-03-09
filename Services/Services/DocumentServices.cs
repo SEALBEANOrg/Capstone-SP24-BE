@@ -146,10 +146,10 @@ namespace Services.Services
         }
 
 
-        public async Task<Guid> CreateTestPaper(Guid currentUserId, DetailOfPaper detailOfPaper, Guid templatePaperId, Guid questionSetId)
+        public async Task<Guid> CreateTestPaper(Guid currentUserId, DetailOfPaper detailOfPaper, Guid templatePaperId, bool shuffleAnswers)
         {
             try
-            {      
+            {
                 //header
                 // trường của creator
                 // name cuộc thi : description của exam
@@ -157,13 +157,12 @@ namespace Services.Services
                 // mã đề thi, save paper xong lấy mã đề thi update vào
 
                 var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
-                string schoolName = currentUser.SchoolId != null? (await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == currentUser.SchoolId)).Name : "";
                 List<string> startAnswer = new List<string> { "A", "B", "C", "D" };
                 string correctAnswer = "";
 
                 //read file
                 var binaryTemplate = (await _unitOfWork.DocumentRepo.FindByField(document => document.DocumentId == templatePaperId)).Data;
-                
+
                 using (var stream = new MemoryStream(binaryTemplate))
                 {
                     var memoryStream = new MemoryStream();
@@ -174,7 +173,6 @@ namespace Services.Services
                     document.LoadFromStream(memoryStream, FileFormat.Auto);
                     Document newDoc = document.Clone();
 
-                    newDoc.Replace("{School Name}", schoolName, false, true);
                     newDoc.Replace("{Name}", $"{detailOfPaper.NameOfTest}", false, true);
                     newDoc.Replace("{Subject} - Lớp {Grade}", "name", false, true);
                     newDoc.Replace("Thời gian làm bài: {Time}p", $"Thời gian làm bài: {detailOfPaper.TimeOfTest}p", false, true);
@@ -192,15 +190,14 @@ namespace Services.Services
                     }
 
                     int numOfQuestion = 1;
-                    var shuffledQuestionIds = detailOfPaper.QuestionIds.OrderBy(q => Guid.NewGuid()).ToList();
 
                     //CLEAR ALL PARAgraph of new doc
                     newDoc.Sections[0].Paragraphs.Clear();
 
-                    foreach (var questionId in shuffledQuestionIds)
+                    foreach (var questionId in detailOfPaper.QuestionIds)
                     {
                         var question = await _unitOfWork.QuestionRepo.FindByField(q => q.QuestionId == questionId);
-                        var shuffleStartAnswer = startAnswer.OrderBy(a => Guid.NewGuid()).ToList();
+                        var shuffleStartAnswer = shuffleAnswers ? startAnswer.OrderBy(a => Guid.NewGuid()).ToList() : startAnswer;
 
                         ProcessContent($"Câu {numOfQuestion}. ", question.QuestionPart, newDoc);
                         int no = 0;
@@ -241,7 +238,7 @@ namespace Services.Services
 
                             if (question.CorrectAnswer == a)
                             {
-                                correctAnswer += $"{numOfQuestion}:{prefix.TrimStart().First()}|";
+                                correctAnswer += $"{questionId}~{numOfQuestion}:{prefix.TrimStart().First()}|";
                             }
 
                             no++;
@@ -254,7 +251,7 @@ namespace Services.Services
                     }
 
                     correctAnswer = correctAnswer.TrimEnd('|');
-                    
+
                     //newDoc.Sections[0].Paragraphs.Add(endPara);
 
                     // Save new doc to stream
@@ -265,26 +262,36 @@ namespace Services.Services
                         .Where(ch => CharUnicodeInfo.GetUnicodeCategory(ch) != UnicodeCategory.NonSpacingMark))
                         .Normalize(NormalizationForm.FormC) + $"-{detailOfPaper.PaperCode}" + ".docx";
 
-                    //serialize papercontent to json
-                    var paperContent = new PaperContentViewModel
-                    {
-                        Answer = correctAnswer,
-                        Content = Convert.ToBase64String(stream.ToArray())
-                    };
-
-                    var paperContentJson = JsonSerializer.Serialize(paperContent);
                     var paper = new Repositories.Models.Paper
                     {
                         CreatedBy = currentUserId,
                         CreatedOn = DateTime.Now,
-                        PaperContent = paperContentJson,
-                        QuestionSetId = questionSetId,
+                        PaperContent = stream.ToArray(),
+                        PaperAnswer = correctAnswer,
+                        PaperCode = detailOfPaper.PaperCode,
                     };
-                    
+
                     _unitOfWork.PaperRepo.AddAsync(paper);
                     var result = await _unitOfWork.SaveChangesAsync();
 
-                    return result > 0 ? paper.PaperId : paper.PaperId; // sửa chỗ này 
+                    if (result <= 0)
+                    {
+                          return Guid.Empty;
+                    }
+
+                    foreach (var q in detailOfPaper.QuestionIds)
+                    {
+                        var questionInPaper = new Repositories.Models.QuestionInPaper
+                        {
+                            PaperId = paper.PaperId,
+                            QuestionId = q,
+                        };
+
+                        _unitOfWork.QuestionInPaperRepo.AddAsync(questionInPaper);
+                        result = await _unitOfWork.SaveChangesAsync();
+                    }
+
+                    return result > 0 ? paper.PaperId : Guid.Empty;
                 }
             }
             catch (Exception e)

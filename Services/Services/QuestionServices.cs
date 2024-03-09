@@ -94,45 +94,47 @@ namespace Services.Services
 
         public async Task<bool> DeleteQuestion(Guid questionId, Guid currentUserId, int grade)
         {
-            try
-            {
-                var question = await _unitOfWork.QuestionRepo.FindByField(question => question.QuestionId == questionId && question.Grade == grade);
-                if (question == null)
-                {
-                    throw new Exception("Câu hỏi không tồn tại.");
-                }
+            //try
+            //{
+            //    var question = await _unitOfWork.QuestionRepo.FindByField(question => question.QuestionId == questionId && question.Grade == grade);
+            //    if (question == null)
+            //    {
+            //        throw new Exception("Câu hỏi không tồn tại.");
+            //    }
 
-                var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
+            //    var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
 
-                var isShare = await CheckPermissionForQuestion(questionId, 3, currentUserId, currentUser.SchoolId);
+            //    var isShare = await CheckPermissionForQuestion(questionId, 3, currentUserId, currentUser.SchoolId);
 
-                if (question.CreatedBy != currentUserId &&  !isShare)
-                {
-                    throw new Exception("Bạn không có quyền xóa câu hỏi này.");
-                }
+            //    if (question.CreatedBy != currentUserId &&  !isShare)
+            //    {
+            //        throw new Exception("Bạn không có quyền xóa câu hỏi này.");
+            //    }
 
-                _unitOfWork.QuestionRepo.Remove(question);
+            //    _unitOfWork.QuestionRepo.Remove(question);
 
-                var result = await _unitOfWork.SaveChangesAsync();
+            //    var result = await _unitOfWork.SaveChangesAsync();
 
-                if (result <= 0)
-                {
-                    return false;
-                }
+            //    if (result <= 0)
+            //    {
+            //        return false;
+            //    }
 
-                return true;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Lỗi ở QuestionServices - DeleteQuestion: " + e.Message);
-            }
+            //    return true;
+            //}
+            //catch (Exception e)
+            //{
+            //    throw new Exception("Lỗi ở QuestionServices - DeleteQuestion: " + e.Message);
+            //}
+
+            throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<QuestionViewModels>> GetAllMyQuestionByGrade(int grade, Guid currentUserId)
         {
             try
             {
-                var questions = await _unitOfWork.QuestionRepo.FindListByField(questions => questions.Grade == grade && questions.CreatedBy == currentUserId);
+                var questions = await _unitOfWork.QuestionRepo.FindListByField(questions => questions.Grade == grade);
                 if (questions == null)
                 {
                     return null;
@@ -149,63 +151,67 @@ namespace Services.Services
 
         public async Task<IEnumerable<QuestionViewModels>> GetAllValidQuestionByGradeForMe(int? subject, int grade, Guid? sectionId, Guid currentUserId)
         {
-            try
-            {
-                var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
+            //try
+            //{
+            //    var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
 
-                var listQuestionId = await GetQuestionIdIsSharedToRead(currentUserId, currentUser.SchoolId);
+            //    var listQuestionId = await GetQuestionIdIsSharedToRead(currentUserId, currentUser.SchoolId);
 
-                var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.Grade == grade && 
-                                                                                            (listQuestionId.Contains(question.QuestionId) || question.CreatedBy == currentUserId));
+            //    var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.Grade == grade && 
+            //                                                                                (listQuestionId.Contains(question.QuestionId) || question.CreatedBy == currentUserId));
 
-                if (subject != null)
-                {
-                    questions = questions.Where(question => question.Subject == subject).ToList();
-                }
+            //    if (subject != null)
+            //    {
+            //        questions = questions.Where(question => question.Subject == subject).ToList();
+            //    }
 
-                if (sectionId != null)
-                {
-                    questions = questions.Where(question => question.SectionId == sectionId).ToList();
-                }
+            //    if (sectionId != null)
+            //    {
+            //        questions = questions.Where(question => question.SectionId == sectionId).ToList();
+            //    }
 
-                if (questions == null)
-                {
-                    return null;
-                }
+            //    if (questions == null)
+            //    {
+            //        return null;
+            //    }
 
-                var questionViewModels = _mapper.Map<IEnumerable<QuestionViewModels>>(questions);
-                return questionViewModels;
+            //    var questionViewModels = _mapper.Map<IEnumerable<QuestionViewModels>>(questions);
+            //    return questionViewModels;
 
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Lỗi ở QuestionServices - GetAllValidQuestionByGradeForMe: " + e.Message);
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    throw new Exception("Lỗi ở QuestionServices - GetAllValidQuestionByGradeForMe: " + e.Message);
+            //}
+
+            throw new NotImplementedException();
         }
 
         public async Task<QuestionViewModels> GetQuestionByQuestionIdAndGrade(Guid questionId, int grade, Guid currentUserId)
         {
-            try
-            {
-                var question = await _unitOfWork.QuestionRepo.FindByField(question => question.Grade == grade && question.QuestionId == questionId);
-                if (question == null)
-                {
-                    throw new Exception("Câu hỏi không tồn tại.");
-                }
+            //try
+            //{
+            //    var question = await _unitOfWork.QuestionRepo.FindByField(question => question.Grade == grade && question.QuestionId == questionId);
+            //    if (question == null)
+            //    {
+            //        throw new Exception("Câu hỏi không tồn tại.");
+            //    }
 
-                var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
-                if (!(await CheckPermissionForQuestion(questionId, 0, currentUserId, currentUser.SchoolId)))
-                {
-                    throw new Exception("Bạn không có quyền xem câu hỏi này.");
-                }
+            //    var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
+            //    if (!(await CheckPermissionForQuestion(questionId, 0, currentUserId, currentUser.SchoolId)))
+            //    {
+            //        throw new Exception("Bạn không có quyền xem câu hỏi này.");
+            //    }
 
-                var questionViewModels = _mapper.Map<QuestionViewModels>(question);
-                return questionViewModels;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Lỗi ở QuestionServices - GetQuestionById: " + e.Message);
-            }
+            //    var questionViewModels = _mapper.Map<QuestionViewModels>(question);
+            //    return questionViewModels;
+            //}
+            //catch (Exception e)
+            //{
+            //    throw new Exception("Lỗi ở QuestionServices - GetQuestionById: " + e.Message);
+            //}
+
+            throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<QuestionViewModels>> GetQuestionBySectionIdAndGrade(Guid sectionId, int grade)
@@ -229,27 +235,29 @@ namespace Services.Services
 
         public async Task<IEnumerable<QuestionViewModels>> GetQuestionBySubjectAndSectionAndGrade(int grade, int subject, Guid? sectionId)
         {
-            try
-            {
-                var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.Subject == subject && question.Grade == grade);
+            //try
+            //{
+            //    var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.Subject == subject && question.Grade == grade);
                 
-                if (sectionId != null)
-                {
-                    questions = questions.Where(question => question.SectionId == sectionId).ToList();
-                }
+            //    if (sectionId != null)
+            //    {
+            //        questions = questions.Where(question => question.SectionId == sectionId).ToList();
+            //    }
                 
-                if (questions == null)
-                {
-                    return null;
-                }
+            //    if (questions == null)
+            //    {
+            //        return null;
+            //    }
 
-                var questionViewModels = _mapper.Map<IEnumerable<QuestionViewModels>>(questions);
-                return questionViewModels;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Lỗi ở QuestionServices - GetQuestionBySubject: " + e.Message);
-            }
+            //    var questionViewModels = _mapper.Map<IEnumerable<QuestionViewModels>>(questions);
+            //    return questionViewModels;
+            //}
+            //catch (Exception e)
+            //{
+            //    throw new Exception("Lỗi ở QuestionServices - GetQuestionBySubject: " + e.Message);
+            //}
+
+            throw new NotImplementedException();
         }
 
         public async Task<bool> UpdateQuestion(QuestionUpdate questionUpdate, Guid currentUser, int grade)
@@ -317,67 +325,71 @@ namespace Services.Services
 
         private async Task<bool> CheckPermissionForQuestion(Guid questionId, int permissionType, Guid userId, Guid? schoolId)
         {
-            if (schoolId == null)
-            {
-                var share = await _unitOfWork.ShareRepo.FindByField(share => share.QuestionSetId == questionId && share.PermissionType >= permissionType &&
-                                                                                share.UserId == userId);
-                if (share == null)
-                {
-                    return false;
-                }
+            //if (schoolId == null)
+            //{
+            //    var share = await _unitOfWork.ShareRepo.FindByField(share => share.QuestionSetId == questionId && share.PermissionType >= permissionType &&
+            //                                                                    share.UserId == userId);
+            //    if (share == null)
+            //    {
+            //        return false;
+            //    }
 
-                return true;
+            //    return true;
 
-            }
-            else
-            {
-                var share = await _unitOfWork.ShareRepo.FindByField(share => share.QuestionSetId == questionId && share.PermissionType >= permissionType &&
-                                                                                share.SchoolId == schoolId);
-                if (share == null)
-                {
-                    return false;
-                }
+            //}
+            //else
+            //{
+            //    var share = await _unitOfWork.ShareRepo.FindByField(share => share.QuestionSetId == questionId && share.PermissionType >= permissionType &&
+            //                                                                    share.SchoolId == schoolId);
+            //    if (share == null)
+            //    {
+            //        return false;
+            //    }
 
-                return true;
-            }
+            //    return true;
+            //}
+
+            throw new NotImplementedException();
         }
     
         private async Task<IEnumerable<Guid>> GetQuestionIdIsSharedToRead(Guid userId, Guid? schoolId)
         {
-            if (schoolId == null)
-            {
-                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.UserId == userId);
-                if (shares == null)
-                {
-                    return null;
-                }
+            //if (schoolId == null)
+            //{
+            //    var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.UserId == userId);
+            //    if (shares == null)
+            //    {
+            //        return null;
+            //    }
 
-                var questionIds = shares.Select(share => share.QuestionSetId);
+            //    var questionIds = shares.Select(share => share.QuestionSetId);
                 
-                if (questionIds == null)
-                {
-                    return null;
-                }
+            //    if (questionIds == null)
+            //    {
+            //        return null;
+            //    }
 
-                return (IEnumerable<Guid>)questionIds;
-            }
-            else
-            {
-                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.SchoolId == schoolId);
-                if (shares == null)
-                {
-                    return null;
-                }
+            //    return (IEnumerable<Guid>)questionIds;
+            //}
+            //else
+            //{
+            //    var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.SchoolId == schoolId);
+            //    if (shares == null)
+            //    {
+            //        return null;
+            //    }
 
-                var questionIds = shares.Select(share => share.QuestionSetId);
+            //    var questionIds = shares.Select(share => share.QuestionSetId);
 
-                if (questionIds == null)
-                {
-                    return null;
-                }
+            //    if (questionIds == null)
+            //    {
+            //        return null;
+            //    }
 
-                return (IEnumerable<Guid>)questionIds;
-            }
+            //    return (IEnumerable<Guid>)questionIds;
+            //}
+
+            throw new NotImplementedException();
         }
     }
 }

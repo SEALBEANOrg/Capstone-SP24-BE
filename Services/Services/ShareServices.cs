@@ -18,54 +18,56 @@ namespace Services.Services
 
         public async Task<IEnumerable<ShareViewModels>> GetRequestToShare(int? status, int? grade, int? subject, int? type)
         {
-            try
-            {
-                var questionSetIds = new List<Guid>();
-                if (grade != null && subject == null)
-                {
-                    questionSetIds = (await _unitOfWork.QuestionSetRepo.GetAllAsync(questionSet => questionSet.Grade == grade)).Select(questionSet => questionSet.QuestionSetId).ToList();
-                }
-                else if (grade == null && subject != null)
-                {
-                    questionSetIds = (await _unitOfWork.QuestionSetRepo.GetAllAsync(questionSet => questionSet.Subject == subject)).Select(questionSet => questionSet.QuestionSetId).ToList();
-                }
-                else 
-                {
-                    questionSetIds = (await _unitOfWork.QuestionSetRepo.GetAllAsync(questionSet => questionSet.Grade == grade && questionSet.Subject == subject)).Select(questionSet => questionSet.QuestionSetId).ToList();
-                }
+            //try
+            //{
+            //    var questionSetIds = new List<Guid>();
+            //    if (grade != null && subject == null)
+            //    {
+            //        questionSetIds = (await _unitOfWork.QuestionSetRepo.GetAllAsync(questionSet => questionSet.Grade == grade)).Select(questionSet => questionSet.QuestionSetId).ToList();
+            //    }
+            //    else if (grade == null && subject != null)
+            //    {
+            //        questionSetIds = (await _unitOfWork.QuestionSetRepo.GetAllAsync(questionSet => questionSet.Subject == subject)).Select(questionSet => questionSet.QuestionSetId).ToList();
+            //    }
+            //    else 
+            //    {
+            //        questionSetIds = (await _unitOfWork.QuestionSetRepo.GetAllAsync(questionSet => questionSet.Grade == grade && questionSet.Subject == subject)).Select(questionSet => questionSet.QuestionSetId).ToList();
+            //    }
 
-                if ((grade != null || subject != null) && questionSetIds.Count() == 0)
-                {
-                    return null;
-                }
+            //    if ((grade != null || subject != null) && questionSetIds.Count() == 0)
+            //    {
+            //        return null;
+            //    }
 
-                var shares = await _unitOfWork.ShareRepo.GetAllAsync(x => x.QuestionSetId);
+            //    var shares = await _unitOfWork.ShareRepo.GetAllAsync(x => x.QuestionSetId);
             
-                if (status != null)
-                {
-                    shares = shares.Where(share => share.Status == status).ToList();
-                }
-                if (type != null)
-                {
-                    shares = shares.Where(share => share.Type == type).ToList();
-                }
-                if (questionSetIds.Count() > 0)
-                {
-                    shares = shares.Where(share => questionSetIds.Contains((Guid)share.QuestionSetId)).ToList();
-                }
+            //    if (status != null)
+            //    {
+            //        shares = shares.Where(share => share.Status == status).ToList();
+            //    }
+            //    if (type != null)
+            //    {
+            //        shares = shares.Where(share => share.Type == type).ToList();
+            //    }
+            //    if (questionSetIds.Count() > 0)
+            //    {
+            //        shares = shares.Where(share => questionSetIds.Contains((Guid)share.QuestionSetId)).ToList();
+            //    }
 
-                if (shares == null)
-                {
-                    return null;
-                }
+            //    if (shares == null)
+            //    {
+            //        return null;
+            //    }
 
-                var result = _mapper.Map<IEnumerable<ShareViewModels>>(shares);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Lỗi ở ShareServices - GetRequestToShare: " + ex.Message);
-            }
+            //    var result = _mapper.Map<IEnumerable<ShareViewModels>>(shares);
+            //    return result;
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw new Exception("Lỗi ở ShareServices - GetRequestToShare: " + ex.Message);
+            //}
+
+            throw new NotImplementedException();
         }
 
         public Task<ShareViewModel> GetRequestToShareById(Guid id)

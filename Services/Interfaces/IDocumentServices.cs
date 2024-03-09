@@ -10,7 +10,7 @@ namespace Services.Interfaces
     public interface IDocumentServices
     {
         Task<bool> AddDocument(DocumentCreate documentCreate, Guid currentUser);
-        Task<Guid> CreateTestPaper(Guid currentUserId, DetailOfPaper documentCreate, Guid templatePaperId, Guid questionSetId);
+        Task<Guid> CreateTestPaper(Guid currentUserId, DetailOfPaper documentCreate, Guid templatePaperId, bool shuffleAnswers);
         Task<bool> DeleteDocument(Guid documentId);
         Task<IEnumerable<DocumentViewModels>> GetAllDocument(int? type);
         Task<DocumentViewModel> GetDocumentById(Guid documentId);

@@ -32,7 +32,6 @@ namespace Services.ViewModels
 
     public class StudentClassUpdate
     {
-        public Guid? SchoolId { get; set; }
         public string Name { get; set; } = null!;
         public int? Grade { get; set; }
         public int Status { get; set; }

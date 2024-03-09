@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using ExagenSharedProject;
+using Microsoft.EntityFrameworkCore;
 using Repositories;
 using Repositories.Models;
 using Services.Interfaces;
 using Services.ViewModels;
+using System.Xml;
 
 namespace Services.Services
 {
@@ -21,17 +24,8 @@ namespace Services.Services
         {
             try
             {
-                if (subjectSectionCreate.Grade < 0 || subjectSectionCreate.Grade > 12)
-                {
-                    throw new Exception("Khối không tồn tại");
-                }
-
-                if (subjectSectionCreate.Subject < 0 || subjectSectionCreate.Subject > 12)  
-                {
-                    throw new Exception("Môn học không tồn tại");
-                }
-
                 var subjectSection = _mapper.Map<SubjectSection>(subjectSectionCreate);
+                subjectSection.SectionNo = (await _unitOfWork.SubjectSectionRepo.FindListByField(section => section.SubjectId == subjectSectionCreate.SubjectId)).Count + 1;
                 subjectSection.CreatedOn = DateTime.Now;
                 subjectSection.CreatedBy = currentUser;
                 subjectSection.ModifiedOn = DateTime.Now;
@@ -48,18 +42,59 @@ namespace Services.Services
             }
         }
 
-        public async Task<IEnumerable<SubjectSectionViewModels>> GetAllBySubjectIdAndGrade(int? subjectId, int? grade)
+        public async Task<IEnumerable<SubjectSectionNav>> GetAllBySubjectIdForNav(Guid? subjectId, Guid currentUserId)
         {
             try
             {
                 var subjectSections = await _unitOfWork.SubjectSectionRepo.GetAllAsync();
-                
-                subjectSections = subjectId != null ? subjectSections.Where(section => section.Subject == subjectId).ToList() : subjectSections;
-                subjectSections = grade != null ? subjectSections.Where(section => section.Grade == grade).ToList() : subjectSections;
 
                 if (subjectSections == null)
                 {
                     return null;
+                }
+
+                if (subjectId != null)
+                {
+                    subjectSections = subjectSections.Where(section => section.SubjectId == subjectId).ToList();
+                }
+
+                var subjectSectionsViewModels = _mapper.Map<IEnumerable<SubjectSectionNav>>(subjectSections);
+                foreach (var section in subjectSectionsViewModels)
+                {
+                    var cn = (await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => questionSet.CreatedBy == currentUserId, includes => includes.Questions));
+                    foreach (var item in cn)
+                    {
+                        section.CHCN += item.Questions.Count;
+                    }
+
+                    var nh = (await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => questionSet.CreatedBy != currentUserId && questionSet.Status == 2, includes => includes.Questions));
+                    foreach (var item in nh)
+                    {
+                        section.NHD += item.Questions.Count;
+                    }
+                }
+
+                return subjectSectionsViewModels;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở SubjectSectionServices - GetAllBySubjectIdAndGrade: " + e.Message);
+            }
+        }
+        public async Task<IEnumerable<SubjectSectionViewModels>> GetAllBySubjectId(Guid? subjectId)
+        {
+            try
+            {
+                var subjectSections = await _unitOfWork.SubjectSectionRepo.GetAllAsync();
+
+                if (subjectSections == null)
+                {
+                    return null;
+                }
+
+                if (subjectId != null)
+                {
+                    subjectSections = subjectSections.Where(section => section.SubjectId == subjectId).ToList();
                 }
 
                 var subjectSectionsViewModels = _mapper.Map<IEnumerable<SubjectSectionViewModels>>(subjectSections);
@@ -76,10 +111,10 @@ namespace Services.Services
         {
             try
             {
-                var section = await _unitOfWork.SubjectSectionRepo.FindByField(section => section.SectionId == sectionId);
+                var section = await _unitOfWork.SubjectSectionRepo.FindByField(section => section.SectionId == sectionId, includes => includes.Subject);
 
                 var sectionViewModel = _mapper.Map<SubjectSectionViewModel>(section);
-
+                sectionViewModel.Grade = section.Subject.Grade;
                 return sectionViewModel;
             }
             catch (Exception e)
@@ -94,27 +129,9 @@ namespace Services.Services
             {
                 var subjectSection = await _unitOfWork.SubjectSectionRepo.FindByField(section => section.SectionId == subjectSectionUpdate.SectionId);
 
-                if (subjectSectionUpdate.Grade < 0 || subjectSectionUpdate.Grade > 12)
-                {
-                    throw new Exception("Khối không tồn tại");
-                }
-
-                if (subjectSectionUpdate.Subject < 0 || subjectSectionUpdate.Subject > 12)
-                {
-                    throw new Exception("Môn học không tồn tại");
-                }
-
                 if (subjectSection == null)
                 {
                     throw new Exception("Chương không tồn tại để chỉnh sửa");
-                }
-
-                var sectionNameExist = await _unitOfWork.SubjectSectionRepo.FindByField(section => section.Name == subjectSectionUpdate.Name && section.SectionId != subjectSectionUpdate.SectionId &&
-                                                                                                    section.Subject == subjectSectionUpdate.Subject && section.Grade == subjectSectionUpdate.Grade);
-
-                if (sectionNameExist != null)
-                {
-                    throw new Exception("Tên chương đã tồn tại ở môn học ở lớp này");
                 }
 
                 subjectSection.ModifiedOn = DateTime.Now;
@@ -160,5 +177,6 @@ namespace Services.Services
                 throw new Exception("Lỗi ở SubjectSectionServices - DeleteSubjectSection: " + e.Message);
             }
         }
+
     }
 }

@@ -11,7 +11,7 @@ namespace Services.Mapper
             #region User
             CreateMap<UserInfo, User>().ReverseMap();
             CreateMap<UserSignUp, User>().ReverseMap();
-            CreateMap<User, UserViewModels>().ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.School != null ? src.School.Name : null)).ReverseMap();
+            CreateMap<User, UserViewModels>().ReverseMap();
             CreateMap<UserLogin, User>().ReverseMap();
             CreateMap<Request, User>().ReverseMap();
             //CreateMap<EmployeeWithNote, Employee>().ReverseMap();
@@ -27,15 +27,6 @@ namespace Services.Mapper
             CreateMap<StudentClass, ClassInfo>().ReverseMap();
             CreateMap<StudentClass, ClassModel>().ReverseMap();
 
-
-            #endregion
-
-            #region School
-            CreateMap<ComboSchool, School>().ReverseMap();
-            CreateMap<School, SchoolForCreateViewModel>().ReverseMap();
-            CreateMap<School, SchoolViewModels>().ForMember(dest => dest.AdminEmail, opt => opt.MapFrom(src => src.Users.FirstOrDefault(u => u.UserId == src.AdminId).Email));
-            CreateMap<School, SchoolForUpdateViewModel>().ReverseMap();
-            CreateMap<SchoolList, School>().ReverseMap();
 
             #endregion
 
@@ -76,6 +67,8 @@ namespace Services.Mapper
             CreateMap<SubjectSection, SubjectSectionCreate>().ReverseMap();
             CreateMap<SubjectSection, SubjectSectionUpdate>().ReverseMap();
             CreateMap<SubjectSection, SubjectSectionViewModel>().ReverseMap();
+            CreateMap<SubjectViewModels, Subject>().ReverseMap();
+            CreateMap<Subject, SubjectSectionNav>().ReverseMap();
 
             #endregion
 
@@ -89,7 +82,8 @@ namespace Services.Mapper
             #region Exam
             CreateMap<Exam, ExamViewModels>().ForMember(dest => dest.ClassName, opt => opt.MapFrom(src => src.Class != null ? src.Class.Name : null)).ReverseMap();
             CreateMap<Exam, ExamInfo>().ReverseMap();
-            CreateMap<Exam, ExamCreate>().ForMember(dest => dest.NameOfExam, otp => otp.MapFrom(src => src.Description)).ReverseMap();
+            CreateMap<Exam, ExamCreate>().ReverseMap();
+            CreateMap<Exam, ExamSourceViewModel>().ReverseMap();
 
 
             #endregion
@@ -97,6 +91,13 @@ namespace Services.Mapper
             #region ExamMark
             CreateMap<ExamMark, ExamMarkViewModels>().ReverseMap();
             CreateMap<ExamMark, ResultOfStudent>().ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Student.FullName)).ReverseMap();
+
+            #endregion
+
+            #region Paper
+            CreateMap<Paper,PaperOfExam>().ReverseMap();
+            CreateMap<Paper, PaperViewModels>().ReverseMap();
+            CreateMap<Paper, PaperContentViewModel>().ReverseMap();
 
             #endregion
 

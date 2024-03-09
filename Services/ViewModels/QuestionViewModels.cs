@@ -13,7 +13,6 @@ namespace Services.ViewModels
     {
         public Guid QuestionId { get; set; }
         public Guid? SectionId { get; set; }
-        public Guid? SchoolId { get; set; }
         public string QuestionContent { get; set; } = null!;
         public int Difficulty { get; set; }
         public int? Grade { get; set; }
@@ -31,6 +30,7 @@ namespace Services.ViewModels
         public string Answer4 { get; set; } = null!;
         public string CorrectAnswer { get; set; } = null!;
         public int Difficulty { get; set; }
+        public Guid SectionId { get; set; }
     }
 
     public class ParagraphProcessing
@@ -42,7 +42,6 @@ namespace Services.ViewModels
     public class QuestionCreate
     {
         public Guid? SectionId { get; set; }
-        public Guid? SchoolId { get; set; }
         public string Content { get; set; } = null!;
         public int Difficulty { get; set; }
         public string QuestionPart { get; set; } = null!;
@@ -59,7 +58,6 @@ namespace Services.ViewModels
     {
         public Guid QuestionId { get; set; }
         public Guid? SectionId { get; set; }
-        public Guid? SchoolId { get; set; }
         public string Content { get; set; } = null!;
         public int Difficulty { get; set; }
         public List<string> Answers { get; set; }
@@ -81,9 +79,8 @@ namespace Services.ViewModels
         public string Name { get; set; } = null!;
         public int NumOfQuestion { get; set; }
         public string? Description { get; set; }
-        public int? Grade { get; set; }
-        public int? Subject { get; set; }
-        public string SetConfig { get; set; } = null!;
+        public int Grade { get; set; }
+        public string SubjectName { get; set; }
         public int Status { get; set; }
         public int? Price { get; set; }
         public DateTime CreatedOn { get; set; }
@@ -95,8 +92,7 @@ namespace Services.ViewModels
         public Guid QuestionSetId { get; set; }
         public string Name { get; set; } = null!;
         public int Type { get; set; }
-        public int Subject { get; set; }
-        public int Grade { get; set; }
+        public int? Price { get; set; }
         public int Status { get; set; }
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }
@@ -135,7 +131,7 @@ namespace Services.ViewModels
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
         public int? Grade { get; set; }
-        public int? Subject { get; set; }
+        public Guid SubjectId { get; set; }
         public List<Question> Questions { get; set; }
     }
 
@@ -143,8 +139,8 @@ namespace Services.ViewModels
     {
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
-        public int? Grade { get; set; }
-        public int? Subject { get; set; }
+        public int Grade { get; set; }
+        public Guid SubjectId { get; set; }
         public List<QuestionSave> Questions { get; set; }
     }
 
@@ -157,7 +153,7 @@ namespace Services.ViewModels
         public string Answer4 { get; set; } = null!;
         public string CorrectAnswer { get; set; } = null!;
         public int Difficulty { get; set; }
-        public Guid? SectionId { get; set; }
+        public Guid SectionId { get; set; }
     }
 
 

@@ -9,8 +9,6 @@ namespace Services.ViewModels
     public class UserViewModels
     {
         public Guid UserId { get; set; }
-        public Guid? SchoolId { get; set; }
-        public string SchoolName { get; set; }
         public int UserType { get; set; }
         public string FullName { get; set; } = null!;
         public string? Phone { get; set; }

@@ -66,17 +66,17 @@ namespace ExagenSharedProject
             {
                 new KeyValuePair<int, string>(0, "Khác"),
                 new KeyValuePair<int, string>(1, "Toán"),
-                new KeyValuePair<int, string>(2, "Ngữ văn/ Tiếng Việt"),
+                new KeyValuePair<int, string>(2, "Ngữ Văn/ Tiếng Việt"),
                 new KeyValuePair<int, string>(3, "Tiếng Anh"),
-                new KeyValuePair<int, string>(4, "Vật lý"),
-                new KeyValuePair<int, string>(5, "Hóa học"),
-                new KeyValuePair<int, string>(6, "Sinh học"),
-                new KeyValuePair<int, string>(7, "Lịch sử"),
-                new KeyValuePair<int, string>(8, "Địa lý"),
-                new KeyValuePair<int, string>(9, "Giáo dục công dân"),
-                new KeyValuePair<int, string>(10, "Công nghệ"),
-                new KeyValuePair<int, string>(11, "Tin học"),
-                new KeyValuePair<int, string>(12, "Giáo dục quốc phòng")
+                new KeyValuePair<int, string>(4, "Vật Lý"),
+                new KeyValuePair<int, string>(5, "Hóa Học"),
+                new KeyValuePair<int, string>(6, "Sinh Học"),
+                new KeyValuePair<int, string>(7, "Lịch Sử"),
+                new KeyValuePair<int, string>(8, "Địa Lý"),
+                new KeyValuePair<int, string>(9, "Giáo Dục Công Dân"),
+                new KeyValuePair<int, string>(10, "Công Nghệ"),
+                new KeyValuePair<int, string>(11, "Tin Học"),
+                new KeyValuePair<int, string>(12, "Giáo Dục Quốc Phòng")
             });
 
         //Create Option Set for Type of Share

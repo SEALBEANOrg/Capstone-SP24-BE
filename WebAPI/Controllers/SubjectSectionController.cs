@@ -14,21 +14,23 @@ namespace WebAPI.Controllers
     {
         private readonly ISubjectSectionServices _subjectSectionServices;
         private readonly IUserServices _userServices;
+        private readonly ISubjectServices _subjectServices;
 
-        public SubjectSectionController(ISubjectSectionServices subjectSectionServices, IUserServices userServices)
+        public SubjectSectionController(ISubjectSectionServices subjectSectionServices, IUserServices userServices, ISubjectServices subjectServices)
         {
             _subjectSectionServices = subjectSectionServices;
             _userServices = userServices;
+            _subjectServices = subjectServices;
         }
 
         [HttpGet]
-        [Authorize(Roles = "0,1,2,3")]
+        [Authorize(Roles = "0,1,2")]
         [SwaggerResponse(200, "List sample section", typeof(IEnumerable<SubjectSectionViewModels>))]
-        public async Task<IActionResult> GetAllBySubjectIdAndGrade(int? grade, int? subjectId)
+        public async Task<IActionResult> GetAllBySubjectId(Guid? subjectId)
         {
             try
             {
-                var subjectSections = await _subjectSectionServices.GetAllBySubjectIdAndGrade(subjectId, grade);
+                var subjectSections = await _subjectSectionServices.GetAllBySubjectId(subjectId);
 
                 return Ok(subjectSections);
             }
@@ -145,6 +147,36 @@ namespace WebAPI.Controllers
                 }
 
                 return Ok("Đã xóa chương thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("nav")]
+        [Authorize(Roles = "0,1,2")]
+        [SwaggerResponse(200, "List sample section", typeof(IEnumerable<SubjectSectionNav>))]
+        public async Task<IActionResult> GetAllBySubjectEnumAndGrade(int grade, int subjectEnum)
+        {
+            try
+            {
+                var subject = (await _subjectServices.GetAll(subjectEnum, grade)).First();
+                if (subject == null)
+                {
+                    return BadRequest(new
+                    {
+                        Message = "Không tìm thấy môn học"
+                    });
+                }
+
+                var currentUser = await _userServices.GetCurrentUser();
+                var subjectSections = await _subjectSectionServices.GetAllBySubjectIdForNav(subject.SubjectId, currentUser);
+
+                return Ok(subjectSections);
             }
             catch (Exception ex)
             {

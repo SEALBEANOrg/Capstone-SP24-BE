@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace Repositories.Implements
 {
-    public class QuestionMappingRepo : GenericRepo<QuestionMapping>, IQuestionMappingRepo
+    public class QuestionInExamRepo : GenericRepo<QuestionInExam>, IQuestionInExamRepo
     {
-        public QuestionMappingRepo(ExagenContext context) : base(context)
-        {
+        public QuestionInExamRepo(ExagenContext context) : base(context)
+        { 
         }
     }
 }

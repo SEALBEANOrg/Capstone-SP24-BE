@@ -23,9 +23,9 @@ namespace WebAPI.Controllers
         [HttpGet]
         [Authorize(Roles = "0")] //chỉ 0
         [SwaggerResponse(200, "List of sample users", typeof(IEnumerable<UserViewModels>))]
-        public async Task<IActionResult> GetAll(string? search)
+        public async Task<IActionResult> GetAll(string? search, int? role, int? status)
         {
-            var users = await _userServices.GetAllUser(search);
+            var users = await _userServices.GetAllUser(search, role, status);
 
             return Ok(users);
         }
@@ -134,115 +134,8 @@ namespace WebAPI.Controllers
         [HttpPut("/api/v0/schools/out-school")]
         [Authorize(Roles = "1,2")]
         [SwaggerResponse(200, "Is success", typeof(string))]
-        public async Task<IActionResult> OutSchool()
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                var result = await _userServices.OutSchool();
-
-                if (!result)
-                {
-                    return BadRequest(new
-                    {
-                        Message = "Out School thất bại"
-                    });
-                }
-
-                return Ok("Đã rời khỏi trường");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    Message = ex.Message
-                });
-            }
-        }
-
-        [HttpPut("/api/v0/requests/join-school")]
-        [Authorize(Roles = "1")]
-        [SwaggerResponse(200, "Is success", typeof(bool))]
-        public async Task<IActionResult> RequestJoinSchool([FromBody] Guid schoolId)
-        {
-            try
-            {
-
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                var result = await _userServices.RequestJoinSchool(schoolId);
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    Message = ex.Message
-                });
-            }
-        }
-
-        [HttpPut("/api/v0/requests/response/{userId}")]
-        [Authorize(Roles = "2")]
-        [SwaggerResponse(200, "Is success", typeof(bool))]
-        public async Task<IActionResult> ResponseRequest(Guid userId, [FromBody] bool isAccept)
-        {
-            try
-            {
-
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                var result = await _userServices.ResponseRequest(userId, isAccept);
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    Message = ex.Message
-                });
-            }
-        }
-
-        [HttpGet("/api/v0/requests")]
-        [Authorize(Roles = "2")]
-        [SwaggerResponse(200, "List of request", typeof(IEnumerable<Request>))]
-        public async Task<IActionResult> GetListRequestToMySchool()
-        {
-            try
-            {
-
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                var result = await _userServices.GetListRequestToMySchool();
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    Message = ex.Message
-                });
-            }
-        }
-
-        [HttpPut("{id}")]
+        
+        [HttpPut("change-status/{id}")]
         [Authorize(Roles = "0")]
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> ChangeStatusOfUser(Guid id, [FromBody] ActiveUser isActive)

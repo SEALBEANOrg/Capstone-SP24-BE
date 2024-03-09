@@ -41,7 +41,7 @@ namespace Services.ViewModels
     {
         public List<Guid> QuestionIds { get; set; }
         public decimal TimeOfTest  { get; set; } 
-        public int? PaperCode { get; set; }
+        public int PaperCode { get; set; }
         public string NameOfTest { get; set; }
     }
 }

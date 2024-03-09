@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("own-questionset")]
         [SwaggerResponse(200, "List of question set", typeof(IEnumerable<OwnQuestionSet>))]
-        [Authorize(Roles = "1,2,3")]
+        [Authorize(Roles = "1,2")]
         public async Task<IActionResult> GetOwnQuestionSet(int? grade, int? subject, [Required]int year)
         {
             try
@@ -43,9 +43,29 @@ namespace WebAPI.Controllers
             }
         }
 
+        [HttpGet("bank")]
+        [SwaggerResponse(200, "List of question set", typeof(IEnumerable<QuestionSetViewModels>))]
+        [Authorize(Roles = "2")]
+        public async Task<IActionResult> GetQuestionSetByBank(int? grade, int? subject, [Required]int year, int type)
+        {
+            try
+            {
+                var result = await _questionSetServices.GetQuestionSetBank(grade, subject, year, type);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
         [HttpDelete("{questionSetId}")]
         [SwaggerResponse(200, "Is success", typeof(string))]
-        [Authorize(Roles = "1,2,3")]
+        [Authorize(Roles = "1,2")]
         public async Task<IActionResult> DeleteQuestionSet(Guid questionSetId)
         {
             try
@@ -74,7 +94,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("{questionSetId}")]
         [SwaggerResponse(200, "Question set sample", typeof(QuestionSetViewModel))]
-        [Authorize(Roles = "1,2,3")]
+        [Authorize(Roles = "1,2")]
         public async Task<IActionResult> GetQuestionByQuestionSetId(Guid questionSetId)
         {
             try
@@ -94,8 +114,7 @@ namespace WebAPI.Controllers
 
         [HttpPost("import-questionset")]
         [SwaggerResponse(200, "Detail question set from import", typeof(QuestionReturn))]
-        //[Authorize(Roles = "1,2,3")]
-        [AllowAnonymous]
+        [Authorize(Roles = "1,2")]
         public async Task<IActionResult> GetQuestionSetFromFile([FromForm] ImportQuestionSet importQuestionSet)
         {
             try
@@ -116,8 +135,7 @@ namespace WebAPI.Controllers
 
         [HttpPost("save")]
         [SwaggerResponse(200, "Is success", typeof(string))]
-        //[Authorize(Roles = "1,2,3")]
-        [AllowAnonymous]
+        [Authorize(Roles = "1,2")]
         public async Task<IActionResult> SaveQuestionSet([FromBody] QuestionSetSave questionSetSave)
         {
             try

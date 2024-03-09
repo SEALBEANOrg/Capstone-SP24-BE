@@ -6,7 +6,6 @@ namespace Repositories.Models
     public partial class User
     {
         public Guid UserId { get; set; }
-        public Guid? SchoolId { get; set; }
         public int UserType { get; set; }
         public string FullName { get; set; } = null!;
         public string? Phone { get; set; }
@@ -17,7 +16,5 @@ namespace Repositories.Models
         public Guid CreatedBy { get; set; }
         public DateTime ModifiedOn { get; set; }
         public Guid ModifiedBy { get; set; }
-
-        public virtual School? School { get; set; }
     }
 }

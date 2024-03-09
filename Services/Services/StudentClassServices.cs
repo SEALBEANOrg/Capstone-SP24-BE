@@ -36,7 +36,6 @@ namespace Services.Services
 
             var studentClass = _mapper.Map<StudentClass>(studentClassCreate);
             studentClass.Status = 1;
-            studentClass.SchoolId = user.SchoolId;
             studentClass.CreatedBy = currentUserId;
             studentClass.ModifiedBy = currentUserId;
             studentClass.CreatedOn = DateTime.Now;
@@ -46,21 +45,7 @@ namespace Services.Services
             {
                 studentClass = await _unitOfWork.StudentClassRepo.AddAsync(studentClass);
 
-                if (studentClass.SchoolId != null)
-                {
-                    var school = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == studentClass.SchoolId);
-
-                    if (school == null)
-                    {
-                        throw new Exception("Trường học không tồn tại");
-                    }
-
-
-                    school.ModifiedOn = DateTime.Now;
-                    school.ModifiedBy = currentUserId;
-
-                    _unitOfWork.SchoolRepo.Update(school);
-                }
+                
 
                 var result = await _unitOfWork.SaveChangesAsync();
                 return result > 0;
@@ -94,15 +79,6 @@ namespace Services.Services
             try
             {
                 _unitOfWork.StudentClassRepo.Remove(studentClass);
-
-                if (studentClass.SchoolId != null)
-                {
-                    var school = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == studentClass.SchoolId);
-                    school.ModifiedOn = DateTime.Now;
-                    school.ModifiedBy = currentUser;
-
-                    _unitOfWork.SchoolRepo.Update(school);
-                }
 
                 var result = await _unitOfWork.SaveChangesAsync();
                 if (result <= 0)

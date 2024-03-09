@@ -6,6 +6,7 @@ using Repositories;
 using Repositories.Models;
 using Services.Interfaces;
 using Services.ViewModels;
+using Spire.Doc.Fields;
 using System.Collections.Generic;
 
 namespace Services.Services
@@ -51,9 +52,9 @@ namespace Services.Services
             return userInfo;
         }
 
-        public async Task<IEnumerable<UserViewModels>> GetAllUser(string search)
+        public async Task<IEnumerable<UserViewModels>> GetAllUser(string? search, int? role, int? status)
         {
-            var users = (await _unitOfWork.UserRepo.GetAllAsync(x => x.School));
+            var users = await _unitOfWork.UserRepo.GetAllAsync();
 
             if (users == null)
             {
@@ -62,115 +63,26 @@ namespace Services.Services
 
             if (!string.IsNullOrEmpty(search))
             {
-                List<int> resultKeys = EnumStatus.PositionID
-                                        .Where(entry => entry.Value.Contains(search))
-                                        .Select(entry => entry.Key)
-                                        .ToList();
+                users = users.Where(x => x.Email.ToLower().Contains(search.ToLower())).ToList();
+            }
 
-                users = users.Where(x => x.FullName.ToLower().Contains(search.ToLower()) || 
-                                        (resultKeys.Count > 0 && resultKeys.Contains(x.UserType)) ||
-                                        (x.School != null && x.School.Name.ToLower().Contains(search.ToLower()))).ToList();
+            if (role != null)
+            {
+                users = users.Where(x => x.UserType == role).ToList();
+            }
+            
+            if (status != null)
+            {
+                users = users.Where(x => x.Status == status).ToList();
             }
 
             var userViewModels = _mapper.Map<IEnumerable<UserViewModels>>(users);
             return userViewModels;
         }
 
-        public async Task<bool> RequestJoinSchool(Guid schoolId)
-        {
-            //var currentUser = await _unitOfWork.UserRepo.FindByField(x => x.UserId == userId);
-            var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == _claimsService.GetCurrentUser);
-
-            if (currentUser.Status == 0)
-            {
-                throw new Exception("Trạng thái tài khoản không khả dụng");
-            }
-            else if (currentUser.Status == 2)
-            {
-                throw new Exception("Tài khoản đã có yêu cầu thêm vào trường cần chờ xác thực");
-            }
-            else if (currentUser.Status == 3)
-            {
-                throw new Exception("Tài khoản đã có trong trường học");
-            }
-            else if (currentUser.Status == 1)
-            {
-                var school = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == schoolId);
-                
-                if (school == null)
-                {
-                    throw new Exception("Trường học không tồn tại");
-                }
-
-                currentUser.SchoolId = schoolId;
-                currentUser.ModifiedOn = DateTime.Now;
-                currentUser.ModifiedBy = _claimsService.GetCurrentUser;
-                currentUser.Status = 2;
-
-                try
-                {
-                    _unitOfWork.UserRepo.Update(currentUser);
-                    var result = await _unitOfWork.SaveChangesAsync();
-                    if (result <= 0)
-                    {
-                        return false;
-                    }
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    throw new Exception("Lỗi ở UserServices - RequestJoinSchool: " + e.Message);
-                }
-            }
-            return false;
-        }
-
         public async Task<Guid> GetCurrentUser()
         {
             return _claimsService.GetCurrentUser;
-        }
-
-        public async Task<bool> ResponseRequest(Guid userId, bool isAccept)
-        {
-            var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == userId);
-            var currentUser = await GetCurrentUser();
-
-            if (user == null)
-            {
-                throw new Exception("Tài khoản không tồn tại");
-            }
-
-            if (isAccept)
-            {
-                user.Status = 3;
-            }
-            else
-            {
-                user.Status = 1;
-                user.SchoolId = null;
-            }
-
-            user.ModifiedOn = DateTime.Now;
-            user.ModifiedBy = currentUser;
-
-            _unitOfWork.UserRepo.Update(user);
-            
-            return (await _unitOfWork.SaveChangesAsync()) > 0;
-        }
-
-        public async Task<IEnumerable<Request>> GetListRequestToMySchool()
-        {
-            var currentUserId = _claimsService.GetCurrentUser;
-            var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
-            var requests = await _unitOfWork.UserRepo.FindListByField(user => user.SchoolId == currentUser.SchoolId && user.Status == 2);
-
-            if (requests == null)
-            {
-                return null;
-            }
-
-            var requestViewModels = _mapper.Map<IEnumerable<Request>>(requests);
-            return requestViewModels;
         }
 
         public async Task<UserInfo> FindUserById(Guid guid)
@@ -311,42 +223,6 @@ namespace Services.Services
             }
         }
 
-        public async Task<bool> OutSchool()
-        {
-            try 
-            {                 
-                var currentUserId = _claimsService.GetCurrentUser;
-                var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
-                var school = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == user.SchoolId);
-                
-                if (school == null)
-                {
-                    throw new Exception("Bạn không trong trường nào");
-                }
-
-                if (user.UserType == 2)
-                {
-                    var users = await _unitOfWork.UserRepo.FindListByField(user => user.SchoolId == user.SchoolId);
-                    if (users.Count() > 1 && school.Status == 1)
-                    {
-                        throw new Exception("Trường học đang hoạt động và bạn là admin, không thể tự rời trường");
-                    }
-                }
-                user.SchoolId = null;
-                user.ModifiedOn = DateTime.Now;
-                user.ModifiedBy = currentUserId;
-                user.Status = 1;
-                _unitOfWork.UserRepo.Update(user);
-                var result = await _unitOfWork.SaveChangesAsync();
-                
-                return result > 0;
-            }
-            catch(Exception e)
-            {
-                throw new Exception("Lỗi ở UserServices - OutSchool: " + e.Message);
-            }
-        }
-
         public async Task<bool> UpdateRoleUser(Guid id, RoleUpdate roleUpdate)
         {
             try 
@@ -355,14 +231,6 @@ namespace Services.Services
                 
                 if (user == null)
                 {
-                    return false;
-                }
-
-                if ((roleUpdate.UserType == 3 && user.SchoolId != null) ||
-                    (roleUpdate.UserType == 1 && user.UserType == 2) ||
-                    (roleUpdate.UserType != 3 && roleUpdate.UserType != 1))
-                { 
-                    // k dc doi school admin thanh teacher, tru khi dung chuc nang doi school admin
                     return false;
                 }
 
@@ -389,16 +257,9 @@ namespace Services.Services
                 {
                     return false;
                 }
-
-                if (user.SchoolId == null)
-                {
-                    user.Status = isActive ? 1 : 0;
-                }
-                else
-                {
-                    user.Status = isActive ? 3 : 0;
-                }
-
+                
+                user.Status = isActive ? 1 : 0;
+                
                 user.ModifiedOn = DateTime.Now;
                 user.ModifiedBy = _claimsService.GetCurrentUser;
 

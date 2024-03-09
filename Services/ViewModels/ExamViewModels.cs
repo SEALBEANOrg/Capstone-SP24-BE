@@ -80,14 +80,23 @@ namespace Services.ViewModels
 
     public class ExamCreate
     {
-        public string? NameOfExam { get; set; }
+        public string Name { get; set; }
         public Guid ClassId { get; set; }
         public int Grade { get; set; }
         public int Duration { get; set; }
         public int Subject { get; set; }
+        public ConfigArrange ConfigArrange { get; set; }
         public List<SectionUse> Sections { get; set; }
         public int NumOfDiffPaper { get; set; }  // 2 đề
         public int NumOfPaperCode { get; set; } // mỗi đề có 5 mã thì có 10 đề
+    }
+
+    public class ConfigArrange
+    {
+        public bool ArrangeDifficulty { get; set; }
+        public bool ShuffleAnswers { get; set; }
+        public bool ShuffleQuestions { get; set; }
+
     }
 
     public class SectionUse
@@ -96,6 +105,35 @@ namespace Services.ViewModels
         public int Difficulty { get; set; }
         public int CHCN { get; set; }
         public int NHD { get; set; }
+        public int Use { get; set; }
+    }
+
+    public class SourceUse
+    {
+        public List<Guid> QuestionIds { get; set; }
+        public int Difficulty { get; set; }
+        public int Use { get; set; }
+    }
+
+    public class ExamSourceViewModel
+    {
+        public List<PaperOfExam>? paperOfExams { get; set; }
+        public List<AnserSheet>? anserSheets { get; set; }
+    }
+
+    public class AnserSheet
+    {
+        public Guid DocumentID { get; set; }
+        public byte[] Data { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class PaperOfExam
+    {
+        public Guid PaperID { get; set; }
+        public int PaperCode { get; set; }
+        public byte[] PaperContent { get; set; }
+
     }
 }
 

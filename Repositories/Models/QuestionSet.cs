@@ -7,24 +7,22 @@ namespace Repositories.Models
     {
         public QuestionSet()
         {
-            Papers = new HashSet<Paper>();
+            Questions = new HashSet<Question>();
         }
 
         public Guid QuestionSetId { get; set; }
-        public Guid? SchoolId { get; set; }
+        public Guid? SubjectId { get; set; }
         public string Name { get; set; } = null!;
         public int NumOfQuestion { get; set; }
         public string? Description { get; set; }
-        public int? Grade { get; set; }
-        public int? Subject { get; set; }
-        public string SetConfig { get; set; } = null!;
+        public int Grade { get; set; }
         public int Status { get; set; }
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }
         public DateTime ModifiedOn { get; set; }
         public Guid ModifiedBy { get; set; }
 
-        public virtual School? School { get; set; }
-        public virtual ICollection<Paper> Papers { get; set; }
+        public virtual Subject? Subject { get; set; }
+        public virtual ICollection<Question> Questions { get; set; }
     }
 }

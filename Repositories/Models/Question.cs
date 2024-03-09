@@ -5,9 +5,15 @@ namespace Repositories.Models
 {
     public partial class Question
     {
+        public Question()
+        {
+            QuestionInExams = new HashSet<QuestionInExam>();
+            QuestionInPapers = new HashSet<QuestionInPaper>();
+        }
+
         public Guid QuestionId { get; set; }
         public Guid? SectionId { get; set; }
-        public Guid? SchoolId { get; set; }
+        public Guid? QuestionSetId { get; set; }
         public string QuestionPart { get; set; } = null!;
         public string Answer1 { get; set; } = null!;
         public string Answer2 { get; set; } = null!;
@@ -15,16 +21,13 @@ namespace Repositories.Models
         public string Answer4 { get; set; } = null!;
         public string CorrectAnswer { get; set; } = null!;
         public int Difficulty { get; set; }
-        public int? Grade { get; set; }
-        public int? Subject { get; set; }
-        public bool IsPublic { get; set; }
-        public int Status { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public Guid CreatedBy { get; set; }
-        public DateTime ModifiedOn { get; set; }
-        public Guid ModifiedBy { get; set; }
+        public Guid? SubjectId { get; set; }
+        public int Grade { get; set; }
 
-        public virtual School? School { get; set; }
+        public virtual QuestionSet? QuestionSet { get; set; }
         public virtual SubjectSection? Section { get; set; }
+        public virtual ICollection<QuestionInExam> QuestionInExams { get; set; }
+
+        public virtual ICollection<QuestionInPaper> QuestionInPapers { get; set; }
     }
 }

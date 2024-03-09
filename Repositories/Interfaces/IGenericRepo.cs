@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Query;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -12,7 +13,11 @@ namespace Repositories.Interfaces
         Task<TEntity> FindByField(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes);
         Task<List<TEntity>> FindListByField(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes);
         Task<List<TEntity>> GetAllAsync(params Expression<Func<TEntity, object>>[] includes);
-
+        Task<IEnumerable<TResult>?> FindByConditionAsync<TResult>(Expression<Func<TEntity, TResult>> selector,
+                                                     Expression<Func<TEntity, bool>> filter = null,
+                                                     Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+                                                     Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
+                                                     bool disableTracking = true);
         Task<TEntity> AddAsync(TEntity entity);
         Task AddRangeAsync(List<TEntity> entities);
 

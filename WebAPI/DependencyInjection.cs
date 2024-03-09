@@ -22,16 +22,19 @@ namespace WebAPI
             services.AddScoped<IDocumentRepo, DocumentRepo>();
             services.AddScoped<IPaperRepo, PaperRepo>();
             services.AddScoped<IQuestionRepo, QuestionRepo>();
-            services.AddScoped<IPaperExamRepo, PaperExamRepo>();
-            services.AddScoped<ISchoolRepo, SchoolRepo>();
+            services.AddScoped<IQuestionInPaperRepo, QuestionInPaperRepo>();
             services.AddScoped<IShareRepo, ShareRepo>();
             services.AddScoped<IStudentClassRepo, StudentClassRepo>();
             services.AddScoped<IStudentRepo, StudentRepo>();
             services.AddScoped<ISubjectSectionRepo, SubjectSectionRepo>();
             services.AddScoped<IExamRepo, ExamRepo>();
             services.AddScoped<IExamMarkRepo, ExamMarkRepo>();
-            services.AddScoped<IQuestionMappingRepo, QuestionMappingRepo>();
+            services.AddScoped<IPaperSetRepo, PaperSetRepo>();
+            services.AddScoped<IQuestionInExamRepo, QuestionInExamRepo>();
             services.AddScoped<IQuestionSetRepo, QuestionSetRepo>();
+            services.AddScoped<ISubjectRepo, SubjectRepo>();
+            services.AddScoped<ITransactionRepo, TransactionRepo>();
+            services.AddScoped<ISectionPaperSetConfigRepo, SectionPaperSetConfigRepo>();
             services.AddScoped<IUserRepo, UserRepo>();
             #endregion
 
@@ -41,7 +44,6 @@ namespace WebAPI
             services.AddScoped<IPaperServices, PaperServices>();
             services.AddScoped<IQuestionServices, QuestionServices>();
             services.AddScoped<IPaperExamServices, PaperExamServices>();
-            services.AddScoped<ISchoolServices, SchoolServices>();
             services.AddScoped<IShareServices, ShareServices>();
             services.AddScoped<IStudentClassServices, StudentClassServices>();
             services.AddScoped<IStudentServices, StudentServices>();
@@ -49,6 +51,7 @@ namespace WebAPI
             services.AddScoped<IExamServices, ExamServices>();
             services.AddScoped<IExamMarkServices, ExamMarkServices>();
             services.AddScoped<IQuestionSetServices, QuestionSetServices>();
+            services.AddScoped<ISubjectServices, SubjectServices>();
             services.AddScoped<IUserServices, UserServices>();
             #endregion
             
