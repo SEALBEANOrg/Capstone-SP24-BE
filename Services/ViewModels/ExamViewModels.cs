@@ -85,6 +85,7 @@ namespace Services.ViewModels
         public int Grade { get; set; }
         public int Duration { get; set; }
         public int Subject { get; set; }
+        public Guid? QuestionSetIdUse { get; set; }
         public ConfigArrange ConfigArrange { get; set; }
         public List<SectionUse> Sections { get; set; }
         public int NumOfDiffPaper { get; set; }  // 2 đề

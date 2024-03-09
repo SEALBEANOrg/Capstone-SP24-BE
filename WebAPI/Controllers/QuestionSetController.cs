@@ -163,6 +163,8 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("{questionSetId}/change-status")]
+        [SwaggerResponse(200, "Is success", typeof(string))]
+        [Authorize(Roles = "1,2")]
         public async Task<IActionResult> ChangeStatusQuestionSet(Guid questionSetId, [FromBody] StatusQuestionSet statusQuestionSet)
         {
             try
@@ -189,6 +191,24 @@ namespace WebAPI.Controllers
             }
         }
 
-        
+        [HttpGet("matrix-of-questionset/{questionSetId}")]
+        [SwaggerResponse(200, "List of matrix", typeof(IEnumerable<SectionUse>))]
+        [Authorize(Roles = "1,2")]
+        public async Task<IActionResult> GetMatrixOfQuestionSet(Guid questionSetId)
+        {
+            try
+            {
+                var result = await _questionSetServices.GetMatrixOfQuestionSet(questionSetId);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
     }
 }

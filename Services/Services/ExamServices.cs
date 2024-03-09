@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DocumentFormat.OpenXml.Bibliography;
+using DucumentProcessing;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -100,38 +101,98 @@ namespace Services.Services
                 List<Guid> paperIds = new List<Guid>();
 
                 // lay src chung cho moi section
-                foreach (var sectionUse in examCreate.Sections)
+                if (examCreate.QuestionSetIdUse == null)
                 {
-                    var questionIdsUse = new List<Guid>();
-                    var questions = (await _unitOfWork.QuestionRepo.FindListByField(question => question.SectionId == sectionUse.SectionId,
-                                                                                    includes => includes.QuestionSet));
+                    foreach (var sectionUse in examCreate.Sections)
+                    {
+                        var questionIdsUse = new List<Guid>();
+                        var sharedQuestionSetId = (await _unitOfWork.ShareRepo.FindListByField(share => share.UserId == currentUserId, includes => includes.QuestionSet)).Select(share => share.QuestionSetId).ToList();
+                        var questions = (await _unitOfWork.QuestionRepo.FindListByField(question => question.SectionId == sectionUse.SectionId,
+                                                                                        includes => includes.QuestionSet));
 
-                    if (sectionUse.CHCN > 0 && sectionUse.NHD > 0)
-                    {
-                        // CHCN là được createdBy currentUserId
-                        questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
-                        // NHD là được public và được share (hiện chưa tính share)
-                        questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy != currentUserId && question.QuestionSet.Status == 2).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.NHD));
-                    }
-                    else if (sectionUse.NHD > 0)
-                    {
-                        // NHD là được public và được share (hiện chưa tính share)
-                        questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy != currentUserId && question.QuestionSet.Status == 2).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.NHD));
-                    }
-                    else if (sectionUse.CHCN > 0)
-                    {
-                        // CHCN là được createdBy currentUserId
-                        questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
-                    }
 
-                    src.Add(new SourceUse
-                    {
-                        QuestionIds = questionIdsUse,
-                        Difficulty = sectionUse.Difficulty,
-                        Use = sectionUse.Use
-                    });
+                        if (sectionUse.CHCN > 0 && sectionUse.NHD > 0)
+                        {
+                            // CHCN là được createdBy currentUserId
+                            questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
+                            // NHD là được public và được share 
+                            questionIdsUse.AddRange(questions.Where(question => (question.QuestionSet.CreatedBy != currentUserId && question.QuestionSet.Status == 2) ||
+                                                                                (sharedQuestionSetId.Contains((Guid)question.QuestionSetId))).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.NHD));
+                        }
+                        else if (sectionUse.NHD > 0)
+                        {
+                            // NHD là được public và được share
+                            questionIdsUse.AddRange(questions.Where(question => (question.QuestionSet.CreatedBy != currentUserId && question.QuestionSet.Status == 2) ||
+                                                                                (sharedQuestionSetId.Contains((Guid)question.QuestionSetId))).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.NHD));
+                        }
+                        else if (sectionUse.CHCN > 0)
+                        {
+                            // CHCN là được createdBy currentUserId
+                            questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
+                        }
+
+                        src.Add(new SourceUse
+                        {
+                            QuestionIds = questionIdsUse,
+                            Difficulty = sectionUse.Difficulty,
+                            Use = sectionUse.Use
+                        });
+                    }
                 }
-                
+                else
+                {
+                    var questionsFromSet = (await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == examCreate.QuestionSetIdUse)).Select(s => s.SectionId);
+                    foreach (var sectionUse in examCreate.Sections)
+                    {
+                        var questionIdsUse = new List<Guid>();
+                        var sharedQuestionSetId = (await _unitOfWork.ShareRepo.FindListByField(share => share.UserId == currentUserId, includes => includes.QuestionSet)).Select(share => share.QuestionSetId).ToList();
+                        var questions = (await _unitOfWork.QuestionRepo.FindListByField(question => question.SectionId == sectionUse.SectionId,
+                                                                                        includes => includes.QuestionSet));
+
+                        if (sectionUse.CHCN > 0 && sectionUse.NHD > 0)
+                        {
+                            // CHCN là được createdBy currentUserId
+                            if (questionsFromSet.Contains(sectionUse.SectionId))
+                            {
+                                questionIdsUse.AddRange(questions.Where(question => question.QuestionSetId == examCreate.QuestionSetIdUse).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
+                            }
+                            else
+                            {
+                                questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
+                            }
+                            
+                            // NHD là được public và được share 
+                            questionIdsUse.AddRange(questions.Where(question => (question.QuestionSet.CreatedBy != currentUserId && question.QuestionSet.Status == 2) ||
+                                                                                (sharedQuestionSetId.Contains((Guid)question.QuestionSetId))).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.NHD));
+                        }
+                        else if (sectionUse.NHD > 0)
+                        {
+                            // NHD là được public và được share
+                            questionIdsUse.AddRange(questions.Where(question => (question.QuestionSet.CreatedBy != currentUserId && question.QuestionSet.Status == 2) ||
+                                                                                (sharedQuestionSetId.Contains((Guid)question.QuestionSetId))).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.NHD));
+                        }
+                        else if (sectionUse.CHCN > 0)
+                        {
+                            // CHCN là được createdBy currentUserId
+                            if (questionsFromSet.Contains(sectionUse.SectionId))
+                            {
+                                questionIdsUse.AddRange(questions.Where(question => question.QuestionSetId == examCreate.QuestionSetIdUse).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
+                            }
+                            else
+                            {
+                                questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
+                            }
+                        }
+
+                        src.Add(new SourceUse
+                        {
+                            QuestionIds = questionIdsUse,
+                            Difficulty = sectionUse.Difficulty,
+                            Use = sectionUse.Use
+                        });
+                    }
+                }
+
                 // moi de thi lay src rieng
                 var questionIdsInPaper = new List<Guid>();
                 for (int i = 0; i < examCreate.NumOfDiffPaper; i++)

@@ -6,6 +6,7 @@ namespace Services.Interfaces
     {
         Task<bool> ChangeStatusQuestionSet(Guid questionSetId, bool isActive, Guid currentUser);
         Task<bool> DeleteQuestionSet(Guid questionSetId, Guid currentUser);
+        Task<IEnumerable<SectionUse>> GetMatrixOfQuestionSet(Guid questionSetId);
         Task<IEnumerable<OwnQuestionSet>> GetOwnQuestionSet(Guid currentUser, int? grade, int? subject, int year);
         Task<QuestionSetViewModel> GetQuestionByQuestionSetId(Guid id);
         Task<IEnumerable<QuestionSetViewModels>> GetQuestionSetBank(int? grade, int? subject, int year, int type);

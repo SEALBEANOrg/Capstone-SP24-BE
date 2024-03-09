@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Presentation;
+using ExagenSharedProject;
 using Repositories;
+using Repositories.Models;
 using Services.Interfaces;
 using Services.ViewModels;
 
@@ -16,63 +19,129 @@ namespace Services.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ShareViewModels>> GetRequestToShare(int? status, int? grade, int? subject, int? type)
+        public async Task<IEnumerable<ShareViewModels>> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, int year)
         {
-            //try
-            //{
-            //    var questionSetIds = new List<Guid>();
-            //    if (grade != null && subject == null)
-            //    {
-            //        questionSetIds = (await _unitOfWork.QuestionSetRepo.GetAllAsync(questionSet => questionSet.Grade == grade)).Select(questionSet => questionSet.QuestionSetId).ToList();
-            //    }
-            //    else if (grade == null && subject != null)
-            //    {
-            //        questionSetIds = (await _unitOfWork.QuestionSetRepo.GetAllAsync(questionSet => questionSet.Subject == subject)).Select(questionSet => questionSet.QuestionSetId).ToList();
-            //    }
-            //    else 
-            //    {
-            //        questionSetIds = (await _unitOfWork.QuestionSetRepo.GetAllAsync(questionSet => questionSet.Grade == grade && questionSet.Subject == subject)).Select(questionSet => questionSet.QuestionSetId).ToList();
-            //    }
+            try
+            {
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.CreatedOn.Year == year, includes => includes.QuestionSet, includes => includes.QuestionSet.Questions, includes => includes.QuestionSet.Subject);
+                if (type != null)
+                {
+                    shares = shares.Where(share => share.Type == type).ToList();
+                }
+                else if (type == 1)
+                {
+                    throw new Exception("Không thể lấy thông tin về loại chia sẻ này");
+                }
+                else
+                {
+                    shares = shares.Where(share => share.Type == 0 || share.Type == 2).ToList();
+                }
 
-            //    if ((grade != null || subject != null) && questionSetIds.Count() == 0)
-            //    {
-            //        return null;
-            //    }
+                if (grade != null && subjectEnum != null)
+                {
+                    var subjectId = (await _unitOfWork.SubjectRepo.FindListByField(subject => EnumStatus.Subject[(int)subjectEnum].ToLower().Contains(subject.Name) && subject.Grade == grade)).Select(s => s.SubjectId);
+                    shares = shares.Where(questionSet => subjectId.ToList().Contains((Guid)questionSet.QuestionSet.SubjectId)).ToList();
+                }
+                else if (grade == null && subjectEnum != null)
+                {
+                    var subjectId = (await _unitOfWork.SubjectRepo.FindListByField(subject => EnumStatus.Subject[(int)subjectEnum].ToLower().Contains(subject.Name))).Select(s => s.SubjectId);
+                    shares = shares.Where(questionSet => subjectId.ToList().Contains((Guid)questionSet.QuestionSet.SubjectId)).ToList();
+                }
+                else if (grade != null && subjectEnum == null)
+                {
+                    shares = shares.Where(share => share.QuestionSet.Grade == grade).ToList();
+                }
+                
+                if (status != null)
+                {
+                    shares = shares.Where(share => share.Status == status).ToList();
+                }
 
-            //    var shares = await _unitOfWork.ShareRepo.GetAllAsync(x => x.QuestionSetId);
-            
-            //    if (status != null)
-            //    {
-            //        shares = shares.Where(share => share.Status == status).ToList();
-            //    }
-            //    if (type != null)
-            //    {
-            //        shares = shares.Where(share => share.Type == type).ToList();
-            //    }
-            //    if (questionSetIds.Count() > 0)
-            //    {
-            //        shares = shares.Where(share => questionSetIds.Contains((Guid)share.QuestionSetId)).ToList();
-            //    }
+                if (shares == null)
+                {
+                    return null;
+                }
 
-            //    if (shares == null)
-            //    {
-            //        return null;
-            //    }
+                var result = new List<ShareViewModels>();
 
-            //    var result = _mapper.Map<IEnumerable<ShareViewModels>>(shares);
-            //    return result;
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw new Exception("Lỗi ở ShareServices - GetRequestToShare: " + ex.Message);
-            //}
+                foreach (var s in shares)
+                {
+                    var config = new SetConfig
+                    {
+                        NB = s.QuestionSet.Questions.Count(c => c.Difficulty == 0),
+                        TH = s.QuestionSet.Questions.Count(c => c.Difficulty == 1),
+                        VDT = s.QuestionSet.Questions.Count(c => c.Difficulty == 2),
+                        VDC = s.QuestionSet.Questions.Count(c => c.Difficulty == 3),
+                    };
+                    var shareViewModel = _mapper.Map<ShareViewModels>(s);
+                    shareViewModel.Price = s.Type == 0 ? (config.NB * 200 + config.TH * 500 + config.VDT *1000 + config.VDC * 3000) / 5 : null;
+                    shareViewModel.NameOfQuestionSet = s.QuestionSet.Name;
+                    shareViewModel.NameOfSubject = s.QuestionSet.Subject.Name;
 
-            throw new NotImplementedException();
+                    result.Add(shareViewModel);
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Lỗi ở ShareServices - GetRequestToShare: " + ex.Message);
+            }
         }
 
         public Task<ShareViewModel> GetRequestToShareById(Guid id)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<List<string>> GetUserEmailOfSharedQuestionSet(Guid questionSetId, Guid currentUserId, int? type)
+        {
+            try
+            {
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.QuestionSetId == questionSetId && share.CreatedBy == currentUserId && share.UserId != null, include => include.User);
+
+                if (shares == null)
+                {
+                    return null;
+                }
+
+                if (type != null)
+                {
+                    shares = shares.Where(share => share.Type == type).ToList();
+                }
+
+                return shares.Select(s => s.User.Email).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Lỗi ở ShareServices - GetUserEmailOfSharedQuestionSet: " + ex.Message);
+            }
+        }
+
+        public async Task<bool> RequestToShare(ShareCreateRequest shareCreate, Guid currentUser)
+        {
+            try
+            {
+                var share = new Share
+                {
+                    QuestionSetId = shareCreate.QuestionSetId,
+                    Type = shareCreate.Type,
+                    Status = 0,
+                    CreatedBy = currentUser,
+                    CreatedOn = DateTime.Now,
+                    ModifiedBy = currentUser,
+                    ModifiedOn = DateTime.Now
+                };
+
+                _unitOfWork.ShareRepo.AddAsync(share);
+                var result = await _unitOfWork.SaveChangesAsync();
+                
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Lỗi ở ShareServices - RequestToShare: " + ex.Message);
+            }
         }
 
         public async Task<bool> ResponseRequestShare(Guid id, ResponseRequest responseRequest, Guid currentUserId)
@@ -97,6 +166,46 @@ namespace Services.Services
             catch (Exception ex)
             {
                 throw new Exception("Lỗi ở ShareServices - ResponseRequestShare: " + ex.Message);
+            }
+        }
+
+        public async Task<bool> ShareIndividual(ShareCreateForIndividual shareIndividual, Guid currentUser)
+        {
+            try
+            {
+                var userID = await _unitOfWork.UserRepo.FindListByField(u => shareIndividual.Email.Contains(u.Email));
+                if (userID == null)
+                {
+                    return false;
+                }
+
+                var shareResult = new List<Share>();
+                foreach (var user in userID)
+                {
+                    var share = new Share
+                    {
+                        QuestionSetId = shareIndividual.QuestionSetId,
+                        UserId = user.UserId,
+                        Type = 1,
+                        Status = 1,
+                        CreatedBy = currentUser,
+                        CreatedOn = DateTime.Now,
+                        ModifiedBy = currentUser,
+                        ModifiedOn = DateTime.Now
+                    };
+
+                    shareResult.Add(share);
+                }
+
+                _unitOfWork.ShareRepo.AddRangeAsync(shareResult);
+
+                var result = await _unitOfWork.SaveChangesAsync();
+                
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Lỗi ở ShareServices - ShareIndividual: " + ex.Message);
             }
         }
     }

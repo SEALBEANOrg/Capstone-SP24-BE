@@ -73,6 +73,27 @@ namespace Services.Services
             throw new NotImplementedException();
         }
 
+        public async Task<IEnumerable<SectionUse>> GetMatrixOfQuestionSet(Guid questionSetId)
+        {
+            try
+            {
+                var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == questionSetId, include => include.Section);
+                var sectionUses = questions.GroupBy(question => new { question.Section.SectionId, question.Difficulty }).Select(group => new SectionUse
+                {
+                    SectionId = group.Key.SectionId,
+                    CHCN = group.Count(),
+                    NHD = 0,
+                    Use = group.Count()
+                });
+
+                return sectionUses;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở QuestionSetServices - GetMatrixOfQuestionSet: " + e.Message);
+            }
+        }
+
         public async Task<IEnumerable<OwnQuestionSet>> GetOwnQuestionSet(Guid currentUserId, int? grade, int? subject, int year)
         {
             try
@@ -211,11 +232,6 @@ namespace Services.Services
             {
                 var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
 
-                int nb = questionSetViewModel.Questions.Count(question => question.Difficulty == 0);
-                int th = questionSetViewModel.Questions.Count(question => question.Difficulty == 1);
-                int vdt = questionSetViewModel.Questions.Count(question => question.Difficulty == 2);
-                int vdc = questionSetViewModel.Questions.Count(question => question.Difficulty == 3);
-
                 // add question set
                 var questionSet = _mapper.Map<QuestionSet>(questionSetViewModel);
                 questionSet.Status = currentUser.UserType == 2 ? 2 : 1;
@@ -257,8 +273,6 @@ namespace Services.Services
             {
                 throw new Exception("Lỗi ở QuestionSetServices - SaveQuestionSet: " + e.Message);
             }
-
-            throw new NotImplementedException();
         }
 
 

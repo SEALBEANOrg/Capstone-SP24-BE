@@ -58,6 +58,7 @@ namespace Services.Services
                     subjectSections = subjectSections.Where(section => section.SubjectId == subjectId).ToList();
                 }
 
+                var sharedQuestionSetId = (await _unitOfWork.ShareRepo.FindListByField(share => share.UserId == currentUserId)).Select(share => share.QuestionSetId).ToList();
                 var subjectSectionsViewModels = _mapper.Map<IEnumerable<SubjectSectionNav>>(subjectSections);
                 foreach (var section in subjectSectionsViewModels)
                 {
