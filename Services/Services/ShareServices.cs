@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Presentation;
+using DocumentFormat.OpenXml.VariantTypes;
 using ExagenSharedProject;
 using Repositories;
 using Repositories.Models;
@@ -101,6 +103,173 @@ namespace Services.Services
             }
         }
 
+        public async Task<List<ShareInMarket>> GetBoughtList(Guid currentUser, int? grade, int? subjectEnum, int year)
+        {
+            try
+            {
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.CreatedOn.Year == year && share.Type == 0 && share.CreatedBy != currentUser && share.UserId == currentUser, includes => includes.QuestionSet);
+
+                if (grade != null && subjectEnum != null)
+                {
+                    var subjectId = (await _unitOfWork.SubjectRepo.FindListByField(subject => EnumStatus.Subject[(int)subjectEnum].ToLower().Contains(subject.Name) && subject.Grade == grade)).Select(s => s.SubjectId);
+                    shares = shares.Where(share => subjectId.ToList().Contains((Guid)share.QuestionSet.SubjectId)).ToList();
+                }
+                else if (grade == null && subjectEnum != null)
+                {
+                    var subjectId = (await _unitOfWork.SubjectRepo.FindListByField(subject => EnumStatus.Subject[(int)subjectEnum].ToLower().Contains(subject.Name))).Select(s => s.SubjectId);
+                    shares = shares.Where(share => subjectId.ToList().Contains((Guid)share.QuestionSet.SubjectId)).ToList();
+                }
+                else if (grade != null && subjectEnum == null)
+                {
+                    shares = shares.Where(share => share.QuestionSet.Grade == grade).ToList();
+                }
+
+                if (shares == null)
+                {
+                    return null;
+                }
+
+                var result = new List<ShareInMarket>();
+
+                foreach (var s in shares)
+                {
+                    var config = new SetConfig
+                    {
+                        NB = s.QuestionSet.Questions.Count(c => c.Difficulty == 0),
+                        TH = s.QuestionSet.Questions.Count(c => c.Difficulty == 1),
+                        VDT = s.QuestionSet.Questions.Count(c => c.Difficulty == 2),
+                        VDC = s.QuestionSet.Questions.Count(c => c.Difficulty == 3),
+                    };
+
+                    var shareInMarket = _mapper.Map<ShareInMarket>(s);
+
+                    shareInMarket.Price = (config.NB * 200 + config.TH * 500 + config.VDT * 1000 + config.VDC * 3000) / 5;
+                    result.Add(shareInMarket);
+                }
+
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Lỗi ở ShareServices - GetBoughtList: " + ex.Message);
+            }
+        }
+
+        public async Task<List<MySold>> GetSoldList(Guid currentUser, int? grade, int? subjectEnum, int? status, int year)
+        {
+            try
+            {
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.CreatedOn.Year == year && share.Type == 0 && share.CreatedBy == currentUser && 
+                                                                                    share.User == null, includes => includes.QuestionSet);
+
+                if (grade != null && subjectEnum != null)
+                {
+                    var subjectId = (await _unitOfWork.SubjectRepo.FindListByField(subject => EnumStatus.Subject[(int)subjectEnum].ToLower().Contains(subject.Name) && subject.Grade == grade)).Select(s => s.SubjectId);
+                    shares = shares.Where(share => subjectId.ToList().Contains((Guid)share.QuestionSet.SubjectId)).ToList();
+                }
+                else if (grade == null && subjectEnum != null)
+                {
+                    var subjectId = (await _unitOfWork.SubjectRepo.FindListByField(subject => EnumStatus.Subject[(int)subjectEnum].ToLower().Contains(subject.Name))).Select(s => s.SubjectId);
+                    shares = shares.Where(share => subjectId.ToList().Contains((Guid)share.QuestionSet.SubjectId)).ToList();
+                }
+                else if (grade != null && subjectEnum == null)
+                {
+                    shares = shares.Where(share => share.QuestionSet.Grade == grade).ToList();
+                }
+
+                if (status != null)
+                {
+                    shares = shares.Where(share => share.Status == status).ToList();
+                }
+
+                if (shares == null)
+                {
+                    return null;
+                }
+
+                var result = new List<MySold>();
+
+                foreach (var s in shares)
+                {
+                    var config = new SetConfig
+                    {
+                        NB = s.QuestionSet.Questions.Count(c => c.Difficulty == 0),
+                        TH = s.QuestionSet.Questions.Count(c => c.Difficulty == 1),
+                        VDT = s.QuestionSet.Questions.Count(c => c.Difficulty == 2),
+                        VDC = s.QuestionSet.Questions.Count(c => c.Difficulty == 3),
+                    };
+
+                    var shareInMarket = _mapper.Map<MySold>(s);
+
+                    shareInMarket.CountSold = s.Status == 1 ? (await _unitOfWork.ShareRepo.FindListByField(share => share.QuestionSetId == s.QuestionSetId && share.UserId != null)).Count : null;
+                    shareInMarket.Price = (config.NB * 200 + config.TH * 500 + config.VDT * 1000 + config.VDC * 3000) / 5;
+                    result.Add(shareInMarket);
+                }
+
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Lỗi ở ShareServices - GetBoughtList: " + ex.Message);
+            }
+        }
+
+        public async Task<IEnumerable<ShareInMarket>> GetQuestionSetInMarket(int? grade, int? subjectEnum, int year, Guid currentUserId)
+        {
+            try
+            {
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.CreatedOn.Year == year && share.Type == 0 && share.Status == 1 && 
+                                                                                share.CreatedBy != currentUserId && share.UserId != currentUserId, includes => includes.QuestionSet);
+            
+                if (grade != null && subjectEnum != null)
+                {
+                    var subjectId = (await _unitOfWork.SubjectRepo.FindListByField(subject => EnumStatus.Subject[(int)subjectEnum].ToLower().Contains(subject.Name) && subject.Grade == grade)).Select(s => s.SubjectId);
+                    shares = shares.Where(share => subjectId.ToList().Contains((Guid)share.QuestionSet.SubjectId)).ToList();
+                }
+                else if (grade == null && subjectEnum != null)
+                {
+                    var subjectId = (await _unitOfWork.SubjectRepo.FindListByField(subject => EnumStatus.Subject[(int)subjectEnum].ToLower().Contains(subject.Name))).Select(s => s.SubjectId);
+                    shares = shares.Where(share => subjectId.ToList().Contains((Guid)share.QuestionSet.SubjectId)).ToList();
+                }
+                else if (grade != null && subjectEnum == null)
+                {
+                    shares = shares.Where(share => share.QuestionSet.Grade == grade).ToList();
+                }
+
+                if (shares == null)
+                {
+                    return null;
+                }
+
+                var result = new List<ShareInMarket>();
+
+                foreach (var s in shares)
+                {
+                    var config = new SetConfig
+                    {
+                        NB = s.QuestionSet.Questions.Count(c => c.Difficulty == 0),
+                        TH = s.QuestionSet.Questions.Count(c => c.Difficulty == 1),
+                        VDT = s.QuestionSet.Questions.Count(c => c.Difficulty == 2),
+                        VDC = s.QuestionSet.Questions.Count(c => c.Difficulty == 3),
+                    };
+
+                    var shareInMarket = _mapper.Map<ShareInMarket>(s);
+
+                    shareInMarket.Price = (config.NB * 200 + config.TH * 500 + config.VDT * 1000 + config.VDC * 3000) / 5;
+                    result.Add(shareInMarket);
+                }
+
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Lỗi ở ShareServices - GetQuestionSetInMarket: " + ex.Message);
+            }
+        }
+
         public async Task<IEnumerable<ShareViewModels>> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, int year)
         {
             try
@@ -197,6 +366,31 @@ namespace Services.Services
             catch (Exception ex)
             {
                 throw new Exception("Lỗi ở ShareServices - GetUserEmailOfSharedQuestionSet: " + ex.Message);
+            }
+        }
+
+        public async Task<bool> ReportShare(Guid shareId, Guid currentUser, NoteReport noteReport)
+        {
+            try
+            {
+                var share = await _unitOfWork.ShareRepo.FindByField(s => s.ShareId == shareId);
+                if (share == null)
+                {
+                    return false;
+                }
+
+                var currentUserInfo = await _unitOfWork.UserRepo.FindByField(u => u.UserId == currentUser);
+
+                share.Note += $"{DateTime.Now} - {currentUserInfo.Email} : {noteReport.Note}";
+
+                _unitOfWork.ShareRepo.AddAsync(share);
+                var result = await _unitOfWork.SaveChangesAsync();
+
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Lỗi ở ShareServices - ReportShare: " + ex.Message);
             }
         }
 

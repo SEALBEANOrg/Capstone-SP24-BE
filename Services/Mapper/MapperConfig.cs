@@ -109,6 +109,18 @@ namespace Services.Mapper
             CreateMap<Transaction, TransactionViewModels>().ReverseMap();
 
             #endregion
+
+            #region Share
+            CreateMap<Share, ShareViewModels>().ReverseMap();
+            CreateMap<Share, ShareInMarket>().ForMember(dest => dest.NameOfQuestionSet, opt => opt.MapFrom(src => src.QuestionSet.Name)).ReverseMap();
+            CreateMap<Share, ShareViewModel>().ReverseMap();
+            CreateMap<ResponseRequest, ResponseRequest>().ReverseMap();
+            CreateMap<ShareCreateRequest, ShareCreateRequest>().ReverseMap(); 
+            CreateMap<Share, ShareCreateForIndividual>().ReverseMap();
+            CreateMap<BuyQuestionSet, BuyQuestionSet>().ReverseMap();
+            CreateMap<Share, MySold>().ForMember(dest => dest.NameOfQuestionSet, opt => opt.MapFrom(src => src.QuestionSet.Name)).ReverseMap();
+
+            #endregion
         }
 
     }

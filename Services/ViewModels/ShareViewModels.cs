@@ -25,13 +25,22 @@ namespace Services.ViewModels
         public Guid ShareId { get; set; }
         public Guid QuestionSetId { get; set; }
         public string NameOfQuestionSet { get; set; }
-        public string NameOfSubject { get; set; }
         public int? Price { get; set; }
         public int Type { get; set; }
-        public string? Note { get; set; }
-        public int Status { get; set; }
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }
+    }
+
+    public class MyBought
+    {
+        public Guid ShareId { get; set; }
+        public Guid QuestionSetId { get; set; }
+        public string NameOfQuestionSet { get; set; }
+        public int? Price { get; set; }
+        public int Status { get; set; }
+        public int Type { get; set; }
+        public int CountSold { get; set; }
+        public DateTime CreatedOn { get; set; }
     }
 
     public class ShareViewModel
@@ -73,5 +82,10 @@ namespace Services.ViewModels
         public Guid QuestionSetId { get; set; }
         public List<string> Email { get; set; }
 
+    }
+
+    public class NoteReport
+    {
+        public string Note { get; set; }
     }
 }

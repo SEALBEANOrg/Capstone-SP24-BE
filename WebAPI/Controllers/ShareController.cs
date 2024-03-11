@@ -196,5 +196,99 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
+        [HttpGet("market")]
+        [Authorize(Roles = "1")]
+        [SwaggerResponse(200, "List of question set in market", typeof(IEnumerable<ShareInMarket>))]
+        public async Task<IActionResult> GetQuestionSetInMarket(int? grade, int? subjectEnum, int year)
+        {
+            try
+            {
+                var currentUser = await _userServices.GetCurrentUser();
+                var result = await _shareServices.GetQuestionSetInMarket(grade, subjectEnum, year, currentUser);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpPut("report/{shareId}")]
+        [Authorize(Roles = "1")]
+        [SwaggerResponse(200, "Is success", typeof(string))]
+        public async Task<IActionResult> ReportShare(Guid shareId, NoteReport noteReport)
+        {
+            try
+            {
+                var currentUser = await _userServices.GetCurrentUser();
+                var result = await _shareServices.ReportShare(shareId, currentUser, noteReport);
+
+                if (!result)
+                {
+                    return NotFound(new
+                    {
+                        Message = "Báo cáo thất bại"
+                    });
+                }
+
+                return Ok("Báo cáo thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("bought-list")]
+        [Authorize(Roles = "1")]
+        [SwaggerResponse(200, "List of bought question set", typeof(IEnumerable<ShareInMarket>))]
+        public async Task<IActionResult> GetBoughtList(int? grade, int? subjectEnum, int year)
+        {
+            try
+            {
+                var currentUser = await _userServices.GetCurrentUser();
+                var result = await _shareServices.GetBoughtList(currentUser, grade, subjectEnum, year);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("sell-list")]
+        [Authorize(Roles = "1")]
+        [SwaggerResponse(200, "List of sell question set", typeof(IEnumerable<ShareInMarket>))]
+        public async Task<IActionResult> GetSellList(int? grade, int? subjectEnum, int? status, int year)
+        {
+            try
+            {
+                var currentUser = await _userServices.GetCurrentUser();
+                var result = await _shareServices.GetSoldList(currentUser, grade, subjectEnum, status, year);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
+
     }
 }
