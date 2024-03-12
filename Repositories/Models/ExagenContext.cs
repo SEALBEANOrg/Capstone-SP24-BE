@@ -300,7 +300,7 @@ namespace Repositories.Models
 
             modelBuilder.Entity<SectionPaperSetConfig>(entity =>
             {
-                entity.HasKey(e => new { e.PaperSetId, e.SectionId })
+                entity.HasKey(e => new { e.PaperSetId, e.SectionId, e.Difficulty })
                     .HasName("pk_sectionexam");
 
                 entity.ToTable("SectionPaperSetConfig");

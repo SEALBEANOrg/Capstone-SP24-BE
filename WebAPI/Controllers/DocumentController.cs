@@ -62,8 +62,8 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = "0")]
-        [AllowAnonymous]
+        [Authorize(Roles = "0")]
+        //[AllowAnonymous]
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> AddDocument([FromForm] DocumentCreate documentCreate)
         {

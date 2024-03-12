@@ -1,4 +1,5 @@
-﻿using FirebaseAdmin.Messaging;
+﻿using CSharpMath.Structures;
+using FirebaseAdmin.Messaging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -162,7 +163,8 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("matrix")]
-        [Authorize(Roles = "1,2")]
+        //[Authorize(Roles = "1,2")]
+        [AllowAnonymous]
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> AddExamByMatrixIntoClass(ExamCreate examCreate)
         {
@@ -200,6 +202,27 @@ namespace WebAPI.Controllers
                 var result = await _testResultServices.GetAllExamSource(examId);
 
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("paper/{paperId}")]
+        [AllowAnonymous]
+        [SwaggerResponse(200, "List of sample exam sources", typeof(IEnumerable<ExamSourceViewModel>))]
+        public async Task<IActionResult> GetPaperById(Guid paperId)
+        {
+            try
+            {
+                byte[] bytes = await _testResultServices.GetPaperById(paperId);
+                // return file to client side to download
+                return File(bytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "ModifiedFile.docx");
+
             }
             catch (Exception ex)
             {

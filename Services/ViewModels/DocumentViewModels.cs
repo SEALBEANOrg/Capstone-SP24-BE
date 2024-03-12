@@ -43,5 +43,7 @@ namespace Services.ViewModels
         public decimal TimeOfTest  { get; set; } 
         public int PaperCode { get; set; }
         public string NameOfTest { get; set; }
+        public int Grade { get; set; }
+        public string SubjectName { get; set; }
     }
 }

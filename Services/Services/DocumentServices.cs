@@ -174,7 +174,7 @@ namespace Services.Services
                     Document newDoc = document.Clone();
 
                     newDoc.Replace("{Name}", $"{detailOfPaper.NameOfTest}", false, true);
-                    newDoc.Replace("{Subject} - Lớp {Grade}", "name", false, true);
+                    newDoc.Replace("{Subject} - Lớp {Grade}", $"{detailOfPaper.SubjectName} - Lớp {detailOfPaper.Grade}", false, true);
                     newDoc.Replace("Thời gian làm bài: {Time}p", $"Thời gian làm bài: {detailOfPaper.TimeOfTest}p", false, true);
                     newDoc.Replace("Mã đề thi: {Code}", $"Mã đề thi: {detailOfPaper.PaperCode}", false, true);
 
@@ -266,7 +266,7 @@ namespace Services.Services
                     {
                         CreatedBy = currentUserId,
                         CreatedOn = DateTime.Now,
-                        PaperContent = stream.ToArray(),
+                        PaperContent = memoryStream.ToArray(),
                         PaperAnswer = correctAnswer,
                         PaperCode = detailOfPaper.PaperCode,
                     };

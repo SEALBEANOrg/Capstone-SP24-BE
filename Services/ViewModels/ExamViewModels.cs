@@ -84,7 +84,7 @@ namespace Services.ViewModels
         public Guid ClassId { get; set; }
         public int Grade { get; set; }
         public int Duration { get; set; }
-        public int Subject { get; set; }
+        public int SubjectEnum { get; set; }
         public Guid? QuestionSetIdUse { get; set; }
         public ConfigArrange ConfigArrange { get; set; }
         public List<SectionUse> Sections { get; set; }
