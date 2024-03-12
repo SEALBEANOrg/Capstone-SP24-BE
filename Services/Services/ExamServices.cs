@@ -134,9 +134,9 @@ namespace Services.Services
                 // lay src chung cho moi section
                 if (examCreate.QuestionSetIdUse == null)
                 {
+                    var questionIdsUse = new List<Guid>();
                     foreach (var sectionUse in examCreate.Sections)
                     {
-                        var questionIdsUse = new List<Guid>();
                         var sharedQuestionSetId = (await _unitOfWork.ShareRepo.FindListByField(share => share.UserId == currentUserId, includes => includes.QuestionSet)).Select(share => share.QuestionSetId).ToList();
                         var questions = (await _unitOfWork.QuestionRepo.FindListByField(question => question.SectionId == sectionUse.SectionId,
                                                                                         includes => includes.QuestionSet));
@@ -172,10 +172,10 @@ namespace Services.Services
                 }
                 else
                 {
+                    var questionIdsUse = new List<Guid>();
                     var questionsFromSet = (await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == examCreate.QuestionSetIdUse)).Select(s => s.SectionId);
                     foreach (var sectionUse in examCreate.Sections)
                     {
-                        var questionIdsUse = new List<Guid>();
                         var sharedQuestionSetId = (await _unitOfWork.ShareRepo.FindListByField(share => share.UserId == currentUserId, includes => includes.QuestionSet)).Select(share => share.QuestionSetId).ToList();
                         var questions = (await _unitOfWork.QuestionRepo.FindListByField(question => question.SectionId == sectionUse.SectionId,
                                                                                         includes => includes.QuestionSet));

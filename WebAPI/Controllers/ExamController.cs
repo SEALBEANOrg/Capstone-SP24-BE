@@ -1,13 +1,8 @@
-﻿using CSharpMath.Structures;
-using FirebaseAdmin.Messaging;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Services.Interfaces;
 using Services.ViewModels;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Text;
 
 namespace WebAPI.Controllers
 {

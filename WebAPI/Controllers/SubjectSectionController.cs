@@ -9,7 +9,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/v0/subjectsections")]
     [ApiController]
-    [Authorize(Roles = "0")] 
+    [Authorize] 
     public class SubjectSectionController : ControllerBase
     {
         private readonly ISubjectSectionServices _subjectSectionServices;
@@ -44,6 +44,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{sectionId}")]
+        [Authorize(Roles = "0")]
         [SwaggerResponse(200, "Sample section", typeof(SubjectSectionViewModel))]
         public async Task<IActionResult> GetSectionBySectionId(Guid sectionId)
         {
@@ -63,6 +64,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "0")]
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> AddSubjectSection(SubjectSectionCreate subjectSectionCreate)
         {
@@ -97,6 +99,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "0")]
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> UpdateSubjectSection(SubjectSectionUpdate subjectSectionUpdate)
         {
@@ -131,6 +134,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("{sectionId}")]
+        [Authorize(Roles = "0")]
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> DeleteSubjectSection(Guid sectionId)
         {

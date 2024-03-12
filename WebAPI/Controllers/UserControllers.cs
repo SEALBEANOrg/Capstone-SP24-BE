@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Services.ViewModels;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Data;
-using static Google.Apis.Requests.BatchRequest;
 
 namespace WebAPI.Controllers
 {
@@ -46,7 +43,7 @@ namespace WebAPI.Controllers
 
                 return Ok(user);
             }
-            catch (DataException ex)
+            catch (Exception ex)
             {
                 return BadRequest(new
                 {
@@ -131,10 +128,6 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPut("/api/v0/schools/out-school")]
-        [Authorize(Roles = "1,2")]
-        [SwaggerResponse(200, "Is success", typeof(string))]
-        
         [HttpPut("change-status/{id}")]
         [Authorize(Roles = "0")]
         [SwaggerResponse(200, "Is success", typeof(string))]

@@ -69,7 +69,7 @@ namespace Services.Mapper
             CreateMap<SubjectSection, SubjectSectionUpdate>().ReverseMap();
             CreateMap<SubjectSection, SubjectSectionViewModel>().ReverseMap();
             CreateMap<SubjectViewModels, Subject>().ReverseMap();
-            CreateMap<Subject, SubjectSectionNav>().ReverseMap();
+            CreateMap<SubjectSection, SubjectSectionNav>().ReverseMap();
 
             #endregion
 
