@@ -134,32 +134,32 @@ namespace Services.Services
                 // lay src chung cho moi section
                 if (examCreate.QuestionSetIdUse == null)
                 {
-                    var questionIdsUse = new List<Guid>();
                     foreach (var sectionUse in examCreate.Sections)
                     {
+                        var questionIdsUse = new List<Guid>();
                         var sharedQuestionSetId = (await _unitOfWork.ShareRepo.FindListByField(share => share.UserId == currentUserId, includes => includes.QuestionSet)).Select(share => share.QuestionSetId).ToList();
-                        var questions = (await _unitOfWork.QuestionRepo.FindListByField(question => question.SectionId == sectionUse.SectionId,
+                        var questions = (await _unitOfWork.QuestionRepo.FindListByField(question => question.SectionId == sectionUse.SectionId && question.Difficulty  == sectionUse.Difficulty,
                                                                                         includes => includes.QuestionSet));
-
+                        Shuffle(questions);
 
                         if (sectionUse.CHCN > 0 && sectionUse.NHD > 0)
                         {
                             // CHCN là được createdBy currentUserId
-                            questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
+                            questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).Take(sectionUse.CHCN));
                             // NHD là được public và được share 
                             questionIdsUse.AddRange(questions.Where(question => (question.QuestionSet.CreatedBy != currentUserId && question.QuestionSet.Status == 2) ||
-                                                                                (sharedQuestionSetId.Contains((Guid)question.QuestionSetId))).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.NHD));
+                                                                                (sharedQuestionSetId.Contains((Guid)question.QuestionSetId))).Select(question => question.QuestionId).Take(sectionUse.NHD));
                         }
                         else if (sectionUse.NHD > 0)
                         {
                             // NHD là được public và được share
                             questionIdsUse.AddRange(questions.Where(question => (question.QuestionSet.CreatedBy != currentUserId && question.QuestionSet.Status == 2) ||
-                                                                                (sharedQuestionSetId.Contains((Guid)question.QuestionSetId))).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.NHD));
+                                                                                (sharedQuestionSetId.Contains((Guid)question.QuestionSetId))).Select(question => question.QuestionId).Take(sectionUse.NHD));
                         }
                         else if (sectionUse.CHCN > 0)
                         {
                             // CHCN là được createdBy currentUserId
-                            questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
+                            questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).Take(sectionUse.CHCN));
                         }
 
                         src.Add(new SourceUse
@@ -177,9 +177,9 @@ namespace Services.Services
                     foreach (var sectionUse in examCreate.Sections)
                     {
                         var sharedQuestionSetId = (await _unitOfWork.ShareRepo.FindListByField(share => share.UserId == currentUserId, includes => includes.QuestionSet)).Select(share => share.QuestionSetId).ToList();
-                        var questions = (await _unitOfWork.QuestionRepo.FindListByField(question => question.SectionId == sectionUse.SectionId,
+                        var questions = (await _unitOfWork.QuestionRepo.FindListByField(question => question.SectionId == sectionUse.SectionId && question.Difficulty == sectionUse.Difficulty,
                                                                                         includes => includes.QuestionSet));
-
+                        Shuffle(questions);
                         if (sectionUse.CHCN > 0 && sectionUse.NHD > 0)
                         {
                             // CHCN là được createdBy currentUserId
@@ -194,24 +194,25 @@ namespace Services.Services
                             
                             // NHD là được public và được share 
                             questionIdsUse.AddRange(questions.Where(question => (question.QuestionSet.CreatedBy != currentUserId && question.QuestionSet.Status == 2) ||
-                                                                                (sharedQuestionSetId.Contains((Guid)question.QuestionSetId))).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.NHD));
+                                                                                (sharedQuestionSetId.Contains((Guid)question.QuestionSetId) && question.Difficulty == sectionUse.Difficulty)).Select(question => question.QuestionId).Take(sectionUse.NHD));
                         }
                         else if (sectionUse.NHD > 0)
                         {
                             // NHD là được public và được share
                             questionIdsUse.AddRange(questions.Where(question => (question.QuestionSet.CreatedBy != currentUserId && question.QuestionSet.Status == 2) ||
-                                                                                (sharedQuestionSetId.Contains((Guid)question.QuestionSetId))).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.NHD));
+                                                                                (sharedQuestionSetId.Contains((Guid)question.QuestionSetId) && question.Difficulty == sectionUse.Difficulty)).Select(question => question.QuestionId).Take(sectionUse.NHD));
                         }
                         else if (sectionUse.CHCN > 0)
                         {
                             // CHCN là được createdBy currentUserId
                             if (questionsFromSet.Contains(sectionUse.SectionId))
                             {
-                                questionIdsUse.AddRange(questions.Where(question => question.QuestionSetId == examCreate.QuestionSetIdUse).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
+                                questionIdsUse.AddRange(questions.Where(question => question.QuestionSetId == examCreate.QuestionSetIdUse).Select(question => question.QuestionId).Take(sectionUse.CHCN));
                             }
                             else
                             {
-                                questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
+                                questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).Take(sectionUse.CHCN));
+                            
                             }
                         }
 
@@ -239,21 +240,22 @@ namespace Services.Services
                     {
                         foreach (var s in src)
                         {
+                            Shuffle(s.QuestionIds);
                             if (s.Difficulty == 0)
                             {
-                                nb.AddRange(s.QuestionIds.OrderBy(o => new Guid()).Take(s.Use));
+                                nb.AddRange(s.QuestionIds.Take(s.Use));
                             }
                             else if (s.Difficulty == 1)
                             {
-                                th.AddRange(s.QuestionIds.OrderBy(o => new Guid()).Take(s.Use));
+                                th.AddRange(s.QuestionIds.Take(s.Use));
                             }
                             else if (s.Difficulty == 2)
                             {
-                                vdt.AddRange(s.QuestionIds.OrderBy(o => new Guid()).Take(s.Use));
+                                vdt.AddRange(s.QuestionIds.Take(s.Use));
                             }
                             else if (s.Difficulty == 3)
                             {
-                                vdc.AddRange(s.QuestionIds.OrderBy(o => new Guid()).Take(s.Use));
+                                vdc.AddRange(s.QuestionIds.Take(s.Use));
                             }
                         }
                     }
@@ -261,7 +263,8 @@ namespace Services.Services
                     {
                         foreach (var s in src)
                         {
-                            questionIdsInPaper.AddRange(s.QuestionIds.OrderBy(o => new Guid()).Take(s.Use));
+                            Shuffle(s.QuestionIds);
+                            questionIdsInPaper.AddRange(s.QuestionIds.Take(s.Use));
                         }
                     }
 
@@ -279,8 +282,9 @@ namespace Services.Services
                     {
                         for (int j = 0; j < examCreate.NumOfPaperCode; j++)
                         {
-                            detailOfPaper.QuestionIds = questionIdsInPaper.OrderBy(o => new Guid()).ToList();
-                            Guid id = await _documentServices.CreateTestPaper(currentUserId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
+                            Shuffle(questionIdsInPaper);
+                            detailOfPaper.QuestionIds = questionIdsInPaper;
+                            Guid id = await _documentServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
                             paperIds.Add(id);
                             detailOfPaper.PaperCode = ++paperCode;
                         }
@@ -290,11 +294,15 @@ namespace Services.Services
                         for (int j = 0; j < examCreate.NumOfPaperCode; j++)
                         {
                             detailOfPaper.QuestionIds = new List<Guid>();
-                            detailOfPaper.QuestionIds.AddRange(nb.OrderBy(x => new Guid()));
-                            detailOfPaper.QuestionIds.AddRange(th.OrderBy(x => new Guid()));
-                            detailOfPaper.QuestionIds.AddRange(vdt.OrderBy(x => new Guid()));
-                            detailOfPaper.QuestionIds.AddRange(vdc.OrderBy(x => new Guid()));
-                            Guid id = await _documentServices.CreateTestPaper(currentUserId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
+                            Shuffle(nb);
+                            detailOfPaper.QuestionIds.AddRange(nb);
+                            Shuffle(th);
+                            detailOfPaper.QuestionIds.AddRange(th);
+                            Shuffle(vdt);
+                            detailOfPaper.QuestionIds.AddRange(vdt);
+                            Shuffle(vdc);
+                            detailOfPaper.QuestionIds.AddRange(vdc);
+                            Guid id = await _documentServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
                             paperIds.Add(id);
                             detailOfPaper.PaperCode = ++paperCode;
                         }
@@ -302,23 +310,28 @@ namespace Services.Services
                     else if (!examCreate.ConfigArrange.ShuffleQuestions && examCreate.ConfigArrange.ArrangeDifficulty)
                     {
                         detailOfPaper.QuestionIds = new List<Guid>();
-                        detailOfPaper.QuestionIds.AddRange(nb.OrderBy(o => new Guid()));
-                        detailOfPaper.QuestionIds.AddRange(th.OrderBy(o => new Guid()));
-                        detailOfPaper.QuestionIds.AddRange(vdt.OrderBy(o => new Guid()));
-                        detailOfPaper.QuestionIds.AddRange(vdc.OrderBy(o => new Guid()));
+                        Shuffle(nb);
+                        detailOfPaper.QuestionIds.AddRange(nb);
+                        Shuffle(th);
+                        detailOfPaper.QuestionIds.AddRange(th);
+                        Shuffle(vdt);
+                        detailOfPaper.QuestionIds.AddRange(vdt);
+                        Shuffle(vdc);
+                        detailOfPaper.QuestionIds.AddRange(vdc);
                         for (int j = 0; j < examCreate.NumOfPaperCode; j++)
                         {
-                            Guid id = await _documentServices.CreateTestPaper(currentUserId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
+                            Guid id = await _documentServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
                             paperIds.Add(id);
                             detailOfPaper.PaperCode = ++paperCode;
                         }
                     }
                     else
                     {
-                        detailOfPaper.QuestionIds = questionIdsInPaper.OrderBy(o => new Guid()).ToList();
+                        Shuffle(questionIdsInPaper);
+                        detailOfPaper.QuestionIds = questionIdsInPaper;
                         for (int j = 0; j < examCreate.NumOfPaperCode; j++)
                         {
-                            Guid id = await _documentServices.CreateTestPaper(currentUserId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
+                            Guid id = await _documentServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
                             paperIds.Add(id);
                             detailOfPaper.PaperCode = ++paperCode;
                         }
@@ -327,7 +340,7 @@ namespace Services.Services
                     //add questioninexam
                     foreach (var questionId in detailOfPaper.QuestionIds)
                     {
-                        if ((await _unitOfWork.QuestionInExamRepo.FindByField(qie => qie.ExamId == exam.ExamId && qie.QuestionId == questionId)) == null)
+                        if (questionInExams.Where(qie => qie.ExamId == exam.ExamId && qie.QuestionId == questionId).Count() == 0)
                         {
                             var qie = new QuestionInExam
                             {
@@ -605,6 +618,21 @@ namespace Services.Services
             catch (Exception e)
             {
                 throw new Exception("Lỗi ở TestResultServices - GetPaperById: " + e.Message);
+            }
+        }
+
+
+        private void Shuffle<T>(List<T> list)
+        {
+            Random rng = new Random();
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
             }
         }
     }

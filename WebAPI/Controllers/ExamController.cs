@@ -158,8 +158,8 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("matrix")]
-        //[Authorize(Roles = "1,2")]
-        [AllowAnonymous]
+        [Authorize(Roles = "1,2")]
+        //[AllowAnonymous]
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> AddExamByMatrixIntoClass(ExamCreate examCreate)
         {
@@ -216,7 +216,7 @@ namespace WebAPI.Controllers
             {
                 byte[] bytes = await _testResultServices.GetPaperById(paperId);
                 // return file to client side to download
-                return File(bytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "ModifiedFile.docx");
+                return File(bytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "TempFile.docx");
 
             }
             catch (Exception ex)

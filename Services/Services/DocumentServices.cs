@@ -146,7 +146,7 @@ namespace Services.Services
         }
 
 
-        public async Task<Guid> CreateTestPaper(Guid currentUserId, DetailOfPaper detailOfPaper, Guid templatePaperId, bool shuffleAnswers)
+        public async Task<Guid> CreateTestPaper(Guid currentUserId, Guid paperSetId, DetailOfPaper detailOfPaper, Guid templatePaperId, bool shuffleAnswers)
         {
             try
             {
@@ -245,7 +245,7 @@ namespace Services.Services
                         }
 
                         Paragraph paragraph = newDoc.Sections[0].AddParagraph();
-                        paragraph.AppendBreak(BreakType.LineBreak);
+                        //paragraph.AppendBreak(BreakType.LineBreak);
 
                         numOfQuestion++;
                     }
@@ -269,6 +269,7 @@ namespace Services.Services
                         PaperContent = memoryStream.ToArray(),
                         PaperAnswer = correctAnswer,
                         PaperCode = detailOfPaper.PaperCode,
+                        PaperSetId = paperSetId
                     };
 
                     _unitOfWork.PaperRepo.AddAsync(paper);
