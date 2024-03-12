@@ -233,11 +233,21 @@ namespace Services.Services
             {
                 var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
 
+                // add question
+                var questions = _mapper.Map<List<Question>>(questionSetViewModel.Questions);
+                foreach (var question in questions)
+                {
+                    question.Grade = questionSetViewModel.Grade;
+                    question.SubjectId = questionSetViewModel.SubjectId;
+
+                }
+
                 // add question set
                 var questionSet = _mapper.Map<QuestionSet>(questionSetViewModel);
                 questionSet.Status = currentUser.UserType == 2 ? 2 : 1;
                 
                 questionSet.NumOfQuestion = questionSetViewModel.Questions.Count;
+                questionSet.Questions = questions;
                 
                 questionSet.CreatedBy = currentUserId;
                 questionSet.CreatedOn = DateTime.Now;
@@ -246,27 +256,6 @@ namespace Services.Services
 
                 _unitOfWork.QuestionSetRepo.AddAsync(questionSet);
                 var result = await _unitOfWork.SaveChangesAsync();
-                if (result <= 0)
-                {
-                    return false;
-                }
-
-                // add question
-                var questions = _mapper.Map<List<Question>>(questionSetViewModel.Questions);
-                foreach (var question in questions)
-                {
-                    question.Grade = questionSetViewModel.Grade;
-                    question.SubjectId = questionSetViewModel.SubjectId;
-                    
-                }
-                _unitOfWork.QuestionRepo.AddRangeAsync(questions);
-                result = await _unitOfWork.SaveChangesAsync();
-                if (result <= 0)
-                {
-                    return false;
-                }
-
-                result = await _unitOfWork.SaveChangesAsync();
 
                 return result > 0 ? true : false;
             }

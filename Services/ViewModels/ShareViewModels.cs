@@ -31,7 +31,7 @@ namespace Services.ViewModels
         public Guid CreatedBy { get; set; }
     }
 
-    public class MyBought
+    public class MySold
     {
         public Guid ShareId { get; set; }
         public Guid QuestionSetId { get; set; }
@@ -39,7 +39,7 @@ namespace Services.ViewModels
         public int? Price { get; set; }
         public int Status { get; set; }
         public int Type { get; set; }
-        public int CountSold { get; set; }
+        public int? CountSold { get; set; }
         public DateTime CreatedOn { get; set; }
     }
 

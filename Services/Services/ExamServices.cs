@@ -504,7 +504,13 @@ namespace Services.Services
 
                 var answerSheet = paperExam.PaperAnswer;
 
-                List<string> correctAnswers = answerSheet.Split('|').ToList();
+                List<string> correctAnswers = new List<string>();
+                var answerSheetList = answerSheet.Split('|').ToList();
+                foreach (var answer in answerSheetList)
+                {
+                    correctAnswers.Add(answer.Substring(37));
+                }
+
                 List<string> studentAnswers = resultToSave.AnswersSelected.Split('|').ToList();
 
                 decimal? mark = 0;
