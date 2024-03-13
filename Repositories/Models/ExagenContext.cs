@@ -320,7 +320,7 @@ namespace Repositories.Models
 
             modelBuilder.Entity<Share>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.ShareId });
 
                 entity.ToTable("Share");
 

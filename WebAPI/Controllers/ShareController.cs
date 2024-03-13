@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Services.ViewModels;
 using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebAPI.Controllers
 {
@@ -22,8 +23,9 @@ namespace WebAPI.Controllers
 
         [HttpGet("requests")]
         [Authorize(Roles = "2")]
+        //[AllowAnonymous]
         [SwaggerResponse(200, "List of request to share", typeof(IEnumerable<ShareViewModels>))]
-        public async Task<IActionResult> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, int year)
+        public async Task<IActionResult> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, [Required] int year)
         {
             try
             {
@@ -75,6 +77,7 @@ namespace WebAPI.Controllers
 
         [HttpPost("requests")]
         [Authorize(Roles = "1")]
+        //[AllowAnonymous ]
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> RequestToShare([FromBody] ShareCreateRequest shareCreate)
         {

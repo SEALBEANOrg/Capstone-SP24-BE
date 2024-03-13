@@ -46,6 +46,7 @@ namespace WebAPI.Controllers
         [HttpGet("bank")]
         [SwaggerResponse(200, "List of question set", typeof(IEnumerable<QuestionSetViewModels>))]
         [Authorize(Roles = "2")]
+        //[AllowAnonymous]
         public async Task<IActionResult> GetQuestionSetByBank(int? grade, int? subject, [Required]int year, int type)
         {
             try

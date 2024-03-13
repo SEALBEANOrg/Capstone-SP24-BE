@@ -155,7 +155,9 @@ namespace Services.Services
             if (type == 0)
             {
                 var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.Type == 0 && share.Status == 1);
-                var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionset => shares.Select(s => s.QuestionSetId).Distinct().Contains(questionset.QuestionSetId)
+                var distinctQuestionSetIds = shares.Select(s => s.QuestionSetId).Distinct().ToList();
+
+                var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionset => distinctQuestionSetIds.Contains(questionset.QuestionSetId)
                                                                                             && questionset.CreatedOn.Year == year, includes => includes.Subject, includes => includes.Questions);
                 if (grade != null)
                 {
@@ -183,7 +185,9 @@ namespace Services.Services
             else if (type == 2)
             {
                 var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.Type == 2 && share.Status == 1);
-                var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionset => (shares.Select(s => s.QuestionSetId).Distinct().Contains(questionset.QuestionSetId) || questionset.Status == 2) && questionset.CreatedOn.Year == year, include => include.Subject);
+                
+                var distinctQuestionSetIds = shares.Select(s => s.QuestionSetId).Distinct().ToList();
+                var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionset => (distinctQuestionSetIds.Contains(questionset.QuestionSetId) || questionset.Status == 2) && questionset.CreatedOn.Year == year, include => include.Subject);
                 if (grade != null)
                 {
                     questionSets = questionSets.Where(questionSet => questionSet.Grade == grade).ToList();

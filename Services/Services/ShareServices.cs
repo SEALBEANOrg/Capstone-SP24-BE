@@ -274,7 +274,8 @@ namespace Services.Services
         {
             try
             {
-                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.CreatedOn.Year == year, includes => includes.QuestionSet, includes => includes.QuestionSet.Questions, includes => includes.QuestionSet.Subject);
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.CreatedOn.Year == year, includes => includes.QuestionSet);
+                
                 if (type != null)
                 {
                     shares = shares.Where(share => share.Type == type).ToList();
@@ -291,12 +292,13 @@ namespace Services.Services
                 if (grade != null && subjectEnum != null)
                 {
                     var subjectId = (await _unitOfWork.SubjectRepo.FindListByField(subject => EnumStatus.Subject[(int)subjectEnum].ToLower().Contains(subject.Name) && subject.Grade == grade)).Select(s => s.SubjectId);
-                    shares = shares.Where(questionSet => subjectId.ToList().Contains((Guid)questionSet.QuestionSet.SubjectId)).ToList();
+                    
+                    shares = shares.Where(share => subjectId.ToList().Contains((Guid)share.QuestionSet.SubjectId)).ToList();
                 }
                 else if (grade == null && subjectEnum != null)
                 {
                     var subjectId = (await _unitOfWork.SubjectRepo.FindListByField(subject => EnumStatus.Subject[(int)subjectEnum].ToLower().Contains(subject.Name))).Select(s => s.SubjectId);
-                    shares = shares.Where(questionSet => subjectId.ToList().Contains((Guid)questionSet.QuestionSet.SubjectId)).ToList();
+                    shares = shares.Where(share => subjectId.ToList().Contains((Guid)share.QuestionSet.SubjectId)).ToList();
                 }
                 else if (grade != null && subjectEnum == null)
                 {
@@ -327,7 +329,7 @@ namespace Services.Services
                     var shareViewModel = _mapper.Map<ShareViewModels>(s);
                     shareViewModel.Price = s.Type == 0 ? (config.NB * 200 + config.TH * 500 + config.VDT *1000 + config.VDC * 3000) / 5 : null;
                     shareViewModel.NameOfQuestionSet = s.QuestionSet.Name;
-                    shareViewModel.NameOfSubject = s.QuestionSet.Subject.Name;
+                    shareViewModel.NameOfSubject = (await _unitOfWork.SubjectRepo.FindByField(subject => subject.SubjectId == s.QuestionSet.SubjectId)).Name;
 
                     result.Add(shareViewModel);
                 }
