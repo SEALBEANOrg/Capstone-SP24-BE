@@ -426,7 +426,7 @@ namespace Services.Services
         {
             try 
             {                 
-                var share = await _unitOfWork.ShareRepo.FindByField(share => share.ShareId == id);
+                var share = await _unitOfWork.ShareRepo.FindByField(share => share.ShareId == id && share.Status == 0);
                 if (share == null)
                 {
                     return false;
@@ -436,6 +436,31 @@ namespace Services.Services
                 share.Note = responseRequest.Note;
                 share.ModifiedBy = currentUserId;
                 share.ModifiedOn = DateTime.Now;
+
+                if (share.Type == 2 && share.Status == 1)
+                {
+                    var questionSet = await _unitOfWork.QuestionSetRepo.FindByField(q => q.QuestionSetId == share.QuestionSetId, include => include.Questions);
+                    SetConfig setConfig = new SetConfig
+                    {
+                        NB = questionSet.Questions.Count(q => q.Difficulty == 0),
+                        TH = questionSet.Questions.Count(q => q.Difficulty == 1),
+                        VDT = questionSet.Questions.Count(q => q.Difficulty == 2),
+                        VDC = questionSet.Questions.Count(q => q.Difficulty == 3)
+                    };
+                    var user = await _unitOfWork.UserRepo.FindByField(u => u.UserId == share.UserId);
+                    user.Point += (setConfig.NB * 200 + setConfig.TH * 500 + setConfig.VDT * 1000 + setConfig.VDC * 3000);
+                    _unitOfWork.UserRepo.Update(user);
+
+                    var transaction = new Transaction
+                    {
+                        UserId = currentUserId,
+                        Type = 5, //public bo cau hoi
+                        PointValue = (setConfig.NB * 200 + setConfig.TH * 500 + setConfig.VDT * 1000 + setConfig.VDC * 3000),
+                        CreatedOn = DateTime.Now
+                    };
+                    _unitOfWork.TransactionRepo.AddAsync(transaction);
+                }
+
                 _unitOfWork.ShareRepo.Update(share);
                 var result = await _unitOfWork.SaveChangesAsync();
 
