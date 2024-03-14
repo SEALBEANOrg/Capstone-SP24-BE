@@ -62,17 +62,30 @@ namespace Services.Services
                 var subjectSectionsViewModels = _mapper.Map<IEnumerable<SubjectSectionNav>>(subjectSections);
                 foreach (var section in subjectSectionsViewModels)
                 {
+                    var nb = new NumOfEachDifficulty { Difficulty = 0, CHCN = 0, NHD = 0 };
+                    var th = new NumOfEachDifficulty { Difficulty = 1, CHCN = 0, NHD = 0 };
+                    var vdt = new NumOfEachDifficulty { Difficulty = 2, CHCN = 0, NHD = 0 };
+                    var vdc = new NumOfEachDifficulty { Difficulty = 3, CHCN = 0, NHD = 0 };
+
                     var cn = (await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => questionSet.CreatedBy == currentUserId, includes => includes.Questions));
                     foreach (var item in cn)
                     {
-                        section.CHCN += item.Questions.Count;
+                        nb.CHCN += item.Questions.Count(question => question.Difficulty == 0);
+                        th.CHCN += item.Questions.Count(question => question.Difficulty == 1);
+                        vdt.CHCN += item.Questions.Count(question => question.Difficulty == 2);
+                        vdc.CHCN += item.Questions.Count(question => question.Difficulty == 3);
                     }
 
                     var nh = (await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => questionSet.CreatedBy != currentUserId && questionSet.Status == 2, includes => includes.Questions));
                     foreach (var item in nh)
                     {
-                        section.NHD += item.Questions.Count;
+                        nb.NHD += item.Questions.Count(question => question.Difficulty == 0);
+                        th.NHD += item.Questions.Count(question => question.Difficulty == 1);
+                        vdt.NHD += item.Questions.Count(question => question.Difficulty == 2);
+                        vdc.NHD += item.Questions.Count(question => question.Difficulty == 3);
                     }
+
+                    section.NumOfEachDifficulties = new List<NumOfEachDifficulty> { nb, th, vdt, vdc };
                 }
 
                 return subjectSectionsViewModels;

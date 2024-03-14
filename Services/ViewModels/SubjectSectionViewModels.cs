@@ -18,6 +18,12 @@ namespace Services.ViewModels
         public Guid SectionId { get; set; }
         public string Name { get; set; } = null!;
         public int SectionNo { get; set; }
+        public List<NumOfEachDifficulty> NumOfEachDifficulties { get; set; } = null!;
+    }
+
+    public class NumOfEachDifficulty
+    {
+        public int Difficulty { get; set; }
         public int CHCN { get; set; }
         public int NHD { get; set; }
     }
