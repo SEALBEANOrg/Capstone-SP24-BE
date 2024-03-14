@@ -12,7 +12,7 @@ namespace Services.ViewModels
     public class ExamViewModels
     {
         public Guid ExamId { get; set; }
-        public string? Description { get; set; } //name of exam
+        public string? Name { get; set; } //name of exam
         public int TestCode { get; set; }
         public string ClassName { get; set; }
         public string HasMark { get; set; }
@@ -69,7 +69,7 @@ namespace Services.ViewModels
     public class ExamInfo
     {
         public Guid ExamId { get; set; }
-        public string? Description { get; set; } //name of exam
+        public string? Name { get; set; } //name of exam
         public int TestCode { get; set; }
         public string ClassName { get; set; }
         public string HasMark { get; set; }
