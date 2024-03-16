@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Repositories;
 using Repositories.Models;
 using Services.Interfaces;
+using Services.Utilities;
 using Services.ViewModels;
 using System.ComponentModel;
 using System.Linq;
@@ -59,7 +60,7 @@ namespace Services.Services
             }
         }
 
-        public async Task<bool> AddExamByMatrixIntoClass(ExamCreate examCreate, Guid currentUserId)
+        public async Task<Guid?> AddExamByMatrixIntoClass(ExamCreate examCreate, Guid currentUserId)
         {
             try
             {
@@ -76,7 +77,7 @@ namespace Services.Services
                 var result = await _unitOfWork.SaveChangesAsync();
                 if (result <= 0)
                 {
-                    return false;
+                    return null;
                 }
                 
                 //add exam
@@ -107,7 +108,7 @@ namespace Services.Services
                 result = await _unitOfWork.SaveChangesAsync();
                 if (result <= 0)
                 {
-                    return false;
+                    return null;
                 }
 
                 //add section config
@@ -179,7 +180,7 @@ namespace Services.Services
                         var sharedQuestionSetId = (await _unitOfWork.ShareRepo.FindListByField(share => share.UserId == currentUserId, includes => includes.QuestionSet)).Select(share => share.QuestionSetId).ToList();
                         var questions = (await _unitOfWork.QuestionRepo.FindListByField(question => question.SectionId == sectionUse.SectionId && question.Difficulty == sectionUse.Difficulty,
                                                                                         includes => includes.QuestionSet));
-                        Shuffle(questions);
+                        Utils.Shuffle(questions);
                         if (sectionUse.CHCN > 0 && sectionUse.NHD > 0)
                         {
                             // CHCN là được createdBy currentUserId
@@ -240,7 +241,7 @@ namespace Services.Services
                     {
                         foreach (var s in src)
                         {
-                            Shuffle(s.QuestionIds);
+                            Utils.Shuffle(s.QuestionIds);
                             if (s.Difficulty == 0)
                             {
                                 nb.AddRange(s.QuestionIds.Take(s.Use));
@@ -263,7 +264,7 @@ namespace Services.Services
                     {
                         foreach (var s in src)
                         {
-                            Shuffle(s.QuestionIds);
+                            Utils.Shuffle(s.QuestionIds);
                             questionIdsInPaper.AddRange(s.QuestionIds.Take(s.Use));
                         }
                     }
@@ -294,13 +295,13 @@ namespace Services.Services
                         for (int j = 0; j < examCreate.NumOfPaperCode; j++)
                         {
                             detailOfPaper.QuestionIds = new List<Guid>();
-                            Shuffle(nb);
+                            Utils.Shuffle(nb);
                             detailOfPaper.QuestionIds.AddRange(nb);
-                            Shuffle(th);
+                            Utils.Shuffle(th);
                             detailOfPaper.QuestionIds.AddRange(th);
-                            Shuffle(vdt);
+                            Utils.Shuffle(vdt);
                             detailOfPaper.QuestionIds.AddRange(vdt);
-                            Shuffle(vdc);
+                            Utils.Shuffle(vdc);
                             detailOfPaper.QuestionIds.AddRange(vdc);
                             Guid id = await _documentServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
                             paperIds.Add(id);
@@ -310,13 +311,13 @@ namespace Services.Services
                     else if (!examCreate.ConfigArrange.ShuffleQuestions && examCreate.ConfigArrange.ArrangeDifficulty)
                     {
                         detailOfPaper.QuestionIds = new List<Guid>();
-                        Shuffle(nb);
+                        Utils.Shuffle(nb);
                         detailOfPaper.QuestionIds.AddRange(nb);
-                        Shuffle(th);
+                        Utils.Shuffle(th);
                         detailOfPaper.QuestionIds.AddRange(th);
-                        Shuffle(vdt);
+                        Utils.Shuffle(vdt);
                         detailOfPaper.QuestionIds.AddRange(vdt);
-                        Shuffle(vdc);
+                        Utils.Shuffle(vdc);
                         detailOfPaper.QuestionIds.AddRange(vdc);
                         for (int j = 0; j < examCreate.NumOfPaperCode; j++)
                         {
@@ -327,7 +328,7 @@ namespace Services.Services
                     }
                     else
                     {
-                        Shuffle(questionIdsInPaper);
+                        Utils.Shuffle(questionIdsInPaper);
                         detailOfPaper.QuestionIds = questionIdsInPaper;
                         for (int j = 0; j < examCreate.NumOfPaperCode; j++)
                         {
@@ -358,7 +359,7 @@ namespace Services.Services
                 _unitOfWork.QuestionInExamRepo.AddRangeAsync(questionInExams);
                 result = await _unitOfWork.SaveChangesAsync();
 
-                return result > 0 ? true : false;
+                return result > 0 ? exam.ExamId : null;
             }
             catch (Exception e)
             {
@@ -622,18 +623,5 @@ namespace Services.Services
         }
 
 
-        private void Shuffle<T>(List<T> list)
-        {
-            Random rng = new Random();
-            int n = list.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = rng.Next(n + 1);
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
-            }
-        }
     }
 }

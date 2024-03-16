@@ -53,4 +53,9 @@ namespace Services.ViewModels
         public string Name { get; set; }
         public decimal? Mark { get; set;}
     }
+
+    public class ComboClass
+    {
+        public Guid ClassId { get; set; }
+        public string Name { get; set; }
 }

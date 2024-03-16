@@ -26,7 +26,7 @@ namespace Services.Mapper
             CreateMap<StudentClass, InfoClassInExam>().ReverseMap();
             CreateMap<StudentClass, ClassInfo>().ReverseMap();
             CreateMap<StudentClass, ClassModel>().ReverseMap();
-
+            CreateMap<StudentClass, ComboClass>().ReverseMap();
 
             #endregion
 

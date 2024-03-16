@@ -14,6 +14,7 @@ namespace WebAPI.Controllers
     {
         private readonly IStudentClassServices _studentClassServices;
         private readonly IStudentServices _studentServices;
+        private readonly IUserServices _userServices;
 
         public StudentClassControllers(IStudentClassServices studentClassServices, IStudentServices studentServices)
         {
@@ -265,6 +266,24 @@ namespace WebAPI.Controllers
             
         }
 
+        [HttpGet("combo-class")]
+        [SwaggerResponse(200, "Combo Class", typeof(IEnumerable<ComboClass>))]
+        public async Task<IActionResult> GetComboClass(int? grade)
+        {
+            try
+            {
+                var currentUserId = await _userServices.GetCurrentUser();
+                var result = await _studentClassServices.GetComboClass(currentUserId, grade);
 
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
     }
 }

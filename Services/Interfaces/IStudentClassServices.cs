@@ -15,5 +15,6 @@ namespace Services.Interfaces
         Task<bool> AddStudentIntoClass(Guid classId, StudentCreate studentClassCreate);
         Task<bool> DeleteStudentFromClass(Guid studentId);
         Task<IEnumerable<StudentViewModels>> ImportExcelToAddStudent(Guid classId, IFormFile file);
+        Task<IEnumerable<ComboClass>> GetComboClass(Guid currentUserId, int? grade);
     }
 }

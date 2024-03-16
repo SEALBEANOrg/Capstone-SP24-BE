@@ -353,6 +353,31 @@ namespace Services.Services
             }
         }
 
-       
+        public async Task<IEnumerable<ComboClass>> GetComboClass(Guid currentUserId, int? grade)
+        {
+            try
+            {
+                var comboClass = await _unitOfWork.StudentClassRepo.FindListByField(studentClass => studentClass.CreatedBy == currentUserId);
+
+                if (comboClass != null && grade != null)
+                {
+                    comboClass = comboClass.Where(classes => classes.Grade == grade).ToList();
+                }
+
+                if (comboClass == null)
+                {
+                    return null;
+                }
+
+                var comboClassViewModels = _mapper.Map<IEnumerable<ComboClass>>(comboClass);
+                return comboClassViewModels;
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Lỗi ở StudentClassServices - GetComboClass: " + ex.Message);
+            }
+        }
     }
 }
