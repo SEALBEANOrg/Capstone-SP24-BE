@@ -168,14 +168,14 @@ namespace WebAPI.Controllers
                 var currentUserId = await _userServices.GetCurrentUser();
                 var result = await _testResultServices.AddExamByMatrixIntoClass(examCreate, currentUserId);
 
-                if (!result)
+                if (result == null)
                 {
                     return NotFound(new
                     {
                         Message = "Thêm thất bại"
                     });
                 }
-
+               
                 return Ok("Thêm thành công");
             }
             catch (Exception ex)

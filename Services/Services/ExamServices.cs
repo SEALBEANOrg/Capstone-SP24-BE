@@ -141,7 +141,7 @@ namespace Services.Services
                         var sharedQuestionSetId = (await _unitOfWork.ShareRepo.FindListByField(share => share.UserId == currentUserId, includes => includes.QuestionSet)).Select(share => share.QuestionSetId).ToList();
                         var questions = (await _unitOfWork.QuestionRepo.FindListByField(question => question.SectionId == sectionUse.SectionId && question.Difficulty  == sectionUse.Difficulty,
                                                                                         includes => includes.QuestionSet));
-                        Shuffle(questions);
+                        Utils.Shuffle(questions);
 
                         if (sectionUse.CHCN > 0 && sectionUse.NHD > 0)
                         {
@@ -283,7 +283,7 @@ namespace Services.Services
                     {
                         for (int j = 0; j < examCreate.NumOfPaperCode; j++)
                         {
-                            Shuffle(questionIdsInPaper);
+                            Utils.Shuffle(questionIdsInPaper);
                             detailOfPaper.QuestionIds = questionIdsInPaper;
                             Guid id = await _documentServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
                             paperIds.Add(id);
