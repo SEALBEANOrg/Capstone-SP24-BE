@@ -372,7 +372,6 @@ namespace Services.Services
                 var comboClassViewModels = _mapper.Map<IEnumerable<ComboClass>>(comboClass);
                 return comboClassViewModels;
 
-
             }
             catch (Exception ex)
             {

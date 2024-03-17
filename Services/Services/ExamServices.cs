@@ -64,6 +64,30 @@ namespace Services.Services
         {
             try
             {
+                if (examCreate.Sections.Count == 0)
+                {
+                    throw new Exception("Không có phần tử nào trong sections");
+                }
+                if (examCreate.ClassId == null)
+                {
+                    throw new Exception("Không có lớp");
+                }
+                if (examCreate.NumOfDiffPaper == 0)
+                {
+                    throw new Exception("Số lượng đề thi phải lớn hơn 0");
+                }
+                if (examCreate.NumOfPaperCode == 0)
+                {
+                    throw new Exception("Số lượng mã đề thi phải lớn hơn 0");
+                }
+                foreach (var section in examCreate.Sections)
+                {
+                    if (section.CHCN + section.NHD < section.Use)
+                    {
+                        throw new Exception("Số lượng câu hỏi phát sinh it hơn số lượng câu hỏi sử dụng");
+                    }
+                };
+
                 Guid templatePaperId = Guid.Parse("2fc0e6e6-edd7-ee11-90e0-90610ca5f0a3");
                 // create paper set
                 var paperSet = new PaperSet();

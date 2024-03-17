@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
@@ -61,6 +62,29 @@ namespace WebAPI.Controllers
             }
         }
 
-        
+        //[HttpGet]
+        //public async Task<IActionResult> MomoReturn([FromQuery] MomoOneTimePaymentResultRequest response)
+        //{
+        //    string returnUrl = string.Empty;
+        //    var returnModel = new PaymentReturnDtos();
+        //    var processResult = await mediator.Send(response.Adapt<ProcessMomoPaymentReturn>());
+
+        //    if (processResult.Success)
+        //    {
+        //        returnModel = processResult.Data.Item1 as PaymentReturnDtos;
+        //        returnUrl = processResult.Data.Item2 as string;
+        //    }
+
+        //    if (returnUrl.EndsWith("/"))
+        //        returnUrl = returnUrl.Remove(returnUrl.Length - 1, 1);
+        //    return Redirect($"{returnUrl}?{returnModel.ToQueryString()}");
+        //}
+
+        //[HttpGet]
+        //public IActionResult PaymentCallBack()
+        //{
+        //    var response = _momoService.PaymentExecuteAsync(HttpContext.Request.Query);
+        //    return View(response);
+        //}
     }
 }

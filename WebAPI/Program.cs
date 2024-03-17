@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using WebAPI.Middlewares;
 using Services;
+using Services.ViewModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddInfrastructure();
 builder.Services.AddServices();
+builder.Services.Configure<MomoModel>(builder.Configuration.GetSection("MomoAPI"));
 builder.Services.AddHttpClient("AI_Services", u => u.BaseAddress = new Uri(builder.Configuration["AI_Services"]));
 
 #region JWT(use)
