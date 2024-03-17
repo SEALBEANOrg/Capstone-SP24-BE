@@ -5,6 +5,7 @@ using Repositories.Models;
 using Services.Interfaces;
 using Services.Mapper;
 using Services.Services;
+using Services.ViewModels;
 using WebAPI.Middlewares;
 using WebAPI.Service;
 
@@ -53,8 +54,10 @@ namespace WebAPI
             services.AddScoped<IQuestionSetServices, QuestionSetServices>();
             services.AddScoped<ISubjectServices, SubjectServices>();
             services.AddScoped<IUserServices, UserServices>();
+            services.AddScoped<ITransactionServices, TransactionServices>();
+            services.AddScoped<IMomoServices, MomoServices>();
             #endregion
-            
+           
             services.AddSingleton<GlobalExceptionMiddleware>();
             services.AddRouting(opt => opt.LowercaseUrls = true);
             services.AddScoped<IClaimsService, ClaimsService>();
