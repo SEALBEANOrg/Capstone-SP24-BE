@@ -615,7 +615,8 @@ namespace Services.Services
                 {
                     throw new Exception("Không tìm thấy đề thi");
                 }
-                var papers = _unitOfWork.PaperRepo.FindListByField(paper => paper.PaperSetId == exam.PaperSetId);
+                var papers = await _unitOfWork.PaperRepo.FindListByField(paper => paper.PaperSetId == exam.PaperSetId);
+                var anserSheet = await _unitOfWork.DocumentRepo.FindListByField(document => document.Type == 0);
                 var result = new ExamSourceViewModel
                 {
                     paperOfExams = _mapper.Map<List<PaperOfExam>>(papers),
