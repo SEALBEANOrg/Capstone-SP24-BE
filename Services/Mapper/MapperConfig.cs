@@ -77,6 +77,7 @@ namespace Services.Mapper
             CreateMap<Document, DocumentViewModels>().ReverseMap();
             CreateMap<Document, DocumentViewModel>().ReverseMap();
             CreateMap<Document, DocumentCreate>().ReverseMap();
+            CreateMap<Document, AnserSheet>().ReverseMap();
 
             #endregion
 

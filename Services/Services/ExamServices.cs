@@ -620,7 +620,7 @@ namespace Services.Services
                 var result = new ExamSourceViewModel
                 {
                     paperOfExams = _mapper.Map<List<PaperOfExam>>(papers),
-                    anserSheets = null //can fix
+                    anserSheets = _mapper.Map<List<AnserSheet>>(anserSheet)
                 };
                 return result;
             }
