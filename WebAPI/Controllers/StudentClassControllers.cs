@@ -16,10 +16,11 @@ namespace WebAPI.Controllers
         private readonly IStudentServices _studentServices;
         private readonly IUserServices _userServices;
 
-        public StudentClassControllers(IStudentClassServices studentClassServices, IStudentServices studentServices)
+        public StudentClassControllers(IUserServices userServices, IStudentClassServices studentClassServices, IStudentServices studentServices)
         {
             _studentClassServices = studentClassServices;
             _studentServices = studentServices;
+            _userServices = userServices;
         }
 
         [HttpGet("own-class")]

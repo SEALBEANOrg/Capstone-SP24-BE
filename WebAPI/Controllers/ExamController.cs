@@ -160,7 +160,7 @@ namespace WebAPI.Controllers
         [HttpPost("matrix")]
         [Authorize(Roles = "1,2")]
         //[AllowAnonymous]
-        [SwaggerResponse(200, "Is success", typeof(string))]
+        [SwaggerResponse(200, "Exam ID", typeof(string))]
         public async Task<IActionResult> AddExamByMatrixIntoClass(ExamCreate examCreate)
         {
             try
@@ -168,7 +168,7 @@ namespace WebAPI.Controllers
                 var currentUserId = await _userServices.GetCurrentUser();
                 var result = await _testResultServices.AddExamByMatrixIntoClass(examCreate, currentUserId);
 
-                if (!result)
+                if (result == null)
                 {
                     return NotFound(new
                     {
@@ -176,7 +176,7 @@ namespace WebAPI.Controllers
                     });
                 }
 
-                return Ok("Thêm thành công");
+                return Ok(result);
             }
             catch (Exception ex)
             {

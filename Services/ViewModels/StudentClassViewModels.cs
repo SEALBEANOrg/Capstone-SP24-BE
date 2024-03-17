@@ -58,4 +58,5 @@ namespace Services.ViewModels
     {
         public Guid ClassId { get; set; }
         public string Name { get; set; }
+    }
 }
