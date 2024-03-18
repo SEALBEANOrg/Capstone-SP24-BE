@@ -62,29 +62,90 @@ namespace WebAPI.Controllers
             }
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> MomoReturn([FromQuery] MomoOneTimePaymentResultRequest response)
-        //{
-        //    string returnUrl = string.Empty;
-        //    var returnModel = new PaymentReturnDtos();
-        //    var processResult = await mediator.Send(response.Adapt<ProcessMomoPaymentReturn>());
+        [HttpGet("buy-point")]
+        //[Authorize]
+        [AllowAnonymous]
+        [SwaggerResponse(200, "url redirect to momo", typeof(string))]
+        public async Task<IActionResult> MomoReturn([FromQuery] TransactionViaMomo transaction)
+        {
+            try
+            {
+                var currentUser = await _userServices.GetCurrentUser();
+                var returnUrl = await _transactionServices.CreatePaymentAsync(transaction, currentUser);
 
-        //    if (processResult.Success)
-        //    {
-        //        returnModel = processResult.Data.Item1 as PaymentReturnDtos;
-        //        returnUrl = processResult.Data.Item2 as string;
-        //    }
+                if (returnUrl == null)
+                {
+                    return BadRequest(new
+                    {
+                        Message = "Tạo thanh toán thất bại"
+                    });
+                }
 
-        //    if (returnUrl.EndsWith("/"))
-        //        returnUrl = returnUrl.Remove(returnUrl.Length - 1, 1);
-        //    return Redirect($"{returnUrl}?{returnModel.ToQueryString()}");
-        //}
+                return Ok(returnUrl);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
 
-        //[HttpGet]
-        //public IActionResult PaymentCallBack()
-        //{
-        //    var response = _momoService.PaymentExecuteAsync(HttpContext.Request.Query);
-        //    return View(response);
-        //}
+        [HttpPost("momo/callback-ipn")]
+        [AllowAnonymous]
+        [SwaggerResponse(204)]
+        public async Task<IActionResult> MomoCallBackIpn([FromBody] CallbackViaMomo transaction)
+        {
+            try
+            {
+                var result = await _transactionServices.MomoCallBackIpn(transaction);
+
+                if (result == false)
+                {
+                    return BadRequest(new
+                    {
+                        Message = "Cập nhật thanh toán thất bại"
+                    });
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("momo/callback-redirect")]
+        [AllowAnonymous]
+        [SwaggerResponse(200, "Is success", typeof(string))]
+        public async Task<IActionResult> MomoCallBackRedirect([FromQuery] CallbackViaMomo transaction)
+        {
+            try
+            {
+                var result = await _transactionServices.MomoCallBackRedirect(transaction);
+
+                if (result == false)
+                {
+                    return BadRequest(new
+                    {
+                        Message = "Thanh toán thất bại"
+                    });
+                }
+
+                return Ok("Thanh toán thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
     }
 }

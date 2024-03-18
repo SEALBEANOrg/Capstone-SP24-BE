@@ -70,13 +70,13 @@ namespace Services.Services
             }
         }
 
-        public string MomoDeposit(TransactionViaMomo transactionViaMomo)
+        public string MomoDeposit(TransactionViaMomo transactionViaMomo, Guid currentUserId)
         {
             var orderId = Guid.NewGuid().ToString();
             var requestId = orderId;
             string rawHash = "accessKey=" + _options.Value.AccessKey +
               "&amount=" + transactionViaMomo.PointValue +
-              "&extraData=" + "" +
+              "&extraData=" + currentUserId +
               "&ipnUrl=" + _options.Value.NotifyUrl +
               "&orderId=" + orderId +
               "&orderInfo=" + "Nạp điểm" +
@@ -99,8 +99,8 @@ namespace Services.Services
                 { "orderInfo", "Nạp điểm" },
                 { "redirectUrl", _options.Value.ReturnUrl },
                 { "ipnUrl", _options.Value.NotifyUrl },
-                { "lang", "vi" },
-                { "extraData", "" },
+                { "lang", "en" },
+                { "extraData", currentUserId },
                 { "requestType", _options.Value.RequestType },
                 { "signature", signature }
             };
@@ -126,7 +126,7 @@ namespace Services.Services
               "&requestId=" + callbackViaMomo.RequestId +
               "&responseTime=" + callbackViaMomo.ResponseTime +
               "&resultCode=" + callbackViaMomo.ResultCode +
-              "&transId=" + callbackViaMomo.TransactionId
+              "&transId=" + callbackViaMomo.TransId
               ;
 
             string signature = ComputeHmacSha256(rawHash, secretKey);
@@ -143,19 +143,16 @@ namespace Services.Services
         // create signature for payment
         private string ComputeHmacSha256(string message, string secretKey)
         {
-            var keyBytes = Encoding.UTF8.GetBytes(secretKey);
-            var messageBytes = Encoding.UTF8.GetBytes(message);
-
-            byte[] hashBytes;
-
-            using (var hmac = new HMACSHA256(keyBytes))
+            byte[] keyByte = Encoding.UTF8.GetBytes(secretKey);
+            byte[] messageBytes = Encoding.UTF8.GetBytes(message);
+            using (var hmacsha256 = new HMACSHA256(keyByte))
             {
-                hashBytes = hmac.ComputeHash(messageBytes);
+                byte[] hashmessage = hmacsha256.ComputeHash(messageBytes);
+                string hex = BitConverter.ToString(hashmessage);
+                hex = hex.Replace("-", "").ToLower();
+                return hex;
+
             }
-
-            var hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-
-            return hashString;
         }
 
         

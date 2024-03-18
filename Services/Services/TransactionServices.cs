@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Repositories;
+using Repositories.Models;
 using Services.Interfaces;
 using Services.ViewModels;
 using System;
@@ -68,11 +69,11 @@ namespace Services.Services
 
 
         //create payment
-        public async Task<string> CreatePaymentAsync(TransactionViaMomo model)
+        public async Task<string> CreatePaymentAsync(TransactionViaMomo model, Guid currentUserId)
         {
             try
             {
-                var redirectUrl = _momoServices.MomoDeposit(model);
+                var redirectUrl = _momoServices.MomoDeposit(model, currentUserId);
                 return redirectUrl;
 
             }
@@ -82,46 +83,82 @@ namespace Services.Services
             }
         }
 
-        //public TransactionResponse CallbackMomo(CallbackViaMomo callbackViaMomo, Guid currentUserId)
-        //{
-        //    try
-        //    {
-        //        var verify = _momoServices.VerifyMomoCallback(callbackViaMomo);
-        //        if (verify)
-        //        {
-        //            var isSuccess = callbackViaMomo.ResultCode == "0";
-        //            var orderId = callbackViaMomo.orderId;
-        //            var orderInfo = callbackViaMomo.orderInfo;
-        //            var pointValue = callbackViaMomo.amount;
-        //            var userId = callbackViaMomo.partnerCode;
-        //            var transaction = new Transaction()
-        //            {
-        //                Id = Guid.NewGuid(),
-        //                UserId = Guid.Parse(userId),
-        //                PointValue = pointValue,
-        //                OrderId = orderId,
-        //                OrderInfo = orderInfo,
-        //                CreatedAt = DateTime.Now
-        //            };
-        //            _unitOfWork.TransactionRepo.Add(transaction);
-        //            _unitOfWork.Commit();
-        //        }
-        //        else
-        //        {
-        //            throw new Exception("Giao dịch Momo không hợp lệ");
-        //        }
-        //        return new TransactionResponse()
-        //        {
-        //            PointValue = pointValue,
-        //            OrderId = orderId,
-        //            OrderInfo = orderInfo
-        //        };
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        throw new Exception("Lỗi ở TransactionServices - CallbackMomo: " + e.Message);
-        //    }
-        //}
+        public async Task<bool> MomoCallBackIpn(CallbackViaMomo callbackViaMomo)
+        {
+            try
+            {
+                Console.WriteLine("call back đã đc gọi");
+                var verify = _momoServices.VerifyMomoCallback(callbackViaMomo);
+                if (verify)
+                {
+                    var isSuccess = callbackViaMomo.ResultCode == "0";
+                    if (!isSuccess)
+                    {
+                        throw new Exception("Giao dịch Momo không thành công");
+                    }
 
+                    var orderId = callbackViaMomo.OrderId;
+                    var orderInfo = callbackViaMomo.OrderInfo;
+                    var pointValue = callbackViaMomo.Amount;
+                    Guid currentUserId = Guid.Parse(callbackViaMomo.ExtraData);
+                    
+                    var transaction = new Transaction()
+                    {
+                        UserId = currentUserId,
+                        PointValue = (int)pointValue,
+                        TransactionCode = callbackViaMomo.TransId.ToString(),
+                        CreatedOn = DateTime.Now,
+                        Type = 0,
+
+                    };
+                    _unitOfWork.TransactionRepo.AddAsync(transaction);
+                    
+                    var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
+                    user.Point += (int)pointValue;
+                    _unitOfWork.UserRepo.Update(user);
+
+                    var result = await _unitOfWork.SaveChangesAsync();
+
+                    return result > 0 ? true : false;                                                   
+                }
+                else
+                {
+                    throw new Exception("Giao dịch Momo không hợp lệ");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở TransactionServices - CallbackMomo: " + e.Message);
+            }
+        }
+
+        public async Task<bool> MomoCallBackRedirect(CallbackViaMomo callbackViaMomo)
+        {
+            try
+            {
+                var verify = _momoServices.VerifyMomoCallback(callbackViaMomo);
+                if (verify)
+                {
+                    var isSuccess = callbackViaMomo.ResultCode == "0";
+                    if (!isSuccess)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+
+                }
+                else
+                {
+                    throw new Exception("Giao dịch Momo không hợp lệ");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở TransactionServices - CallbackMomo: " + e.Message);
+            }
+        }
     }
 }

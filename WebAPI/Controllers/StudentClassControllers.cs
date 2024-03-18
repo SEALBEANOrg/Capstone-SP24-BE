@@ -244,6 +244,7 @@ namespace WebAPI.Controllers
 
         [HttpPost("{classId}/import-students")]
         [SwaggerResponse(200, "Is success", typeof(IEnumerable<StudentViewModels>))]
+        [AllowAnonymous]
         public async Task<IActionResult> ImportExcelToAddStudent(IFormFile file, Guid classId)
         {
             try
