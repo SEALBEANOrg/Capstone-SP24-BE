@@ -5,6 +5,7 @@ using ExagenSharedProject;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using OfficeOpenXml;
 using Repositories;
 using Repositories.Models;
 using Services.Interfaces;
@@ -647,6 +648,47 @@ namespace Services.Services
             }
         }
 
+        public async Task<ExportResult> ExportResult(Guid examId)
+        {
+            var exam = await _unitOfWork.ExamRepo.FindByField(exam => exam.ExamId == examId, includes => includes.Class);
+            var examMark = await _unitOfWork.ExamMarkRepo.FindListByField(exam => exam.ExamId == examId, includes => includes.Student);
+            var fileName = "BaoCaoDiem-" + exam.TestCode + "-" + exam.Class.Name + ".xlsx";
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                // Create a new Excel package
+                using (ExcelPackage package = new ExcelPackage(memoryStream))
+                {
+                    // Add a worksheet to the Excel package
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Sheet1");
 
+                    // Set column names
+                    worksheet.Cells[1, 1].Value = $"Kì thi: {exam.Name} - Mã cuộc thi: {exam.TestCode}";
+                    worksheet.Cells[2, 1].Value = $"Lớp: {exam.Class.Name}";
+                    worksheet.Cells[3, 1].Value = "Mã số sinh viên";
+                    worksheet.Cells[3, 2].Value = "Họ và tên";
+                    worksheet.Cells[3, 3].Value = "Mã đề";
+                    worksheet.Cells[3, 4].Value = "Điểm";
+
+                    // Add data to the worksheet
+                    // Assuming you have a list of students with their details
+                    int row = 4;
+                    foreach (var em in examMark.OrderBy(o => o.StudentNo))
+                    {
+                        worksheet.Cells[row, 1].Value = em.StudentNo;
+                        worksheet.Cells[row, 2].Value = em.Student.FullName;
+                        worksheet.Cells[row, 3].Value = em.PaperCode;
+                        worksheet.Cells[row, 4].Value = em.Mark;
+                        row++;
+                    }
+
+                    // Save the Excel package to the memory stream
+                    package.Save();
+                }
+
+                // Return the byte array
+                return new ExportResult { Bytes = memoryStream.ToArray(), FileName = fileName };
+            }
+
+        }
     }
 }

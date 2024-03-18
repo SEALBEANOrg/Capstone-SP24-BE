@@ -122,6 +122,12 @@ namespace Services.ViewModels
         public List<AnserSheet>? anserSheets { get; set; }
     }
 
+    public class ExportResult
+    {
+        public byte[] Bytes { get; set; }
+        public string FileName { get; set; }
+    }
+
     public class AnserSheet
     {
         public Guid DocumentID { get; set; }

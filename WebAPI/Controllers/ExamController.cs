@@ -227,5 +227,27 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
+        [HttpGet("expor-result")]
+        //[Authorize]
+        [AllowAnonymous]
+        [SwaggerResponse(200, "List of sample exam sources", typeof(IEnumerable<ExamSourceViewModel>))]
+        public async Task<IActionResult> ExportResult(Guid examId)
+        {
+            try
+            {
+                var result = await _testResultServices.ExportResult(examId);
+                return File(result.Bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.FileName);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
     }
 }
