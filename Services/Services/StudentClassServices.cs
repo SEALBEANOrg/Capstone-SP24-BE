@@ -253,30 +253,36 @@ namespace Services.Services
 
         public async Task<bool> DeleteStudentFromClass(Guid studentId)
         {
-            var student = await _unitOfWork.StudentRepo.FindByField(student => student.StudentId == studentId);
-            if (student == null)
-            {
-                throw new Exception("Học sinh không tồn tại");
-            }
-
-            var studentClass = await _unitOfWork.StudentClassRepo.FindByField(studentClass => studentClass.ClassId == student.ClassId);
-            if (studentClass == null)
-            {
-                throw new Exception("Lớp học không tồn tại");
-            }
-
-            var currentUser = await GetCurrentUser();
-
-            if (studentClass.CreatedBy != currentUser)
-            {
-                throw new Exception("Bạn không có quyền xóa học sinh khỏi lớp học này");
-            }
-
-            studentClass.ModifiedOn = DateTime.Now;
-            studentClass.ModifiedBy = currentUser;
-
             try
             {
+                var student = await _unitOfWork.StudentRepo.FindByField(student => student.StudentId == studentId);
+                if (student == null)
+                {
+                    throw new Exception("Học sinh không tồn tại");
+                }
+
+                var studentClass = await _unitOfWork.StudentClassRepo.FindByField(studentClass => studentClass.ClassId == student.ClassId);
+                if (studentClass == null)
+                {
+                    throw new Exception("Lớp học không tồn tại");
+                }
+
+                var currentUser = await GetCurrentUser();
+                    
+                if (studentClass.CreatedBy != currentUser)
+                {
+                    throw new Exception("Bạn không có quyền xóa học sinh khỏi lớp học này");
+                }
+                    
+                studentClass.ModifiedOn = DateTime.Now;
+                studentClass.ModifiedBy = currentUser;
+
+                var studentMark = await _unitOfWork.ExamMarkRepo.FindListByField(examMark => examMark.StudentId == studentId);
+                if (studentMark != null)
+                {
+                    _unitOfWork.ExamMarkRepo.RemoveRange(studentMark);
+                }
+
                 _unitOfWork.StudentRepo.Remove(student);
                 _unitOfWork.StudentClassRepo.Update(studentClass);
 
