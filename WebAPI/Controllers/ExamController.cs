@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 using Services.Interfaces;
 using Services.ViewModels;
 using Swashbuckle.AspNetCore.Annotations;
@@ -229,8 +230,8 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("expor-result")]
-        //[Authorize]
-        [AllowAnonymous]
+        [Authorize(Roles = "1,2")]
+        //[AllowAnonymous]
         [SwaggerResponse(200, "List of sample exam sources", typeof(IEnumerable<ExamSourceViewModel>))]
         public async Task<IActionResult> ExportResult(Guid examId)
         {

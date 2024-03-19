@@ -18,6 +18,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+using LicenseContext = OfficeOpenXml.LicenseContext;
 
 namespace Services.Services
 {
@@ -650,6 +651,7 @@ namespace Services.Services
 
         public async Task<ExportResult> ExportResult(Guid examId)
         {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial; 
             var exam = await _unitOfWork.ExamRepo.FindByField(exam => exam.ExamId == examId, includes => includes.Class);
             var examMark = await _unitOfWork.ExamMarkRepo.FindListByField(exam => exam.ExamId == examId, includes => includes.Student);
             var fileName = "BaoCaoDiem-" + exam.TestCode + "-" + exam.Class.Name + ".xlsx";
