@@ -438,7 +438,7 @@ namespace Repositories.Models
 
             modelBuilder.Entity<Transaction>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.TransactionId);
 
                 entity.ToTable("Transaction");
 
