@@ -92,7 +92,7 @@ namespace Services.Services
                     }
                 };
 
-                Guid templatePaperId = Guid.Parse("2fc0e6e6-edd7-ee11-90e0-90610ca5f0a3");
+                Guid templatePaperId = Guid.Parse("bc0ba4fd-57e7-ee11-90fb-e848b8c82000");
                 // create paper set
                 var paperSet = new PaperSet();
                 paperSet.SubjectId = (await _unitOfWork.SubjectRepo.FindByField(subject => subject.Grade == examCreate.Grade && EnumStatus.Subject[examCreate.SubjectEnum].Contains(subject.Name))).SubjectId;
