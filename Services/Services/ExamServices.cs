@@ -28,13 +28,15 @@ namespace Services.Services
         private readonly IMapper _mapper;
         private readonly IDocumentServices _documentServices;
         private readonly HttpClient _httpClient;
+        private readonly IS3Services _s3Services;
 
-        public ExamServices(IUnitOfWork unitOfWork, IMapper mapper, IDocumentServices documentServices, HttpClient httpClient)
+        public ExamServices(IUnitOfWork unitOfWork, IMapper mapper, IS3Services s3Services, IDocumentServices documentServices, HttpClient httpClient)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _documentServices = documentServices;
             _httpClient = httpClient;
+            _s3Services = s3Services;
         }
 
         public async Task<Response> SendImage(ResultForScanViewModel Image)
@@ -619,10 +621,27 @@ namespace Services.Services
                 }
                 var papers = await _unitOfWork.PaperRepo.FindListByField(paper => paper.PaperSetId == exam.PaperSetId);
                 var anserSheet = await _unitOfWork.DocumentRepo.FindListByField(document => document.Type == 0);
+                
+                var papersToDownload = new List<PaperOfExam>();
+                foreach (var paper in papers)
+                {
+                    var p = _mapper.Map<PaperOfExam>(paper);
+                    p.S3Url = await _s3Services.GetObjectUrlAsync(paper.KeyS3);
+                    papersToDownload.Add(p);
+                }
+
+                var answerSheetToDownload = new List<AnserSheet>();
+                foreach (var answer in anserSheet)
+                {
+                    var a = _mapper.Map<AnserSheet>(answer);
+                    a.S3Url = await _s3Services.GetObjectUrlAsync(answer.KeyS3);
+                    answerSheetToDownload.Add(a);
+                }
+                
                 var result = new ExamSourceViewModel
                 {
-                    paperOfExams = _mapper.Map<List<PaperOfExam>>(papers),
-                    anserSheets = _mapper.Map<List<AnserSheet>>(anserSheet)
+                    paperOfExams = papersToDownload,
+                    anserSheets = answerSheetToDownload
                 };
                 return result;
             }
@@ -632,7 +651,7 @@ namespace Services.Services
             }
         }
 
-        public async Task<byte[]> GetPaperById(Guid paperId)
+        public async Task<string> GetPaperById(Guid paperId)
         {
             try 
             {                 
@@ -641,7 +660,9 @@ namespace Services.Services
                 {
                     throw new Exception("Không tìm thấy đề thi");
                 }
-                return paper.PaperContent;
+                var urlS3 = await _s3Services.GetObjectUrlAsync(paper.KeyS3);
+                
+                return urlS3;
             }
             catch (Exception e)
             {

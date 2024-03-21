@@ -5,12 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Repositories;
 using Services.Interfaces;
+using Services.Utilities;
 using Services.ViewModels;
 using Spire.Doc;
 using Spire.Doc.Documents;
 using Spire.Doc.Fields;
 using Spire.Doc.Fields.OMath;
 using System.Globalization;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -23,11 +25,13 @@ namespace Services.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IS3Services _s3Services;
 
-        public DocumentServices(IUnitOfWork unitOfWork, IMapper mapper)
+        public DocumentServices(IUnitOfWork unitOfWork, IMapper mapper, IS3Services s3Services)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _s3Services = s3Services;
         }
 
         public async Task<bool> AddDocument(DocumentCreate documentCreate, Guid currentUser)
@@ -37,10 +41,26 @@ namespace Services.Services
                 
                 var file = documentCreate.FileImport;
                 var stream = file.OpenReadStream();
-                var bytes = new byte[stream.Length];
-                stream.Read(bytes, 0, bytes.Length);
-                document.Data = bytes;
-
+                MemoryStream memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                var keyS3 = "";
+                if (documentCreate.Type == 0)
+                {
+                    keyS3 = "templates/answer-sheet/" + $"{Utils.FormatFileName(documentCreate.Name).Trim()}-{DateTime.Now.Ticks}.docx";
+                }
+                else if (documentCreate.Type == 1)
+                {
+                    keyS3 = "templates/paper/" + $"{Utils.FormatFileName(documentCreate.Name).Trim()}-{DateTime.Now.Ticks}.docx";
+                }
+                var statusCode = await _s3Services.UploadFileIntoS3Async(memoryStream, keyS3);
+                if (statusCode == HttpStatusCode.OK)
+                {
+                    document.KeyS3 = keyS3;
+                }
+                else
+                {
+                    return false;
+                }
                 document.CreatedBy = currentUser;           
                 document.CreatedOn = DateTime.Now;
             
@@ -69,7 +89,15 @@ namespace Services.Services
                 _unitOfWork.DocumentRepo.Remove(document);
                 var result = await _unitOfWork.SaveChangesAsync();
 
-                return result > 0;
+                if (result > 0) 
+                {
+                    var statusCode = await _s3Services.DeleteObjectAsync(document.KeyS3);
+                    return statusCode == HttpStatusCode.NoContent;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception e)
             {
@@ -89,7 +117,14 @@ namespace Services.Services
                     return null;
                 }
 
-                var documentViewModels = _mapper.Map<IEnumerable<DocumentViewModels>>(documents);
+                var documentViewModels = new List<DocumentViewModels>();
+
+                foreach (var document in documents)
+                {
+                    var documentViewModel = _mapper.Map<DocumentViewModels>(document);
+                    documentViewModel.UrlS3 = await _s3Services.GetObjectUrlAsync(document.KeyS3);
+                    documentViewModels.Add(documentViewModel);
+                }
 
                 return documentViewModels;
             }
@@ -111,6 +146,7 @@ namespace Services.Services
                 }
 
                 var documentViewModel = _mapper.Map<DocumentViewModel>(document);
+                documentViewModel.UrlS3 = await _s3Services.GetObjectUrlAsync(document.KeyS3);
 
                 return documentViewModel;
             }
@@ -120,31 +156,30 @@ namespace Services.Services
             }
         }
 
-        public async Task<bool> UploadDocument(MemoryStream stream, DocumentCreate documentCreate)
-        {
-            try
-            {
-                var document = new Repositories.Models.Document
-                {
-                    Name = documentCreate.Name,
-                    Type = documentCreate.Type,
-                    CreatedOn = DateTime.Now,
-                    CreatedBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
-                    Description = documentCreate.Description,
-                    Data = stream.ToArray(),
-                };
+        //public async Task<bool> UploadDocument(MemoryStream stream, DocumentCreate documentCreate)
+        //{
+        //    try
+        //    {
+        //        var document = new Repositories.Models.Document
+        //        {
+        //            Name = documentCreate.Name,
+        //            Type = documentCreate.Type,
+        //            CreatedOn = DateTime.Now,
+        //            CreatedBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
+        //            Description = documentCreate.Description,
+        //            Data = stream.ToArray(),
+        //        };
 
-                _unitOfWork.DocumentRepo.AddAsync(document);
-                var result = await _unitOfWork.SaveChangesAsync();
+        //        _unitOfWork.DocumentRepo.AddAsync(document);
+        //        var result = await _unitOfWork.SaveChangesAsync();
 
-                return result > 0;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Lỗi ở DocumentServices - UploadDocument: " + e.Message);
-            }
-        }
-
+        //        return result > 0;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        throw new Exception("Lỗi ở DocumentServices - UploadDocument: " + e.Message);
+        //    }
+        //}
 
         public async Task<Guid> CreateTestPaper(Guid currentUserId, Guid paperSetId, DetailOfPaper detailOfPaper, Guid templatePaperId, bool shuffleAnswers)
         {
@@ -161,7 +196,8 @@ namespace Services.Services
                 string correctAnswer = "";
 
                 //read file
-                var binaryTemplate = (await _unitOfWork.DocumentRepo.FindByField(document => document.DocumentId == templatePaperId)).Data;
+                var keyS3OfTemplate = (await _unitOfWork.DocumentRepo.FindByField(document => document.DocumentId == templatePaperId)).KeyS3;
+                var binaryTemplate = await _s3Services.GetByteOfFileAsync(keyS3OfTemplate);
 
                 using (var stream = new MemoryStream(binaryTemplate))
                 {
@@ -255,19 +291,24 @@ namespace Services.Services
                     //newDoc.Sections[0].Paragraphs.Add(endPara);
 
                     // Save new doc to stream
-                    newDoc.SaveToStream(memoryStream, Spire.Doc.FileFormat.Docx);
+                    newDoc.SaveToStream(memoryStream, FileFormat.Docx);
 
                     //set file name
-                    string fileName = string.Concat(detailOfPaper.NameOfTest.Normalize(NormalizationForm.FormD)
-                        .Where(ch => CharUnicodeInfo.GetUnicodeCategory(ch) != UnicodeCategory.NonSpacingMark))
-                        .Normalize(NormalizationForm.FormC) + $"-{detailOfPaper.PaperCode}" + ".docx";
+                    string nameOfExam = Utils.FormatFileName(detailOfPaper.NameOfTest) + $"-{DateTime.Now.Ticks}";
+
+                    var statusCode = await _s3Services.UploadFileIntoS3Async(memoryStream, $"/papers/{currentUserId}/{nameOfExam}/{detailOfPaper.PaperCode}.docx");
+
+                    if (statusCode != HttpStatusCode.OK)
+                    {
+                        throw new Exception("Lỗi khi upload file lên S3");
+                    }
 
                     var paper = new Repositories.Models.Paper
                     {
                         CreatedBy = currentUserId,
                         CreatedOn = DateTime.Now,
-                        PaperContent = memoryStream.ToArray(),
-                        PaperAnswer = correctAnswer,
+                        KeyS3 = $"papers/{currentUserId}/{nameOfExam}/{detailOfPaper.PaperCode}.docx",
+                        PaperAnswer = correctAnswer, 
                         PaperCode = detailOfPaper.PaperCode,
                         PaperSetId = paperSetId
                     };
@@ -406,8 +447,7 @@ namespace Services.Services
             }
         }
 
-
-
+        
        
     
     }

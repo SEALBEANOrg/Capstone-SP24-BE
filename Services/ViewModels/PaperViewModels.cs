@@ -12,13 +12,13 @@ namespace Services.ViewModels
 
     public class PaperContentViewModel
     {
-        public string Content { get; set; } = null!;
+        public string UrlS3 { get; set; } = null!;
         public string Answer { get; set; } = null!;
     }
 
     public class PaperToDownload
     {
         public string PaperCode { get; set; } = null!;
-        public byte[] Content { get; set; } = null!;
+        public string UrlS3 { get; set; } = null!;
     }
 }

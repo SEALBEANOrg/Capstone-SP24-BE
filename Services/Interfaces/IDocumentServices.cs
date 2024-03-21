@@ -14,6 +14,6 @@ namespace Services.Interfaces
         Task<bool> DeleteDocument(Guid documentId);
         Task<IEnumerable<DocumentViewModels>> GetAllDocument(int? type);
         Task<DocumentViewModel> GetDocumentById(Guid documentId);
-        Task<bool> UploadDocument(MemoryStream stream, DocumentCreate documentCreate);
+        //Task<bool> UploadDocument(MemoryStream stream, DocumentCreate documentCreate);
     }
 }

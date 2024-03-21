@@ -24,6 +24,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [SwaggerResponse(200, "sample document", typeof(IEnumerable<DocumentViewModels>))]
         public async Task<IActionResult> GetAllDocument(int? type)
         {
@@ -43,6 +44,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{documentId}")]
+        [AllowAnonymous]
         [SwaggerResponse(200, "sample document", typeof(DocumentViewModel))]
         public async Task<IActionResult> GetDocumentById(Guid documentId)
         {
@@ -62,8 +64,8 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "0")]
-        //[AllowAnonymous]
+        //[Authorize(Roles = "0")]
+        [AllowAnonymous]
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> AddDocument([FromForm] DocumentCreate documentCreate)
         {
@@ -119,7 +121,8 @@ namespace WebAPI.Controllers
         //}
 
         [HttpDelete("{documentId}")]
-        [Authorize(Roles = "0")]
+        //[Authorize(Roles = "0")]
+        [AllowAnonymous]
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> DeleteDocument(Guid documentId)
         {

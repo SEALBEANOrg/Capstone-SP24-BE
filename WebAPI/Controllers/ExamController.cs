@@ -210,14 +210,14 @@ namespace WebAPI.Controllers
 
         [HttpGet("paper/{paperId}")]
         [AllowAnonymous]
-        [SwaggerResponse(200, "List of sample exam sources", typeof(IEnumerable<ExamSourceViewModel>))]
+        [SwaggerResponse(200, "url", typeof(string))]
         public async Task<IActionResult> GetPaperById(Guid paperId)
         {
             try
             {
-                byte[] bytes = await _testResultServices.GetPaperById(paperId);
+                string urlS3 = await _testResultServices.GetPaperById(paperId);
                 // return file to client side to download
-                return File(bytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "TempFile.docx");
+                return File(urlS3, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "TempFile.docx");
 
             }
             catch (Exception ex)
@@ -232,7 +232,7 @@ namespace WebAPI.Controllers
         [HttpGet("expor-result")]
         [Authorize(Roles = "1,2")]
         //[AllowAnonymous]
-        [SwaggerResponse(200, "List of sample exam sources", typeof(IEnumerable<ExamSourceViewModel>))]
+        [SwaggerResponse(200, "Export result", typeof(ExportResult))]
         public async Task<IActionResult> ExportResult(Guid examId)
         {
             try

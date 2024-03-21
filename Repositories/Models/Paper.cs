@@ -12,11 +12,11 @@ namespace Repositories.Models
 
         public Guid PaperId { get; set; }
         public Guid PaperSetId { get; set; }
-        public byte[] PaperContent { get; set; } = null!;
         public string PaperAnswer { get; set; } = null!;
         public int PaperCode { get; set; }
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }
+        public string KeyS3 { get; set; } = null!;
 
         public virtual PaperSet PaperSet { get; set; } = null!;
 

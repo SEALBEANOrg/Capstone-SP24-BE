@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,13 @@ namespace Services.Utilities
                 list[k] = list[n];
                 list[n] = value;
             }
+        }
+
+        public static string FormatFileName(string name)
+        {
+            return string.Concat(name.Normalize(NormalizationForm.FormD)
+                        .Where(ch => CharUnicodeInfo.GetUnicodeCategory(ch) != UnicodeCategory.NonSpacingMark))
+                        .Normalize(NormalizationForm.FormC).Replace(" ", "").Replace("Đ", "D").Trim();
         }
 
     }

@@ -56,6 +56,7 @@ namespace WebAPI
             services.AddScoped<IUserServices, UserServices>();
             services.AddScoped<ITransactionServices, TransactionServices>();
             services.AddScoped<IMomoServices, MomoServices>();
+            services.AddScoped<IS3Services, S3Services>();
             #endregion
            
             services.AddSingleton<GlobalExceptionMiddleware>();

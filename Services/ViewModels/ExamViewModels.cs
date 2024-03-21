@@ -131,7 +131,7 @@ namespace Services.ViewModels
     public class AnserSheet
     {
         public Guid DocumentID { get; set; }
-        public byte[] Data { get; set; }
+        public string S3Url { get; set; }
         public string Name { get; set; }
     }
 
@@ -139,7 +139,7 @@ namespace Services.ViewModels
     {
         public Guid PaperID { get; set; }
         public int PaperCode { get; set; }
-        public byte[] PaperContent { get; set; }
+        public string S3Url { get; set; }
 
     }
 }

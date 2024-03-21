@@ -21,6 +21,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructure();
 builder.Services.AddServices();
 builder.Services.Configure<MomoModel>(builder.Configuration.GetSection("MomoAPI"));
+builder.Services.Configure<AWSCredential>(builder.Configuration.GetSection("AWSCredential"));
 builder.Services.AddHttpClient("AI_Services", u => u.BaseAddress = new Uri(builder.Configuration["AI_Services"]));
 
 #region JWT(use)
