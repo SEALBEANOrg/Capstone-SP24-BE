@@ -19,6 +19,7 @@ namespace Repositories.Models
         public bool ShuffleAnswer { get; set; }
         public bool ShuffleQuestion { get; set; }
         public bool SortByDifficulty { get; set; }
+        public string KeyS3 { get; set; } = null!;
 
         public virtual ICollection<Exam> Exams { get; set; }
         public virtual ICollection<Paper> Papers { get; set; }

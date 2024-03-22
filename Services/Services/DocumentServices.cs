@@ -3,6 +3,7 @@ using Google.Apis.Logging;
 using Google.Cloud.Storage.V1;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using OfficeOpenXml;
 using Repositories;
 using Services.Interfaces;
 using Services.Utilities;
@@ -181,7 +182,7 @@ namespace Services.Services
         //    }
         //}
 
-        public async Task<Guid> CreateTestPaper(Guid currentUserId, Guid paperSetId, DetailOfPaper detailOfPaper, Guid templatePaperId, bool shuffleAnswers)
+        public async Task<Guid> CreateTestPaper(Guid currentUserId, Guid paperSetId, DetailOfPaper detailOfPaper, Guid templatePaperId, bool shuffleAnswers, ExcelWorksheet worksheet)
         {
             try
             {
@@ -230,6 +231,8 @@ namespace Services.Services
                     //CLEAR ALL PARAgraph of new doc
                     newDoc.Sections[0].Paragraphs.Clear();
 
+                    worksheet.Cells[1, detailOfPaper.PaperCode].Value = detailOfPaper.PaperCode;
+
                     foreach (var questionId in detailOfPaper.QuestionIds)
                     {
                         var question = await _unitOfWork.QuestionRepo.FindByField(q => q.QuestionId == questionId);
@@ -275,6 +278,8 @@ namespace Services.Services
                             if (question.CorrectAnswer == a)
                             {
                                 correctAnswer += $"{questionId}~{numOfQuestion}:{prefix.TrimStart().First()}|";
+
+                                worksheet.Cells[numOfQuestion + 1, detailOfPaper.PaperCode].Value = prefix.TrimStart().First();
                             }
 
                             no++;
@@ -296,7 +301,7 @@ namespace Services.Services
                     //set file name
                     string nameOfExam = Utils.FormatFileName(detailOfPaper.NameOfTest) + $"-{DateTime.Now.Ticks}";
 
-                    var statusCode = await _s3Services.UploadFileIntoS3Async(memoryStream, $"/papers/{currentUserId}/{nameOfExam}/{detailOfPaper.PaperCode}.docx");
+                    var statusCode = await _s3Services.UploadFileIntoS3Async(memoryStream, $"papers/{currentUserId}/{nameOfExam}/{detailOfPaper.PaperCode}.docx");
 
                     if (statusCode != HttpStatusCode.OK)
                     {

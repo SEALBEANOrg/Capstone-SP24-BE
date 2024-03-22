@@ -139,6 +139,7 @@ namespace Services.Services
                     return null;
                 }
 
+                int totalUse = 0;
                 //add section config
                 var sectionConfigs = new List<SectionPaperSetConfig>();
                 foreach (var section in examCreate.Sections)
@@ -151,6 +152,7 @@ namespace Services.Services
                         SectionId = section.SectionId,
                         NumInPaper = section.Use
                     };
+                    totalUse += section.Use;
                     sectionConfigs.Add(sectionConfig);
                 }
                 _unitOfWork.SectionPaperSetConfigRepo.AddRangeAsync(sectionConfigs);
@@ -254,6 +256,16 @@ namespace Services.Services
                     }
                 }
 
+                // Tạo file Excel để lưu điểm 
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                var package = new ExcelPackage();
+                var worksheet = package.Workbook.Worksheets.Add("Sheet1");
+                worksheet.Cells[1, 1].Value = "Mã đề";
+                for (int i = 1; i <= totalUse; i++)
+                {
+                    worksheet.Cells[1, i + 1].Value = i;
+                }
+
                 // moi de thi lay src rieng
                 var questionIdsInPaper = new List<Guid>();
                 var questionInExams = new List<QuestionInExam>();
@@ -313,7 +325,7 @@ namespace Services.Services
                         {
                             Utils.Shuffle(questionIdsInPaper);
                             detailOfPaper.QuestionIds = questionIdsInPaper;
-                            Guid id = await _documentServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
+                            Guid id = await _documentServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers, worksheet);
                             paperIds.Add(id);
                             detailOfPaper.PaperCode = ++paperCode;
                         }
@@ -331,7 +343,7 @@ namespace Services.Services
                             detailOfPaper.QuestionIds.AddRange(vdt);
                             Utils.Shuffle(vdc);
                             detailOfPaper.QuestionIds.AddRange(vdc);
-                            Guid id = await _documentServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
+                            Guid id = await _documentServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers, worksheet);
                             paperIds.Add(id);
                             detailOfPaper.PaperCode = ++paperCode;
                         }
@@ -349,7 +361,7 @@ namespace Services.Services
                         detailOfPaper.QuestionIds.AddRange(vdc);
                         for (int j = 0; j < examCreate.NumOfPaperCode; j++)
                         {
-                            Guid id = await _documentServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
+                            Guid id = await _documentServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers, worksheet);
                             paperIds.Add(id);
                             detailOfPaper.PaperCode = ++paperCode;
                         }
@@ -360,11 +372,20 @@ namespace Services.Services
                         detailOfPaper.QuestionIds = questionIdsInPaper;
                         for (int j = 0; j < examCreate.NumOfPaperCode; j++)
                         {
-                            Guid id = await _documentServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers);
+                            Guid id = await _documentServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers, worksheet);
                             paperIds.Add(id);
                             detailOfPaper.PaperCode = ++paperCode;
                         }
                     }
+
+                    package.Save();
+                    // convert package to memorystream 
+                    var stream = new MemoryStream();
+                    package.SaveAs(stream);
+                    stream.Position = 0;
+                    string nameOfExam = Utils.FormatFileName(detailOfPaper.NameOfTest) + $"-{DateTime.Now.Ticks}";
+                    _s3Services.UploadFileIntoS3Async(stream, $"papers/{currentUserId}/{nameOfExam}/DapAnTongHop.xlsx");
+                    paperSet.KeyS3 = $"papers/{currentUserId}/{nameOfExam}/DapAnTongHop.xlsx";
 
                     //add questioninexam
                     foreach (var questionId in detailOfPaper.QuestionIds)
@@ -614,7 +635,7 @@ namespace Services.Services
         {
             try
             {
-                var exam = await _unitOfWork.ExamRepo.FindByField(exam => exam.ExamId == examId);
+                var exam = await _unitOfWork.ExamRepo.FindByField(exam => exam.ExamId == examId, include => include.Class, includes => includes.PaperSet);
                 if (exam == null)
                 {
                     throw new Exception("Không tìm thấy đề thi");
@@ -640,8 +661,10 @@ namespace Services.Services
                 
                 var result = new ExamSourceViewModel
                 {
-                    paperOfExams = papersToDownload,
-                    anserSheets = answerSheetToDownload
+                    ExamName = exam.Name + " - " + exam.Class.Name + " - Môn " + (await _unitOfWork.SubjectRepo.FindByField(subject => subject.SubjectId == exam.SubjectId)).Name,
+                    PaperOfExams = papersToDownload,
+                    AnserSheets = answerSheetToDownload,
+                    FileTotalAnswer = new FileTotalAnswer { S3Url = await _s3Services.GetObjectUrlAsync(exam.PaperSet.KeyS3) }
                 };
                 return result;
             }

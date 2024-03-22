@@ -217,7 +217,7 @@ namespace WebAPI.Controllers
             {
                 string urlS3 = await _testResultServices.GetPaperById(paperId);
                 // return file to client side to download
-                return File(urlS3, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "TempFile.docx");
+                return Ok(urlS3);
 
             }
             catch (Exception ex)

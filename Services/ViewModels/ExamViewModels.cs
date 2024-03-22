@@ -118,8 +118,10 @@ namespace Services.ViewModels
 
     public class ExamSourceViewModel
     {
-        public List<PaperOfExam>? paperOfExams { get; set; }
-        public List<AnserSheet>? anserSheets { get; set; }
+        public string ExamName { get; set; }
+        public List<PaperOfExam>? PaperOfExams { get; set; }
+        public List<AnserSheet>? AnserSheets { get; set; }
+        public FileTotalAnswer? FileTotalAnswer { get; set; }
     }
 
     public class ExportResult
@@ -141,6 +143,11 @@ namespace Services.ViewModels
         public int PaperCode { get; set; }
         public string S3Url { get; set; }
 
+    }
+
+    public class FileTotalAnswer
+    {
+        public string S3Url { get; set; }
     }
 }
 
