@@ -171,7 +171,7 @@ namespace WebAPI.Controllers
 
                 if (result == null)
                 {
-                    return NotFound(new
+                    return BadRequest(new
                     {
                         Message = "Thêm thất bại"
                     });

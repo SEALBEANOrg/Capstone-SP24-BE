@@ -101,6 +101,7 @@ namespace Services.Services
                 paperSet.SortByDifficulty = examCreate.ConfigArrange.ArrangeDifficulty;
                 paperSet.Grade = examCreate.Grade;
                 paperSet.Name = examCreate.Name; // nhập tên bộ đề chỗ nào
+                paperSet.KeyS3 = "";
                 _unitOfWork.PaperSetRepo.AddAsync(paperSet);
                 var result = await _unitOfWork.SaveChangesAsync();
                 if (result <= 0)
@@ -199,6 +200,7 @@ namespace Services.Services
                             Difficulty = sectionUse.Difficulty,
                             Use = sectionUse.Use
                         });
+                        questionIdsUse = new List<Guid>();
                     }
                 }
                 else
@@ -253,9 +255,11 @@ namespace Services.Services
                             Difficulty = sectionUse.Difficulty,
                             Use = sectionUse.Use
                         });
+                        questionIdsUse = new List<Guid>();
                     }
                 }
 
+                string nameOfExam = Utils.FormatFileName(examCreate.Name + $"-{DateTime.Now.Ticks}");
                 // Tạo file Excel để lưu điểm 
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 var package = new ExcelPackage();
@@ -274,8 +278,8 @@ namespace Services.Services
 
                 for (int i = 1; i <= totalUse; i++)
                 {
-                    worksheet.Cells[1, i + 2].Value = i;
-                    worksheet.Cells[1, i + 2].Style.Font.Bold = true;
+                    worksheet.Cells[i+2, 1].Value = i;
+                    worksheet.Cells[i+2, 1].Style.Font.Bold = true;
                 }
 
                 // moi de thi lay src rieng
@@ -325,7 +329,7 @@ namespace Services.Services
                     {
                         TimeOfTest = examCreate.Duration,
                         PaperCode = paperCode,
-                        NameOfTest = examCreate.Name,
+                        NameOfTest = nameOfExam,
                         Grade = examCreate.Grade,
                         SubjectName = EnumStatus.Subject[examCreate.SubjectEnum]
                     };
@@ -390,15 +394,7 @@ namespace Services.Services
                         }
                     }
 
-                    package.Save();
-                    // convert package to memorystream 
-                    var stream = new MemoryStream();
-                    package.SaveAs(stream);
-                    stream.Position = 0;
-                    string nameOfExam = Utils.FormatFileName(detailOfPaper.NameOfTest) + $"-{DateTime.Now.Ticks}";
-                    _s3Services.UploadFileIntoS3Async(stream, $"papers/{currentUserId}/{nameOfExam}/DapAnTongHop.xlsx");
-                    paperSet.KeyS3 = $"papers/{currentUserId}/{nameOfExam}/DapAnTongHop.xlsx";
-
+                    
                     //add questioninexam
                     foreach (var questionId in detailOfPaper.QuestionIds)
                     {
@@ -416,7 +412,15 @@ namespace Services.Services
                         }
                     }
                 }
-                
+                package.Save();
+                // convert package to memorystream 
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+                stream.Position = 0;
+                _s3Services.UploadFileIntoS3Async(stream, $"papers/{currentUserId}/{nameOfExam}/DapAnTongHop.xlsx");
+                paperSet.KeyS3 = $"papers/{currentUserId}/{nameOfExam}/DapAnTongHop.xlsx";
+
+                _unitOfWork.PaperSetRepo.Update(paperSet);
                 _unitOfWork.QuestionInExamRepo.AddRangeAsync(questionInExams);
                 result = await _unitOfWork.SaveChangesAsync();
 

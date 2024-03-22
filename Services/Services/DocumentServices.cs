@@ -233,6 +233,7 @@ namespace Services.Services
 
                     var pCode = detailOfPaper.PaperCode.ToString("D3");
                     worksheet.Cells[2, detailOfPaper.PaperCode + 1].Value = pCode;
+                    worksheet.Cells[2, detailOfPaper.PaperCode + 1].Style.Font.Bold = true;
 
                     foreach (var questionId in detailOfPaper.QuestionIds)
                     {
@@ -299,10 +300,7 @@ namespace Services.Services
                     // Save new doc to stream
                     newDoc.SaveToStream(memoryStream, FileFormat.Docx);
 
-                    //set file name
-                    string nameOfExam = Utils.FormatFileName(detailOfPaper.NameOfTest) + $"-{DateTime.Now.Ticks}";
-
-                    var statusCode = await _s3Services.UploadFileIntoS3Async(memoryStream, $"papers/{currentUserId}/{nameOfExam}/{detailOfPaper.PaperCode}.docx");
+                    var statusCode = await _s3Services.UploadFileIntoS3Async(memoryStream, $"papers/{currentUserId}/{detailOfPaper.NameOfTest}/{detailOfPaper.PaperCode}.docx");
 
                     if (statusCode != HttpStatusCode.OK)
                     {
@@ -313,7 +311,7 @@ namespace Services.Services
                     {
                         CreatedBy = currentUserId,
                         CreatedOn = DateTime.Now,
-                        KeyS3 = $"papers/{currentUserId}/{nameOfExam}/{detailOfPaper.PaperCode}.docx",
+                        KeyS3 = $"papers/{currentUserId}/{detailOfPaper.NameOfTest}/{detailOfPaper.PaperCode}.docx",
                         PaperAnswer = correctAnswer, 
                         PaperCode = detailOfPaper.PaperCode,
                         PaperSetId = paperSetId
