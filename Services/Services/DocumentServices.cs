@@ -231,7 +231,8 @@ namespace Services.Services
                     //CLEAR ALL PARAgraph of new doc
                     newDoc.Sections[0].Paragraphs.Clear();
 
-                    worksheet.Cells[1, detailOfPaper.PaperCode].Value = detailOfPaper.PaperCode;
+                    var pCode = detailOfPaper.PaperCode.ToString("D3");
+                    worksheet.Cells[2, detailOfPaper.PaperCode + 1].Value = pCode;
 
                     foreach (var questionId in detailOfPaper.QuestionIds)
                     {
@@ -279,7 +280,7 @@ namespace Services.Services
                             {
                                 correctAnswer += $"{questionId}~{numOfQuestion}:{prefix.TrimStart().First()}|";
 
-                                worksheet.Cells[numOfQuestion + 1, detailOfPaper.PaperCode].Value = prefix.TrimStart().First();
+                                worksheet.Cells[numOfQuestion + 2, detailOfPaper.PaperCode + 1].Value = prefix.TrimStart().First();
                             }
 
                             no++;

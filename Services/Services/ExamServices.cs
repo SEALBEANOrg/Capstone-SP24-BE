@@ -260,10 +260,22 @@ namespace Services.Services
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 var package = new ExcelPackage();
                 var worksheet = package.Workbook.Worksheets.Add("Sheet1");
-                worksheet.Cells[1, 1].Value = "Mã đề";
+                //merge cell [1,1] và [2,1] lại xong value = Câu hỏi
+                worksheet.Cells[1, 1, 2, 1].Merge = true;
+                worksheet.Cells[1, 1].Value = "Câu hỏi";
+                worksheet.Cells[1, 1, totalUse + 1, 1].Style.Font.Bold = true;
+                worksheet.Cells[1, 1, totalUse + 2, examCreate.NumOfDiffPaper * examCreate.NumOfPaperCode + 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                worksheet.Cells[1, 1, totalUse + 2, examCreate.NumOfDiffPaper * examCreate.NumOfPaperCode + 1].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                worksheet.Cells.Style.Font.Size = 12;
+                worksheet.Cells.Style.Font.Name = "Arial";
+                worksheet.Cells[1, 2, 1, examCreate.NumOfDiffPaper * examCreate.NumOfPaperCode + 1].Merge = true;
+                worksheet.Cells[1, 2].Value = "Mã đề thi";
+                worksheet.Cells[1, 2].Style.Font.Bold = true;
+
                 for (int i = 1; i <= totalUse; i++)
                 {
-                    worksheet.Cells[1, i + 1].Value = i;
+                    worksheet.Cells[1, i + 2].Value = i;
+                    worksheet.Cells[1, i + 2].Style.Font.Bold = true;
                 }
 
                 // moi de thi lay src rieng
