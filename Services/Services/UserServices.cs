@@ -27,7 +27,7 @@ namespace Services.Services
         public async Task<UserInfo?> CreateNewUser(UserSignUp userSignUp)
         {
             var user = _mapper.Map<User>(userSignUp);
-            user.Point = 0;
+            user.Point = 200;
             user.Status = 1;
             user.UserType = 1;
             user.CreatedOn = DateTime.Now;
