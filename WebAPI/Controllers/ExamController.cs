@@ -55,7 +55,7 @@ namespace WebAPI.Controllers
         //mobile
         [AllowAnonymous]
         [HttpPost("save-result")]
-        [SwaggerResponse(200, "Sample mark", typeof(decimal))]
+        [SwaggerResponse(200, "IsSuccess", typeof(bool))]
         public async Task<IActionResult> SaveResultOfTest([FromBody] ResultToSave resultToSave)
         {
             try
@@ -229,7 +229,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpGet("expor-result")]
+        [HttpGet("export-result")]
         [Authorize(Roles = "1,2")]
         //[AllowAnonymous]
         [SwaggerResponse(200, "Export result", typeof(ExportResult))]
@@ -250,5 +250,26 @@ namespace WebAPI.Controllers
             }
         }
 
+
+        [HttpPut("{examId}/calculate-all")]
+        [Authorize(Roles = "1,2")]
+        [SwaggerResponse(200, "exam info", typeof(ExamInfo))]
+        public async Task<IActionResult> CalculateAllMark(Guid examId)
+        {
+            try
+            {
+                var currentUserId = await _userServices.GetCurrentUser();
+                var result = await _testResultServices.CalculateAllMark(examId, currentUserId);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
     }
 }

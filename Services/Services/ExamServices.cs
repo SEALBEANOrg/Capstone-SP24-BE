@@ -598,7 +598,7 @@ namespace Services.Services
             }
         }
 
-        public async Task<decimal?> SaveResult(ResultToSave resultToSave)
+        public async Task<bool> SaveResult(ResultToSave resultToSave)
         {
             try
             {
@@ -615,42 +615,18 @@ namespace Services.Services
                     throw new Exception("Không tìm thấy đề thi");
                 }
 
-                var answerSheet = paperExam.PaperAnswer;
-
-                List<string> correctAnswers = new List<string>();
-                var answerSheetList = answerSheet.Split('|').ToList();
-                foreach (var answer in answerSheetList)
-                {
-                    correctAnswers.Add(answer.Substring(37));
-                }
-
-                List<string> studentAnswers = resultToSave.AnswersSelected.Split('|').ToList();
-
-                decimal? mark = 0;
-                int maxAnswer = correctAnswers.Count < studentAnswers.Count ? correctAnswers.Count : studentAnswers.Count;
-                for (int i = 0; i < maxAnswer; i++)
-                {
-                    if (correctAnswers[i] == studentAnswers[i])
-                    {
-                        mark += (decimal)10 / (decimal)correctAnswers.Count;
-                    }
-                }
-
                 examMark.AnswersSelected = resultToSave.AnswersSelected;
-                examMark.Mark = mark;
                 examMark.PaperCode = resultToSave.PaperCode;
                 examMark.ModifiedOn = DateTime.Now;
                 _unitOfWork.ExamMarkRepo.Update(examMark);
                 var result = await _unitOfWork.SaveChangesAsync();
 
-                return result > 0 ? mark : -1;
+                return result > 0 ;
             }
             catch (Exception e)
             {
                 throw new Exception("Lỗi ở SaveResultServices - SaveResult: " + e.Message);
             }
-
-            throw new NotImplementedException();
         }
 
         private string EliminateMultipleChoice(string answer)
@@ -771,5 +747,91 @@ namespace Services.Services
             }
 
         }
+
+        public async Task<ExamInfo> CalculateAllMark(Guid examId, Guid currentUserId)
+        {
+            try
+            {
+                var examMark = await _unitOfWork.ExamMarkRepo.FindListByField(exam => exam.ExamId == examId);
+                if (examMark == null)
+                {
+                    throw new Exception("Không tìm thấy kết quả thi");
+                }
+
+                var currentUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
+                if (examMark.Count > currentUser.Point)
+                {
+                    throw new Exception("Không đủ xu để chấm điểm");
+                }
+
+                foreach (var em in examMark)
+                {
+                    if (string.IsNullOrEmpty(em.AnswersSelected))
+                    {
+                        em.Mark = 0;
+                        continue;
+                    }
+
+                    var paperSetId = (await _unitOfWork.ExamRepo.FindByField(exam => exam.ExamId == examId)).PaperSetId;
+                    var answerSheetList = (await _unitOfWork.PaperRepo.FindByField(paper => paper.PaperCode == em.PaperCode && paper.PaperSetId == paperSetId)).PaperAnswer.Split('|').ToList();
+                    List<string> correctAnswers = new List<string>();
+                    foreach (var answer in answerSheetList)
+                    {
+                        correctAnswers.Add(answer.Substring(37));
+                    }
+
+                    List<string> selectedAnswers = em.AnswersSelected.Split('|').ToList();
+
+                    decimal? mark = 0;
+                    int maxAnswer = correctAnswers.Count < selectedAnswers.Count ? correctAnswers.Count : selectedAnswers.Count;
+                    for (int i = 0; i < maxAnswer; i++)
+                    {
+                        if (correctAnswers[i] == selectedAnswers[i])
+                        {
+                            mark += (decimal)10 / (decimal)correctAnswers.Count;
+                        }
+                    }
+
+                    em.Mark = mark;
+                    em.ModifiedOn = DateTime.Now;
+                }
+
+                _unitOfWork.ExamMarkRepo.UpdateRange(examMark);
+                var result = await _unitOfWork.SaveChangesAsync();
+
+                if (result < examMark.Count)
+                {
+                    throw new Exception("Xuất điểm bị lỗi");
+                }
+
+                currentUser.Point -= examMark.Count;
+                Transaction transaction = new Transaction
+                {
+                    PointValue = -examMark.Count,
+                    Type = 2, // chấm bài
+                    UserId = currentUserId,
+                    CreatedOn = DateTime.Now
+                };
+
+                _unitOfWork.UserRepo.Update(currentUser);
+                _unitOfWork.TransactionRepo.AddAsync(transaction);
+
+                result = await _unitOfWork.SaveChangesAsync();
+
+                if (result < 2)
+                {
+                    throw new Exception("Lỗi lưu giao dịch");
+                }
+
+                var examInfo = await GetExamInfo(examId, currentUserId);
+                return examInfo;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở SaveResultServices - SaveResult: " + e.Message);
+            }
+        }
+
+
     }
 }
