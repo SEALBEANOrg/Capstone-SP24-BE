@@ -33,16 +33,35 @@ namespace Services.Services
             user.CreatedOn = DateTime.Now;
             user.ModifiedOn = DateTime.Now;
             
-            _unitOfWork.UserRepo.AddAsync(user);
-            var result = await _unitOfWork.SaveChangesAsync();
-            if (result <= 0)
+            try
             {
-                return null;
-            }
+                _unitOfWork.UserRepo.AddAsync(user);
+                var result = await _unitOfWork.SaveChangesAsync();
+                if (result <= 0)
+                {
+                    return null;
+                }
 
-            var userInfo = _mapper.Map<UserInfo>(user);
+                var transaction = new Transaction
+                {
+                    UserId = user.UserId,
+                    PointValue = 200,
+                    Type = 5, // đăng nhập lần đầu
+                    CreatedOn = DateTime.Now
+                };
+
+                _unitOfWork.TransactionRepo.AddAsync(transaction);
+                result = await _unitOfWork.SaveChangesAsync();
+
+                var userInfo = _mapper.Map<UserInfo>(user);
+
+                return userInfo;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Lỗi ở UserServices - CreateNewUser: " + ex);
+            }
             
-            return userInfo;
         }
 
         public async Task<UserInfo> FindUserByEmail(string email)
