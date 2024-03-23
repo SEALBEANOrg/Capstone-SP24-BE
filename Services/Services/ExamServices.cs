@@ -68,6 +68,11 @@ namespace Services.Services
         {
             try
             {
+                var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
+                if (examCreate.NumOfDiffPaper * examCreate.NumOfPaperCode * 10 > user.Point)
+                {
+                    throw new Exception("Không đủ điểm để phát sinh đề");
+                }
                 if (examCreate.Sections.Count == 0)
                 {
                     throw new Exception("Không có phần tử nào trong sections");
@@ -420,8 +425,22 @@ namespace Services.Services
                 _s3Services.UploadFileIntoS3Async(stream, $"papers/{currentUserId}/{nameOfExam}/DapAnTongHop.xlsx");
                 paperSet.KeyS3 = $"papers/{currentUserId}/{nameOfExam}/DapAnTongHop.xlsx";
 
+                //charge user when create paper
+                user.Point -= examCreate.NumOfDiffPaper * examCreate.NumOfPaperCode * 10;
+
+                var transaction = new Transaction
+                {
+                    Type = 1, // tạo đề
+                    UserId = currentUserId,
+                    PointValue = -(examCreate.NumOfDiffPaper * examCreate.NumOfPaperCode * 10),
+                    CreatedOn = DateTime.Now
+                };
+
                 _unitOfWork.PaperSetRepo.Update(paperSet);
                 _unitOfWork.QuestionInExamRepo.AddRangeAsync(questionInExams);
+                _unitOfWork.UserRepo.Update(user);
+                _unitOfWork.TransactionRepo.AddAsync(transaction);
+
                 result = await _unitOfWork.SaveChangesAsync();
 
                 return result > 0 ? exam.ExamId : null;
