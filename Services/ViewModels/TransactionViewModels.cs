@@ -48,7 +48,7 @@ namespace Services.ViewModels
         public string? TransactionCode { get; set; }
     }
 
-    public class TransactionViaMomo
+    public class TransactionPoint
     {
         public int PointValue { get; set; }
     }
@@ -79,7 +79,7 @@ namespace Services.ViewModels
         public string OrderInfo { get; set; }
         public string OrderType { get; set; }
         public long TransId { get; set; }
-        public string ResultCode { get; set; }
+        public int ResultCode { get; set; }
         public string Message { get; set; }
         public string PayType { get; set; }
         public long ResponseTime { get; set; }

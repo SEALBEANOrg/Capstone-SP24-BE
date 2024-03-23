@@ -9,7 +9,7 @@ namespace Services.Interfaces
 {
     public interface IMomoServices
     {
-        string MomoDeposit(TransactionViaMomo transactionViaMomo, Guid currentUserId);
+        string MomoDeposit(TransactionPoint transactionViaMomo, Guid currentUserId);
         bool VerifyMomoCallback(CallbackViaMomo callbackViaMomo);
     }
 }

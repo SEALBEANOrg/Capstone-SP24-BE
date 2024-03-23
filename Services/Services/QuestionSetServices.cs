@@ -133,7 +133,7 @@ namespace Services.Services
                 questionSetViewModel.SubjectName = questionSet.Subject.Name;
 
                 var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == questionSetId);
-                questionSetViewModel.Questions = _mapper.Map<List<QuestionViewModel>>(questions);
+                questionSetViewModel.Questions = (_mapper.Map<List<QuestionViewModel>>(questions)).OrderBy(o => o.QuestionPart).ToList();
 
                 var setConfig = new SetConfig { NB = questions.Count(q => q.Difficulty == 0), TH = questions.Count(q => q.Difficulty == 1), VDT = questions.Count(q => q.Difficulty == 2), VDC = questions.Count(q => q.Difficulty == 3) };
 
@@ -221,7 +221,7 @@ namespace Services.Services
             {
                 var questionSet = _mapper.Map<QuestionReturn>(importQuestionSet);
                 questionSet.SubjectId = (await _unitOfWork.SubjectRepo.FindByField(subject => EnumStatus.Subject[(int)importQuestionSet.Subject].ToLower().Contains(subject.Name.ToLower()) && subject.Grade == importQuestionSet.Grade)).SubjectId;
-                questionSet.Questions = DucumentProcessing.ImportQuestionSet.ImportQuestions(importQuestionSet.File);
+                questionSet.Questions = DucumentProcessing.ImportQuestionSet.ImportQuestions(importQuestionSet.File).OrderBy(o => o.QuestionPart).ToList();
 
                 return questionSet;
             }

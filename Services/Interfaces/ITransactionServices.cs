@@ -11,7 +11,7 @@ namespace Services.Interfaces
     {
         Task<IEnumerable<TransactionViewModels>> GetAll();
         Task<IEnumerable<TransactionViewModels>> GetMyTransactions(Guid currentUser);
-        Task<string> CreatePaymentAsync(TransactionViaMomo model, Guid currentUserId);
+        Task<string> CreatePaymentAsync(TransactionPoint model, Guid currentUserId);
         Task<bool> MomoCallBackIpn(CallbackViaMomo callbackViaMomo);
         Task<bool> MomoCallBackRedirect(CallbackViaMomo transaction);
     }

@@ -70,7 +70,7 @@ namespace Services.Services
             }
         }
 
-        public string MomoDeposit(TransactionViaMomo transactionViaMomo, Guid currentUserId)
+        public string MomoDeposit(TransactionPoint transactionViaMomo, Guid currentUserId)
         {
             var orderId = Guid.NewGuid().ToString();
             var requestId = orderId;

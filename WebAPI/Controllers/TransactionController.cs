@@ -66,7 +66,7 @@ namespace WebAPI.Controllers
         //[Authorize]
         [AllowAnonymous]
         [SwaggerResponse(200, "url redirect to momo", typeof(string))]
-        public async Task<IActionResult> MomoReturn([FromQuery] TransactionViaMomo transaction)
+        public async Task<IActionResult> MomoReturn([FromQuery] TransactionPoint transaction)
         {
             try
             {

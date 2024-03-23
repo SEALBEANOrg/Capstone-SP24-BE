@@ -69,7 +69,7 @@ namespace Services.Services
 
 
         //create payment
-        public async Task<string> CreatePaymentAsync(TransactionViaMomo model, Guid currentUserId)
+        public async Task<string> CreatePaymentAsync(TransactionPoint model, Guid currentUserId)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace Services.Services
                 var verify = _momoServices.VerifyMomoCallback(callbackViaMomo);
                 if (verify)
                 {
-                    var isSuccess = callbackViaMomo.ResultCode == "0";
+                    var isSuccess = callbackViaMomo.ResultCode == 0;
                     if (!isSuccess)
                     {
                         throw new Exception("Giao dịch Momo không thành công");
@@ -139,7 +139,7 @@ namespace Services.Services
                 var verify = _momoServices.VerifyMomoCallback(callbackViaMomo);
                 if (verify)
                 {
-                    var isSuccess = callbackViaMomo.ResultCode == "0";
+                    var isSuccess = callbackViaMomo.ResultCode == 0;
                     if (!isSuccess)
                     {
                         return false;
