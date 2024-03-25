@@ -51,7 +51,6 @@ namespace Services.ViewModels
 
     }
 
-
     public class ResultToSave
     {
         public int PaperCode { get; set; }
@@ -149,5 +148,6 @@ namespace Services.ViewModels
     {
         public string S3Url { get; set; }
     }
+
 }
 

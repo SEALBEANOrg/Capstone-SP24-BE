@@ -13,4 +13,5 @@ namespace Services.ViewModels
         public string Region { get; set; }
         public string BucketName { get; set; }
     }
+
 }

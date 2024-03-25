@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Services.Interfaces;
+using Services.Interfaces.Student;
+using Services.Interfaces.User;
 using Services.ViewModels;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -48,32 +48,6 @@ namespace WebAPI.Controllers
             {
                 var currentUser = await _userServices.GetCurrentUser();
                 var student = await _studentServices.UpdateStudent(studentUpdate, currentUser);
-
-                return Ok(student);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    Message = ex.Message
-                });
-            }
-        }
-
-        /// <summary>
-        /// Just for school Admin
-        /// </summary>
-        /// <param name="studentId"></param>
-        /// <returns></returns>
-        [Authorize(Roles = "2")]
-        [HttpGet("Move-Out-Student")]
-        [SwaggerResponse(200, "Is success", typeof(bool))]
-        public async Task<IActionResult> MoveOutStudent(Guid studentId)
-        {
-            try
-            {
-                var currentUser = await _userServices.GetCurrentUser();
-                var student = await _studentServices.MoveOutStudent(studentId, currentUser);
 
                 return Ok(student);
             }

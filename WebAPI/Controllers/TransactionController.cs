@@ -1,8 +1,7 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services.Interfaces;
+using Services.Interfaces.Transaction;
+using Services.Interfaces.User;
 using Services.ViewModels;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -82,34 +81,6 @@ namespace WebAPI.Controllers
                 }
 
                 return Ok(returnUrl);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    Message = ex.Message
-                });
-            }
-        }
-
-        [HttpPost("momo/callback-ipn")]
-        [AllowAnonymous]
-        [SwaggerResponse(204)]
-        public async Task<IActionResult> MomoCallBackIpn([FromBody] CallbackViaMomo transaction)
-        {
-            try
-            {
-                var result = await _transactionServices.MomoCallBackIpn(transaction);
-
-                if (result == false)
-                {
-                    return BadRequest(new
-                    {
-                        Message = "Cập nhật thanh toán thất bại"
-                    });
-                }
-
-                return NoContent();
             }
             catch (Exception ex)
             {

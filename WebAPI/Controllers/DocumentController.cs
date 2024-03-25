@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Services.Interfaces;
-using Services.Services;
+using Services.Interfaces.Document;
+using Services.Interfaces.User;
 using Services.ViewModels;
 using Swashbuckle.AspNetCore.Annotations;
-using static System.Collections.Specialized.BitVector32;
 
 namespace WebAPI.Controllers
 {

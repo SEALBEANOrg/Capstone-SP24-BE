@@ -45,5 +45,6 @@ namespace Services.ViewModels
         public string NameOfTest { get; set; }
         public int Grade { get; set; }
         public string SubjectName { get; set; }
+        public string NameInTest { get; set; }
     }
 }

@@ -14,10 +14,9 @@ namespace Services.Mapper
             CreateMap<User, UserViewModels>().ReverseMap();
             CreateMap<UserLogin, User>().ReverseMap();
             CreateMap<Request, User>().ReverseMap();
-            //CreateMap<EmployeeWithNote, Employee>().ReverseMap();
-            //CreateMap<Employee, ComboEmployee>().ReverseMap();
             
             #endregion
+
 
             #region StudentClass
             CreateMap<StudentClassViewModels, StudentClass>().ReverseMap();
@@ -30,6 +29,7 @@ namespace Services.Mapper
 
             #endregion
 
+
             #region Student
             CreateMap<StudentCreate, Student>().ReverseMap();
             CreateMap<Student, StudentViewModels>().ReverseMap();
@@ -39,6 +39,7 @@ namespace Services.Mapper
             CreateMap<Student, ResultOfStudent>().ReverseMap();
 
             #endregion
+
 
             #region Question
             CreateMap<QuestionCreate, Question>().ReverseMap();
@@ -51,6 +52,7 @@ namespace Services.Mapper
 
             #endregion
 
+
             #region QuestionSet
             CreateMap<QuestionSet, QuestionSetViewModels>().ReverseMap();
             CreateMap<QuestionSet, OwnQuestionSet>().ReverseMap();
@@ -59,9 +61,10 @@ namespace Services.Mapper
             CreateMap<ImportQuestionSet, QuestionReturn>().ReverseMap();
             CreateMap<QuestionSet, ImportQuestionSet>().ReverseMap();
             CreateMap<QuestionSet, QuestionSetSave>().ReverseMap();
-            
+            CreateMap<QuestionSet, SharedQuestionSet>().ReverseMap();
 
             #endregion
+
 
             #region SubjectSection
             CreateMap<SubjectSection, SubjectSectionViewModels>().ReverseMap();
@@ -73,6 +76,7 @@ namespace Services.Mapper
 
             #endregion
 
+
             #region Document
             CreateMap<Document, DocumentViewModels>().ReverseMap();
             CreateMap<Document, DocumentViewModel>().ReverseMap();
@@ -80,6 +84,7 @@ namespace Services.Mapper
             CreateMap<Document, AnserSheet>().ReverseMap();
 
             #endregion
+
 
             #region Exam
             CreateMap<Exam, ExamViewModels>().ForMember(dest => dest.ClassName, opt => opt.MapFrom(src => src.Class != null ? src.Class.Name : null)).ReverseMap();
@@ -90,12 +95,14 @@ namespace Services.Mapper
 
             #endregion
 
+
             #region ExamMark
             CreateMap<ExamMark, ExamMarkViewModels>().ReverseMap();
             CreateMap<ExamMark, ResultOfStudent>().ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Student.FullName)).ReverseMap();
             
 
             #endregion
+
 
             #region Paper
             CreateMap<Paper,PaperOfExam>().ReverseMap();
@@ -110,6 +117,7 @@ namespace Services.Mapper
             CreateMap<Transaction, TransactionViewModels>().ReverseMap();
 
             #endregion
+
 
             #region Share
             CreateMap<Share, ShareViewModels>().ReverseMap();

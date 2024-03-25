@@ -88,4 +88,5 @@ namespace Services.ViewModels
     {
         public string Note { get; set; }
     }
+
 }

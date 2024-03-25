@@ -59,4 +59,5 @@ namespace Services.ViewModels
         public string Name { get; set; } = null!;
         public int Grade { get; set; }
     }
+
 }

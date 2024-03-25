@@ -1,22 +1,12 @@
-﻿using AutoMapper.Internal.Mappers;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Services.Interfaces;
-using System.Buffers.Text;
-using System.Security.Principal;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Text;
 using Services.ViewModels;
-using Microsoft.IdentityModel.JsonWebTokens;
 using MiniStore.Service.Utilities;
 using System.IdentityModel.Tokens.Jwt;
-using System;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
-using System.Net.Sockets;
-using Google.Apis.Auth;
-using System.Linq.Expressions;
 using Swashbuckle.AspNetCore.Annotations;
+using Services.Interfaces.User;
 
 namespace WebAPI.Controllers
 {

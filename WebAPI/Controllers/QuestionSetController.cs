@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Services.Interfaces;
+using Services.Interfaces.QuestionSet;
+using Services.Interfaces.User;
 using Services.ViewModels;
 using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
@@ -43,10 +44,32 @@ namespace WebAPI.Controllers
             }
         }
 
+
+        [HttpGet("shared")]
+        [Authorize(Roles = "1")]
+        [SwaggerResponse(200, "List of shared question set", typeof(IEnumerable<SharedQuestionSet>))]
+        public async Task<IActionResult> GetSharedQuestionSet(int? grade, int? subjectEnum, int year)
+        {
+            try
+            {
+                var currentUserId = await _userServices.GetCurrentUser();
+                var result = await _questionSetServices.GetSharedQuestionSet(currentUserId, grade, subjectEnum, year);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
+
         [HttpGet("bank")]
         [SwaggerResponse(200, "List of question set", typeof(IEnumerable<QuestionSetViewModels>))]
         [Authorize(Roles = "2")]
-        //[AllowAnonymous]
         public async Task<IActionResult> GetQuestionSetByBank(int? grade, int? subject, [Required]int year, int type)
         {
             try
@@ -63,6 +86,7 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
 
         [HttpDelete("{questionSetId}")]
         [SwaggerResponse(200, "Is success", typeof(string))]
@@ -93,6 +117,7 @@ namespace WebAPI.Controllers
             }
         }
 
+
         [HttpGet("{questionSetId}")]
         [SwaggerResponse(200, "Question set sample", typeof(QuestionSetViewModel))]
         [Authorize(Roles = "1,2")]
@@ -113,9 +138,9 @@ namespace WebAPI.Controllers
             }
         }
 
+
         [HttpPost("import-questionset")]
         [SwaggerResponse(200, "Detail question set from import", typeof(QuestionReturn))]
-        //[AllowAnonymous]
         [Authorize(Roles = "1,2")]
         public async Task<IActionResult> GetQuestionSetFromFile([FromForm] ImportQuestionSet importQuestionSet)
         {
@@ -135,10 +160,10 @@ namespace WebAPI.Controllers
 
         }
 
+
         [HttpPost("save")]
         [SwaggerResponse(200, "Is success", typeof(string))]
-        [Authorize(Roles = "1,2")]
-        //[AllowAnonymous]
+        [Authorize(Roles = "1,2")] 
         public async Task<IActionResult> SaveQuestionSet([FromBody] QuestionSetSave questionSetSave)
         {
             try
@@ -164,6 +189,7 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
 
         [HttpPut("{questionSetId}/change-status")]
         [SwaggerResponse(200, "Is success", typeof(string))]
@@ -193,6 +219,7 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
 
         [HttpGet("matrix-of-questionset/{questionSetId}")]
         [SwaggerResponse(200, "List of matrix", typeof(IEnumerable<SectionUse>))]

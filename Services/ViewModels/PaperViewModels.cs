@@ -21,4 +21,5 @@ namespace Services.ViewModels
         public string PaperCode { get; set; } = null!;
         public string UrlS3 { get; set; } = null!;
     }
+
 }

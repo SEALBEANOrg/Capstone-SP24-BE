@@ -1,4 +1,4 @@
-﻿using Services.Interfaces;
+﻿using Services.Interfaces.User;
 using System.Security.Claims;
 
 namespace WebAPI.Service

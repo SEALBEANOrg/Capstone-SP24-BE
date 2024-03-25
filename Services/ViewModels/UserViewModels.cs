@@ -44,4 +44,19 @@ namespace Services.ViewModels
     {
         public bool isActive { get; set; }
     }
+
+    public class UserInfo
+    {
+        public Guid UserId { get; set; }
+        public int UserType { get; set; }
+        public string FullName { get; set; } = null!;
+        public int Status { get; set; }
+    }
+
+    public class UserSignUp
+    {
+        public Guid? Guid { get; set; }
+        public string Email { get; set; }
+        public string FullName { get; set; } = null!;
+    }
 }

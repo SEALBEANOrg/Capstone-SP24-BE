@@ -3,9 +3,33 @@ using Repositories.Implements;
 using Repositories.Interfaces;
 using Repositories.Models;
 using Services.Interfaces;
+using Services.Interfaces.Document;
+using Services.Interfaces.Exam;
+using Services.Interfaces.Paper;
+using Services.Interfaces.Question;
+using Services.Interfaces.QuestionSet;
+using Services.Interfaces.Share;
+using Services.Interfaces.Storage;
+using Services.Interfaces.Student;
+using Services.Interfaces.StudentClass;
+using Services.Interfaces.Subject;
+using Services.Interfaces.SubjectSection;
+using Services.Interfaces.Transaction;
+using Services.Interfaces.User;
 using Services.Mapper;
-using Services.Services;
-using Services.ViewModels;
+using Services.Services.Document;
+using Services.Services.Exam;
+using Services.Services.Paper;
+using Services.Services.Question;
+using Services.Services.QuestionSet;
+using Services.Services.Share;
+using Services.Services.Storage;
+using Services.Services.Student;
+using Services.Services.StudentClass;
+using Services.Services.Subject;
+using Services.Services.SubjectSection;
+using Services.Services.Transaction;
+using Services.Services.User;
 using WebAPI.Middlewares;
 using WebAPI.Service;
 
@@ -50,6 +74,7 @@ namespace WebAPI
             services.AddScoped<IStudentServices, StudentServices>();
             services.AddScoped<ISubjectSectionServices, SubjectSectionServices>();
             services.AddScoped<IExamServices, ExamServices>();
+            services.AddScoped<IExamMobileServices, ExamMobileServices>();
             services.AddScoped<IExamMarkServices, ExamMarkServices>();
             services.AddScoped<IQuestionSetServices, QuestionSetServices>();
             services.AddScoped<ISubjectServices, SubjectServices>();
@@ -57,6 +82,7 @@ namespace WebAPI
             services.AddScoped<ITransactionServices, TransactionServices>();
             services.AddScoped<IMomoServices, MomoServices>();
             services.AddScoped<IS3Services, S3Services>();
+            services.AddScoped<IMarketServices, MarketServices>();
             #endregion
            
             services.AddSingleton<GlobalExceptionMiddleware>();

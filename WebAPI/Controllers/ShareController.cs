@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Services.Interfaces;
+using Services.Interfaces.Share;
+using Services.Interfaces.User;
 using Services.ViewModels;
 using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
@@ -13,17 +13,18 @@ namespace WebAPI.Controllers
     public class ShareController : ControllerBase
     {
         private readonly IShareServices _shareServices;
+        private readonly IMarketServices _marketServices;
         private readonly IUserServices _userServices;
 
-        public ShareController(IShareServices shareServices, IUserServices userServices)
+        public ShareController(IShareServices shareServices, IUserServices userServices, IMarketServices marketServices)
         {
             _shareServices = shareServices;
             _userServices = userServices;
+            _marketServices = marketServices;
         }
 
         [HttpGet("requests")]
         [Authorize(Roles = "2")]
-        //[AllowAnonymous]
         [SwaggerResponse(200, "List of request to share", typeof(IEnumerable<ShareViewModels>))]
         public async Task<IActionResult> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, [Required] int year)
         {
@@ -42,9 +43,6 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpGet]
-        [Authorize(Roles = "1")]
-        [SwaggerResponse(200, "List of shared question set", typeof(IEnumerable<ShareViewModels>))]
 
         [HttpPut("response/{shareId}")]
         [Authorize(Roles = "2")]
@@ -75,9 +73,9 @@ namespace WebAPI.Controllers
             }
         }
 
+
         [HttpPost("requests")]
         [Authorize(Roles = "1")]
-        //[AllowAnonymous ]
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> RequestToShare([FromBody] ShareCreateRequest shareCreate)
         {
@@ -109,6 +107,7 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
 
         [HttpPost("individual")]
         [Authorize(Roles = "1")]
@@ -144,6 +143,7 @@ namespace WebAPI.Controllers
             }
         }
 
+
         [HttpGet("{questionSetId}")]
         [Authorize(Roles = "1")]
         [SwaggerResponse(200, "Question set sample", typeof(List<string>))]
@@ -166,6 +166,7 @@ namespace WebAPI.Controllers
 
         }
 
+
         [HttpPost("buy")]
         [Authorize(Roles = "1")]
         [SwaggerResponse(200, "Is success", typeof(string))]
@@ -179,7 +180,7 @@ namespace WebAPI.Controllers
                 }
 
                 var currentUser = await _userServices.GetCurrentUser();
-                var result = await _shareServices.BuyQuestionSet(buyQuestionSet, currentUser);
+                var result = await _marketServices.BuyQuestionSet(buyQuestionSet, currentUser);
 
                 if (!result)
                 {
@@ -200,6 +201,7 @@ namespace WebAPI.Controllers
             }
         }
 
+
         [HttpGet("market")]
         [Authorize(Roles = "1")]
         [SwaggerResponse(200, "List of question set in market", typeof(IEnumerable<ShareInMarket>))]
@@ -208,7 +210,7 @@ namespace WebAPI.Controllers
             try
             {
                 var currentUser = await _userServices.GetCurrentUser();
-                var result = await _shareServices.GetQuestionSetInMarket(grade, subjectEnum, year, currentUser);
+                var result = await _marketServices.GetQuestionSetInMarket(grade, subjectEnum, year, currentUser);
 
                 return Ok(result);
             }
@@ -220,6 +222,7 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
 
         [HttpPut("report/{shareId}")]
         [Authorize(Roles = "1")]
@@ -250,6 +253,7 @@ namespace WebAPI.Controllers
             }
         }
 
+
         [HttpGet("bought-list")]
         [Authorize(Roles = "1")]
         [SwaggerResponse(200, "List of bought question set", typeof(IEnumerable<ShareInMarket>))]
@@ -258,7 +262,7 @@ namespace WebAPI.Controllers
             try
             {
                 var currentUser = await _userServices.GetCurrentUser();
-                var result = await _shareServices.GetBoughtList(currentUser, grade, subjectEnum, year);
+                var result = await _marketServices.GetBoughtList(currentUser, grade, subjectEnum, year);
 
                 return Ok(result);
             }
@@ -271,6 +275,7 @@ namespace WebAPI.Controllers
             }
         }
 
+
         [HttpGet("sell-list")]
         [Authorize(Roles = "1")]
         [SwaggerResponse(200, "List of sell question set", typeof(IEnumerable<ShareInMarket>))]
@@ -279,7 +284,7 @@ namespace WebAPI.Controllers
             try
             {
                 var currentUser = await _userServices.GetCurrentUser();
-                var result = await _shareServices.GetSoldList(currentUser, grade, subjectEnum, status, year);
+                var result = await _marketServices.GetSoldList(currentUser, grade, subjectEnum, status, year);
 
                 return Ok(result);
             }

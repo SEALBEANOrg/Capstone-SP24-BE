@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OfficeOpenXml;
 using Services.Interfaces;
+using Services.Interfaces.Exam;
+using Services.Interfaces.User;
 using Services.ViewModels;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -13,14 +14,16 @@ namespace WebAPI.Controllers
     public class ExamController : ControllerBase
     {
         private readonly IExamServices _testResultServices;
+        private readonly IExamMobileServices _examMobileServices;
+        private readonly IExamMarkServices _examMarkServices;
         private readonly IUserServices _userServices;
-        private readonly IHttpClientFactory _httpClientFactory;
         
-        public ExamController(IExamServices testResultServices, IUserServices userServices, IHttpClientFactory httpClientFactory)
+        public ExamController(IExamServices testResultServices, IExamMarkServices examMarkServices, IExamMobileServices examMobileServices, IUserServices userServices)
         {
             _testResultServices = testResultServices;
+            _examMobileServices = examMobileServices;
+            _examMarkServices = examMarkServices;
             _userServices = userServices;
-            _httpClientFactory = httpClientFactory;
         }
 
         //mobile
@@ -35,7 +38,7 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest();
                 }
-                var resp = await _testResultServices.SendImage(Image);
+                var resp = await _examMobileServices.SendImage(Image);
 
                 if (resp != null)
                 {
@@ -60,7 +63,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                var result = await _testResultServices.SaveResult(resultToSave);
+                var result = await _examMobileServices.SaveResult(resultToSave);
 
                 return Ok(result);
             }
@@ -84,7 +87,7 @@ namespace WebAPI.Controllers
                 return BadRequest();
             }
 
-            var result = await _testResultServices.CheckPermissionAccessTest(testCode, email);
+            var result = await _examMobileServices.CheckPermissionAccessTest(testCode, email);
 
             return Ok(result);
         }
@@ -102,7 +105,7 @@ namespace WebAPI.Controllers
 
             try
             {
-                var result = await _testResultServices.GetInfoOfClassInExam(testCode, email);
+                var result = await _examMobileServices.GetInfoOfClassInExam(testCode, email);
 
                 return Ok(result);
             }
@@ -208,27 +211,6 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpGet("paper/{paperId}")]
-        [AllowAnonymous]
-        [SwaggerResponse(200, "url", typeof(string))]
-        public async Task<IActionResult> GetPaperById(Guid paperId)
-        {
-            try
-            {
-                string urlS3 = await _testResultServices.GetPaperById(paperId);
-                // return file to client side to download
-                return Ok(urlS3);
-
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    Message = ex.Message
-                });
-            }
-        }
-
         [HttpGet("export-result")]
         [Authorize(Roles = "1,2")]
         //[AllowAnonymous]
@@ -250,7 +232,6 @@ namespace WebAPI.Controllers
             }
         }
 
-
         [HttpPut("{examId}/calculate-all")]
         [Authorize(Roles = "1,2")]
         [SwaggerResponse(200, "exam info", typeof(ExamInfo))]
@@ -259,7 +240,7 @@ namespace WebAPI.Controllers
             try
             {
                 var currentUserId = await _userServices.GetCurrentUser();
-                var result = await _testResultServices.CalculateAllMark(examId, currentUserId);
+                var result = await _examMarkServices.CalculateAllMark(examId, currentUserId);
 
                 return Ok(result);
             }
