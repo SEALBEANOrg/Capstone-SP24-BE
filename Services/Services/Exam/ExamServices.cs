@@ -429,7 +429,6 @@ namespace Services.Services.Exam
                         }
                     }
 
-
                     //add questioninexam
                     foreach (var questionId in detailOfPaper.QuestionIds)
                     {
@@ -446,6 +445,8 @@ namespace Services.Services.Exam
                             questionInExams.Add(qie);
                         }
                     }
+
+                    questionIdsInPaper = new List<Guid>();
                 }
                 package.Save();
                 // convert package to memorystream 
