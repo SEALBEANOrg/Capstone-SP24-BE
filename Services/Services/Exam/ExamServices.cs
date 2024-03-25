@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using ExagenSharedProject;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -109,6 +110,8 @@ namespace Services.Services.Exam
                 result = await _unitOfWork.SaveChangesAsync();
                 if (result <= 0)
                 {
+                    _unitOfWork.PaperSetRepo.Remove(paperSet);
+                    await _unitOfWork.SaveChangesAsync();
                     return null;
                 }
 
@@ -129,6 +132,14 @@ namespace Services.Services.Exam
                     sectionConfigs.Add(sectionConfig);
                 }
                 _unitOfWork.SectionPaperSetConfigRepo.AddRangeAsync(sectionConfigs);
+                result = await _unitOfWork.SaveChangesAsync();
+                if (result < sectionConfigs.Count)
+                {
+                    _unitOfWork.PaperSetRepo.Remove(paperSet);
+                    _unitOfWork.ExamRepo.Remove(exam);
+                    await _unitOfWork.SaveChangesAsync();
+                    return null;
+                }
 
                 // create paper
                 List<SourceUse> src = new List<SourceUse>();
@@ -314,6 +325,19 @@ namespace Services.Services.Exam
                             Utils.Shuffle(questionIdsInPaper);
                             detailOfPaper.QuestionIds = questionIdsInPaper;
                             Guid id = await _paperServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers, worksheet);
+                            if (id.Equals(Guid.Empty))
+                            {
+                                var paper = await _unitOfWork.PaperRepo.FindListByField(paper => paper.PaperSetId == paperSet.PaperSetId);
+                                if (paper != null)
+                                {
+                                    _unitOfWork.PaperRepo.RemoveRange(paper);
+                                }
+                                _unitOfWork.SectionPaperSetConfigRepo.RemoveRange(sectionConfigs);
+                                _unitOfWork.ExamRepo.Remove(exam);
+                                _unitOfWork.PaperSetRepo.Remove(paperSet);
+                                await _unitOfWork.SaveChangesAsync();
+                                return null;
+                            }
                             paperIds.Add(id);
                             detailOfPaper.PaperCode = ++paperCode;
                         }
@@ -332,6 +356,19 @@ namespace Services.Services.Exam
                             Utils.Shuffle(vdc);
                             detailOfPaper.QuestionIds.AddRange(vdc);
                             Guid id = await _paperServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers, worksheet);
+                            if (id.Equals(Guid.Empty))
+                            {
+                                var paper = await _unitOfWork.PaperRepo.FindListByField(paper => paper.PaperSetId == paperSet.PaperSetId);
+                                if (paper != null)
+                                {
+                                    _unitOfWork.PaperRepo.RemoveRange(paper);
+                                }
+                                _unitOfWork.SectionPaperSetConfigRepo.RemoveRange(sectionConfigs);
+                                _unitOfWork.ExamRepo.Remove(exam);
+                                _unitOfWork.PaperSetRepo.Remove(paperSet);
+                                await _unitOfWork.SaveChangesAsync();
+                                return null;
+                            }
                             paperIds.Add(id);
                             detailOfPaper.PaperCode = ++paperCode;
                         }
@@ -350,6 +387,19 @@ namespace Services.Services.Exam
                         for (int j = 0; j < examCreate.NumOfPaperCode; j++)
                         {
                             Guid id = await _paperServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers, worksheet);
+                            if (id.Equals(Guid.Empty))
+                            {
+                                var paper = await _unitOfWork.PaperRepo.FindListByField(paper => paper.PaperSetId == paperSet.PaperSetId);
+                                if (paper != null)
+                                {
+                                    _unitOfWork.PaperRepo.RemoveRange(paper);
+                                }
+                                _unitOfWork.SectionPaperSetConfigRepo.RemoveRange(sectionConfigs);
+                                _unitOfWork.ExamRepo.Remove(exam);
+                                _unitOfWork.PaperSetRepo.Remove(paperSet);
+                                await _unitOfWork.SaveChangesAsync();
+                                return null;
+                            }
                             paperIds.Add(id);
                             detailOfPaper.PaperCode = ++paperCode;
                         }
@@ -361,6 +411,19 @@ namespace Services.Services.Exam
                         for (int j = 0; j < examCreate.NumOfPaperCode; j++)
                         {
                             Guid id = await _paperServices.CreateTestPaper(currentUserId, paperSet.PaperSetId, detailOfPaper, templatePaperId, examCreate.ConfigArrange.ShuffleAnswers, worksheet);
+                            if (id.Equals(Guid.Empty))
+                            {
+                                var paper = await _unitOfWork.PaperRepo.FindListByField(paper => paper.PaperSetId == paperSet.PaperSetId);
+                                if (paper != null)
+                                {
+                                    _unitOfWork.PaperRepo.RemoveRange(paper);
+                                }
+                                _unitOfWork.SectionPaperSetConfigRepo.RemoveRange(sectionConfigs);
+                                _unitOfWork.ExamRepo.Remove(exam);
+                                _unitOfWork.PaperSetRepo.Remove(paperSet);
+                                await _unitOfWork.SaveChangesAsync();
+                                return null;
+                            }
                             paperIds.Add(id);
                             detailOfPaper.PaperCode = ++paperCode;
                         }
@@ -410,7 +473,18 @@ namespace Services.Services.Exam
 
                 result = await _unitOfWork.SaveChangesAsync();
 
-                return result > 0 ? exam.ExamId : null;
+                if (result < questionInExams.Count + 3)
+                {
+                    var paper = await _unitOfWork.PaperRepo.FindListByField(paper => paper.PaperSetId == paperSet.PaperSetId);
+                    _unitOfWork.PaperRepo.RemoveRange(paper);
+                    _unitOfWork.SectionPaperSetConfigRepo.RemoveRange(sectionConfigs);
+                    _unitOfWork.ExamRepo.Remove(exam);
+                    _unitOfWork.PaperSetRepo.Remove(paperSet);
+                    await _unitOfWork.SaveChangesAsync();
+                    return null;
+                }
+
+                return exam.ExamId;
             }
             catch (Exception e)
             {
