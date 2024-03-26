@@ -142,9 +142,9 @@ namespace Services.Services.StudentClass
                 foreach (var item in list)
                 {
                     _unitOfWork.StudentRepo.AddAsync(item);
+                    var result = await _unitOfWork.SaveChangesAsync();
                 }
 
-                var result = await _unitOfWork.SaveChangesAsync();
                 var studentViewModels = _mapper.Map<IEnumerable<StudentViewModels>>(list);
                 return studentViewModels;
 
