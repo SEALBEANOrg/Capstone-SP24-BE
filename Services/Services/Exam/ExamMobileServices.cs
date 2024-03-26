@@ -138,14 +138,16 @@ namespace Services.Services.Exam
         {
             try
             {
-                var examMark = await _unitOfWork.ExamMarkRepo.FindByField(exam => exam.ExamMarkId == resultToSave.ExamMarkId, includes => includes.Exam);
+                var examMark = await _unitOfWork.ExamMarkRepo.FindByField(exam => exam.ExamMarkId == resultToSave.ExamMarkId);
                 if (examMark == null)
                 {
                     throw new Exception("Không tìm thấy kết quả thi");
                 }
 
+                var exam = await _unitOfWork.ExamRepo.FindByField(exam => exam.ExamId == examMark.ExamId);
+
                 //join exam and paper exam and paper and select paper content
-                var paperExam = await _unitOfWork.PaperRepo.FindByField(paper => paper.PaperSetId == examMark.Exam.PaperSetId && paper.PaperCode == resultToSave.PaperCode);
+                var paperExam = await _unitOfWork.PaperRepo.FindByField(paper => paper.PaperSetId == exam.PaperSetId && paper.PaperCode == resultToSave.PaperCode);
                 if (paperExam == null)
                 {
                     throw new Exception("Không tìm thấy đề thi");
