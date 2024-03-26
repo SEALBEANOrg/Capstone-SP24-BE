@@ -23,10 +23,11 @@ namespace Repositories
         private readonly IStudentClassRepo _studentClassRepo;
         private readonly ISubjectSectionRepo _subjectSectionRepo;
         private readonly ISubjectRepo _subjectRepo;
+        private readonly ISchoolRepo _schoolRepo;
         private readonly ITransactionRepo _transactionRepo;
         private readonly IUserRepo _userRepo;
 
-        public UnitOfWork(ExagenContext context, IDocumentRepo documentRepo, IExamRepo examRepo, IExamMarkRepo examMarkRepo, IPaperRepo paperRepo, IPaperSetRepo paperSetRepo, IQuestionInExamRepo questionInExamRepo, IQuestionInPaperRepo questionInPaper, IQuestionRepo questionRepo, IQuestionSetRepo questionSetRepo, ISectionPaperSetConfigRepo sectionPaperSetConfigRepo, IShareRepo shareRepo, IStudentRepo studentRepo, IStudentClassRepo studentClassRepo, ISubjectSectionRepo subjectSectionRepo, ISubjectRepo subjectRepo, ITransactionRepo transactionRepo, IUserRepo userRepo)
+        public UnitOfWork(ExagenContext context, IDocumentRepo documentRepo, IExamRepo examRepo, IExamMarkRepo examMarkRepo, IPaperRepo paperRepo, IPaperSetRepo paperSetRepo, IQuestionInExamRepo questionInExamRepo, IQuestionInPaperRepo questionInPaper, IQuestionRepo questionRepo, IQuestionSetRepo questionSetRepo, ISectionPaperSetConfigRepo sectionPaperSetConfigRepo, IShareRepo shareRepo, IStudentRepo studentRepo, IStudentClassRepo studentClassRepo, ISubjectSectionRepo subjectSectionRepo, ISubjectRepo subjectRepo, ISchoolRepo schoolRepo, ITransactionRepo transactionRepo, IUserRepo userRepo)
         {
             _context = context;
             _documentRepo = documentRepo;
@@ -44,6 +45,7 @@ namespace Repositories
             _studentClassRepo = studentClassRepo;
             _subjectSectionRepo = subjectSectionRepo;
             _subjectRepo = subjectRepo;
+            _schoolRepo = schoolRepo;
             _transactionRepo = transactionRepo;
             _userRepo = userRepo;
         }
@@ -63,6 +65,7 @@ namespace Repositories
         public IStudentClassRepo StudentClassRepo => _studentClassRepo;
         public ISubjectSectionRepo SubjectSectionRepo => _subjectSectionRepo;
         public ISubjectRepo SubjectRepo => _subjectRepo;
+        public ISchoolRepo SchoolRepo => _schoolRepo;
         public ITransactionRepo TransactionRepo => _transactionRepo;
         public IUserRepo UserRepo => _userRepo;
 

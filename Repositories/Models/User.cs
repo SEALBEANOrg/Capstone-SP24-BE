@@ -16,5 +16,8 @@ namespace Repositories.Models
         public Guid CreatedBy { get; set; }
         public DateTime ModifiedOn { get; set; }
         public Guid ModifiedBy { get; set; }
+        public Guid? SchoolId { get; set; }
+
+        public virtual School? School { get; set; }
     }
 }

@@ -21,6 +21,7 @@ namespace Repositories
         public IStudentClassRepo StudentClassRepo { get; }
         public ISubjectSectionRepo SubjectSectionRepo { get; }
         public ISubjectRepo SubjectRepo { get; }
+        public ISchoolRepo SchoolRepo { get; }
         public ITransactionRepo TransactionRepo { get; }
         public IUserRepo UserRepo { get; }
 

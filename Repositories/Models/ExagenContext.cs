@@ -26,6 +26,7 @@ namespace Repositories.Models
         public virtual DbSet<QuestionInExam> QuestionInExams { get; set; } = null!;
         public virtual DbSet<QuestionInPaper> QuestionInPapers { get; set; } = null!;
         public virtual DbSet<QuestionSet> QuestionSets { get; set; } = null!;
+        public virtual DbSet<School> Schools { get; set; } = null!;
         public virtual DbSet<SectionPaperSetConfig> SectionPaperSetConfigs { get; set; } = null!;
         public virtual DbSet<Share> Shares { get; set; } = null!;
         public virtual DbSet<Student> Students { get; set; } = null!;
@@ -67,6 +68,10 @@ namespace Repositories.Models
 
                 entity.Property(e => e.Description).HasMaxLength(500);
 
+                entity.Property(e => e.KeyS3)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.Name).HasMaxLength(255);
             });
 
@@ -90,6 +95,11 @@ namespace Repositories.Models
                 entity.Property(e => e.Name).HasMaxLength(255);
 
                 entity.Property(e => e.PaperSetId).HasColumnName("PaperSetID");
+
+                entity.Property(e => e.StudyYear)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .HasComputedColumnSql("([dbo].[GetStudyYear]([CreatedOn]))", false);
 
                 entity.Property(e => e.SubjectId).HasColumnName("SubjectID");
 
@@ -166,6 +176,10 @@ namespace Repositories.Models
 
                 entity.Property(e => e.CreatedOn).HasColumnType("datetime");
 
+                entity.Property(e => e.KeyS3)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.PaperSetId).HasColumnName("PaperSetID");
 
                 entity.HasOne(d => d.PaperSet)
@@ -180,6 +194,10 @@ namespace Repositories.Models
                 entity.Property(e => e.PaperSetId)
                     .HasColumnName("PaperSetID")
                     .HasDefaultValueSql("(newsequentialid())");
+
+                entity.Property(e => e.KeyS3)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Name).HasMaxLength(255);
 
@@ -298,9 +316,30 @@ namespace Repositories.Models
                     .OnDelete(DeleteBehavior.SetNull);
             });
 
+            modelBuilder.Entity<School>(entity =>
+            {
+                entity.ToTable("School");
+
+                entity.Property(e => e.SchoolId)
+                    .HasColumnName("SchoolID")
+                    .HasDefaultValueSql("(newsequentialid())");
+
+                entity.Property(e => e.Address).HasMaxLength(500);
+
+                entity.Property(e => e.City).HasMaxLength(50);
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.Name).HasMaxLength(500);
+
+                entity.Property(e => e.Province).HasMaxLength(50);
+            });
+
             modelBuilder.Entity<SectionPaperSetConfig>(entity =>
             {
-                entity.HasKey(e => new { e.PaperSetId, e.SectionId, e.Difficulty })
+                entity.HasKey(e => new { e.Difficulty, e.PaperSetId, e.SectionId })
                     .HasName("pk_sectionexam");
 
                 entity.ToTable("SectionPaperSetConfig");
@@ -365,8 +404,6 @@ namespace Repositories.Models
 
                 entity.Property(e => e.Grade).HasComputedColumnSql("([dbo].[GetGradeForStudent]([ClassID]))", false);
 
-                entity.Property(e => e.StudentNo).HasDefaultValueSql("((1))");
-
                 entity.HasOne(d => d.Class)
                     .WithMany(p => p.Students)
                     .HasForeignKey(d => d.ClassId);
@@ -390,6 +427,11 @@ namespace Repositories.Models
                 entity.Property(e => e.Name).HasMaxLength(255);
 
                 entity.Property(e => e.Status).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.StudyYear)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .HasComputedColumnSql("([dbo].[GetStudyYear]([CreatedOn]))", false);
 
                 entity.Property(e => e.TotalStudent).HasComputedColumnSql("([dbo].[CountStudent]([ClassID]))", false);
             });
@@ -484,6 +526,13 @@ namespace Repositories.Models
                 entity.Property(e => e.Phone)
                     .HasMaxLength(20)
                     .IsUnicode(false);
+
+                entity.Property(e => e.SchoolId).HasColumnName("SchoolID");
+
+                entity.HasOne(d => d.School)
+                    .WithMany(p => p.Users)
+                    .HasForeignKey(d => d.SchoolId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             OnModelCreatingPartial(modelBuilder);

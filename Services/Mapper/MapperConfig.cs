@@ -130,6 +130,15 @@ namespace Services.Mapper
             CreateMap<Share, MySold>().ForMember(dest => dest.NameOfQuestionSet, opt => opt.MapFrom(src => src.QuestionSet.Name)).ReverseMap();
 
             #endregion
+
+
+            #region School
+            CreateMap<School, SchoolForCreateViewModel>().ReverseMap();
+            CreateMap<School, SchoolViewModels>().ReverseMap();
+            CreateMap<School, SchoolForUpdateViewModel>().ReverseMap();
+            CreateMap<SchoolList, School>().ReverseMap();
+
+            #endregion
         }
 
     }

@@ -8,9 +8,9 @@ namespace Repositories.Models
         public Guid DocumentId { get; set; }
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
-        public string KeyS3 { get; set; } = null!;
         public int Type { get; set; }
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }
+        public string KeyS3 { get; set; } = null!;
     }
 }
