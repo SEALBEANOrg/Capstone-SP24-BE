@@ -8,10 +8,13 @@ namespace Services.ViewModels
 {
     public class StudentViewModels
     {
-        public Guid StudentId { get; set; }
         public Guid ClassId { get; set; }
-        public string FullName { get; set; } = null!;
+        public Guid StudentId { get; set; }
         public int StudentNo { get; set; }
+        public string FullName { get; set; } = null!;
+        public int? Gender { get; set; }
+        public DateTime? DoB { get; set; }
+        public string? ParentPhoneNumber { get; set; }
     }
 
     public class StudentInfo 
@@ -24,13 +27,19 @@ namespace Services.ViewModels
     public class StudentCreate
     {
         public string FullName { get; set; } = null!;
-        
+        public int? Gender { get; set; }
+        public DateTime? DoB { get; set; }
+        public string? ParentPhoneNumber { get; set; }
+
     }
 
     public class StudentUpdate
     {
         public Guid StudentId { get; set; }
         public string FullName { get; set; } = null!;
+        public int? Gender { get; set; }
+        public DateTime? DoB { get; set; }
+        public string? ParentPhoneNumber { get; set; }
     }
 
     public class StudentMoveOut

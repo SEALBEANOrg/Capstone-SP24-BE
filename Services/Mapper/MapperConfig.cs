@@ -14,6 +14,7 @@ namespace Services.Mapper
             CreateMap<User, UserViewModels>().ReverseMap();
             CreateMap<UserLogin, User>().ReverseMap();
             CreateMap<Request, User>().ReverseMap();
+            CreateMap<User, UserViewModel>().ReverseMap();
             
             #endregion
 

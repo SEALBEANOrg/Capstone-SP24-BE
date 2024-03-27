@@ -112,7 +112,7 @@ namespace Services.Services.User
             return userViewModels;
         }
 
-        public async Task<UserViewModels> GetProfile()
+        public async Task<UserViewModel> GetProfile()
         {
             try
             {
@@ -124,7 +124,17 @@ namespace Services.Services.User
                     return null;
                 }
 
-                var userViewModels = _mapper.Map<UserViewModels>(user);
+                var userViewModels = _mapper.Map<UserViewModel>(user);
+                
+                if (user.SchoolId != null)
+                {
+                    userViewModels.DropdownSchools = new DropdownSchools
+                    {
+                        SchoolId = (Guid)user.SchoolId,
+                        SchoolNameIdentity = $"{user.School.Name} - {user.School.Address}, {user.School.Province}, {user.School.City}"
+                    };
+                }
+
                 return userViewModels;
             }
             catch (Exception e)
@@ -140,7 +150,7 @@ namespace Services.Services.User
             return userInfo;
         }
 
-        public async Task<UserViewModels> GetUserById(Guid id)
+        public async Task<UserViewModel> GetUserById(Guid id)
         {
             try
             {
@@ -151,7 +161,16 @@ namespace Services.Services.User
                     throw new Exception("Người dùng không tồn tại");
                 }
 
-                var userViewModels = _mapper.Map<UserViewModels>(user);
+                var userViewModels = _mapper.Map<UserViewModel>(user);
+                if (user.SchoolId != null)
+                {
+                    userViewModels.DropdownSchools = new DropdownSchools
+                    {
+                        SchoolId = (Guid)user.SchoolId,
+                        SchoolNameIdentity = $"{user.School.Name} - {user.School.Address}, {user.School.Province}, {user.School.City}"
+                    };
+                }
+
                 return userViewModels;
             }
             catch (Exception e)
@@ -202,6 +221,7 @@ namespace Services.Services.User
 
                 user.FullName = userUpdate.FullName;
                 user.Phone = userUpdate.Phone;
+                user.SchoolId = userUpdate.SchoolId;
                 user.ModifiedOn = DateTime.Now;
                 user.ModifiedBy = currentUserId;
 

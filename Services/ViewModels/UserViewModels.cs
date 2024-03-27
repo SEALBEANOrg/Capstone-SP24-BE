@@ -20,6 +20,21 @@ namespace Services.ViewModels
         public DateTime ModifiedOn { get; set; }
         public Guid ModifiedBy { get; set; }
     }
+    public class UserViewModel
+    {
+        public Guid UserId { get; set; }
+        public int UserType { get; set; }
+        public string FullName { get; set; } = null!;
+        public string? Phone { get; set; }
+        public string Email { get; set; } = null!;
+        public int Point { get; set; }
+        public int Status { get; set; }
+        public DropdownSchools? DropdownSchools { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public Guid CreatedBy { get; set; }
+        public DateTime ModifiedOn { get; set; }
+        public Guid ModifiedBy { get; set; }
+    }
 
     public class Request
     {
@@ -33,6 +48,7 @@ namespace Services.ViewModels
     {
         public string FullName { get; set; } = null!;
         public string? Phone { get; set; }
+        public Guid? SchoolId { get; set; }
     }
 
     public class RoleUpdate

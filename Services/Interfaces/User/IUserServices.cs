@@ -10,9 +10,9 @@ namespace Services.Interfaces.User
 
         Task<Guid> GetCurrentUser();
         Task<IEnumerable<UserViewModels>> GetAllUser(string? search, int? role, int? status);
-        Task<UserViewModels> GetProfile();
+        Task<UserViewModel> GetProfile();
         Task<UserInfo> FindUserByEmail(string email);
-        Task<UserViewModels> GetUserById(Guid id);
+        Task<UserViewModel> GetUserById(Guid id);
         Task<UserInfo> FindUserById(Guid id);
 
         Task<bool> UpdateProfile(ProfileUpdate userUpdate);
