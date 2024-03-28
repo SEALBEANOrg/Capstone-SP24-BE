@@ -14,6 +14,7 @@ namespace Repositories.Models
         public decimal? Mark { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime ModifiedOn { get; set; }
+        public int Status { get; set; }
 
         public virtual Exam Exam { get; set; } = null!;
         public virtual Student Student { get; set; } = null!;

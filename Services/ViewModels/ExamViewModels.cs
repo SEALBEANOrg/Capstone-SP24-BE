@@ -72,9 +72,9 @@ namespace Services.ViewModels
         public string? Name { get; set; } //name of exam
         public int TestCode { get; set; }
         public string ClassName { get; set; }
-        public string HasMark { get; set; }
+        public string SubjectName { get; set; }
         public int Status { get; set; }
-        public DateTime CreatedOn { get; set; }
+        public DateTime ModifiedOn { get; set; }
         public IEnumerable<ResultOfStudent> Students { get; set; }
     }
 

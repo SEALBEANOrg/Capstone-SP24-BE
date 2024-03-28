@@ -91,7 +91,7 @@ namespace Services.Services.Exam
                             ExamMarkId = item.ExamMarkId,
                             StudentId = item.StudentId,
                             Name = student.FullName,
-                            HasAnswer = item.AnswersSelected != null,
+                            Status = item.Status,
                             No = student.StudentNo
                         };
                         studentInExam.Add(comboStudent);

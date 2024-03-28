@@ -530,10 +530,7 @@ namespace Services.Services.Exam
 
                 var examInfo = _mapper.Map<ExamInfo>(exam);
                 examInfo.ClassName = exam.Class.Name;
-                var examMark = await _unitOfWork.ExamMarkRepo.FindListByField(examMark => examMark.ExamId == exam.ExamId);
-                var count = examMark.Count(examMark => examMark.Mark != null);
-                examInfo.HasMark = count + "/" + examMark.Count;
-
+                
                 var studentInExam = await _unitOfWork.ExamMarkRepo.FindListByField(examMark => examMark.ExamId == examId, includes => includes.Student);
 
                 var students = _mapper.Map<IEnumerable<ResultOfStudent>>(studentInExam.OrderBy(o => o.StudentNo));

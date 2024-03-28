@@ -26,6 +26,8 @@ namespace Services.ViewModels
         public Guid ExamMarkId { get; set; }
         public Guid StudentId { get; set; }
         public string Name { get; set; }
+        public int Status { get; set; }
+        public int? PaperCode { get; set; }
         public decimal? Mark { get; set; }  
     }
 
