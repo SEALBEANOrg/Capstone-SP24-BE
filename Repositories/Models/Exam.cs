@@ -23,6 +23,7 @@ namespace Repositories.Models
         public DateTime ModifiedOn { get; set; }
         public Guid ModifiedBy { get; set; }
         public string? StudyYear { get; set; }
+        public string Submitted { get; set; } = null!;
 
         public virtual StudentClass Class { get; set; } = null!;
         public virtual PaperSet PaperSet { get; set; } = null!;

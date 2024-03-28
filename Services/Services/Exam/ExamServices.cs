@@ -497,7 +497,7 @@ namespace Services.Services.Exam
         {
             try
             {
-                var exams = await _unitOfWork.ExamRepo.FindListByField(exam => exam.CreatedBy == currentUserId && exam.StudyYear == studyYear, includes => includes.Class);
+                var exams = await _unitOfWork.ExamRepo.FindListByField(exam => exam.CreatedBy == currentUserId && exam.StudyYear == studyYear, includes => includes.Class, includes => includes.Subject);
                 if (exams == null)
                 {
                     return null;
@@ -509,12 +509,7 @@ namespace Services.Services.Exam
                 }
 
                 var examViewModels = _mapper.Map<IEnumerable<ExamViewModels>>(exams);
-                foreach (var exam in examViewModels)
-                {
-                    var examMark = await _unitOfWork.ExamMarkRepo.FindListByField(examMark => examMark.ExamId == exam.ExamId);
-                    var count = examMark.Count(examMark => examMark.Mark != null);
-                    exam.HasMark = count + "/" + examMark.Count;
-                }
+               
                 return examViewModels;
             }
             catch (Exception e)

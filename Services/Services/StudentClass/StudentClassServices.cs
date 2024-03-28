@@ -174,21 +174,8 @@ namespace Services.Services.StudentClass
             var students = await _unitOfWork.StudentRepo.FindListByField(student => student.ClassId == id);
             var studentInfo = students != null ? _mapper.Map<List<StudentInfo>>(students) : null;
 
-            var examOfClass = await _unitOfWork.ExamRepo.FindListByField(examOfClass => examOfClass.ClassId == id);
-            List<ExamViewModels> examInfo = examOfClass != null ? new List<ExamViewModels>() : null;
-
-            if (examOfClass != null)
-            {
-                foreach (var exam in examOfClass)
-                {
-                    var examViewModel = _mapper.Map<ExamViewModels>(exam);
-                    examViewModel.ClassName = studentClass.Name;
-                    var examMark = await _unitOfWork.ExamMarkRepo.FindListByField(examMark => examMark.ExamId == exam.ExamId);
-                    var count = examMark.Count(examMark => examMark.Mark != null);
-                    examViewModel.HasMark = count + "/" + examMark.Count;
-                    examInfo.Add(examViewModel);
-                }
-            }
+            var examOfClass = await _unitOfWork.ExamRepo.FindListByField(examOfClass => examOfClass.ClassId == id, includes => includes.Class, includes => includes.Subject);
+            List<ExamViewModels> examInfo = examOfClass != null ? _mapper.Map<List<ExamViewModels>>(examOfClass) : null;
 
             var classInfo = new ClassInfo
             {
