@@ -51,7 +51,7 @@ namespace Services.ViewModels
         public Guid StudentId { get; set; }
         public int No { get; set; }
         public string Name { get; set; }
-        public decimal? Mark { get; set;}
+        public bool HasAnswer { get; set; }
     }
 
     public class ComboClass
