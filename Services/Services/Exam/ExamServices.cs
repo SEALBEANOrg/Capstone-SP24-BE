@@ -541,7 +541,7 @@ namespace Services.Services.Exam
 
                 var studentInExam = await _unitOfWork.ExamMarkRepo.FindListByField(examMark => examMark.ExamId == examId, includes => includes.Student);
 
-                var students = _mapper.Map<IEnumerable<ResultOfStudent>>(studentInExam);
+                var students = _mapper.Map<IEnumerable<ResultOfStudent>>(studentInExam.OrderBy(o => o.StudentNo));
                 examInfo.Students = students;
                 return examInfo;
             }

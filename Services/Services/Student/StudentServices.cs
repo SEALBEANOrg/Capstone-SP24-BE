@@ -45,7 +45,7 @@ namespace Services.Services.Student
                 return null;
             }
 
-            var studentViewModels = _mapper.Map<IEnumerable<StudentViewModels>>(students);
+            var studentViewModels = _mapper.Map<IEnumerable<StudentViewModels>>(students.OrderBy(o => o.StudentNo));
             return studentViewModels;
         }
 

@@ -97,7 +97,7 @@ namespace Services.Services.Exam
                         studentInExam.Add(comboStudent);
                     }
 
-                    infoClassInExam.StudentInExam = studentInExam;
+                    infoClassInExam.StudentInExam = studentInExam.OrderBy(o => o.No).ToList();
                 }
 
                 return infoClassInExam;
