@@ -90,7 +90,30 @@ namespace Services.Services.QuestionSet
                 {
                     questionSets = questionSets.Where(questionSet => EnumStatus.Subject[(int)subject].ToLower().Contains(questionSet.Subject.Name.ToLower())).ToList();
                 }
-                var questionSetViewModels = questionSets != null ? _mapper.Map<IEnumerable<OwnQuestionSet>>(questionSets) : null;
+
+                if (questionSets == null)
+                {
+                    return null;
+                }
+
+                var questionSetViewModels = new List<OwnQuestionSet>();
+                foreach (var questionSet in questionSets)
+                {
+                    var questionSetViewModel = _mapper.Map<OwnQuestionSet>(questionSet);
+
+                    if (subject == null)
+                    {
+                        var subjectName = (await _unitOfWork.SubjectRepo.FindByField(sub => sub.SubjectId == questionSet.SubjectId)).Name;
+                        questionSetViewModel.SubjectEnum = EnumStatus.Subject.FirstOrDefault(s => s.Value.ToLower().Contains(subjectName.ToLower())).Key;
+                    }
+                    else
+                    {
+                        questionSetViewModel.SubjectEnum = (int)subject;
+                    }
+
+                    questionSetViewModels.Add(questionSetViewModel);
+                }
+
                 return questionSetViewModels;
             }
             catch (Exception e)

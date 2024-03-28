@@ -98,6 +98,8 @@ namespace Services.ViewModels
         public Guid QuestionSetId { get; set; }
         public string Name { get; set; } = null!;
         public int Status { get; set; }
+        public int Grade { get; set; }
+        public int SubjectEnum { get; set; }
     }
 
     public class SharedQuestionSet
