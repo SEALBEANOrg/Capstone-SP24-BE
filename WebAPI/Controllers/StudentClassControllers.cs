@@ -5,6 +5,7 @@ using Services.Interfaces.StudentClass;
 using Services.Interfaces.User;
 using Services.ViewModels;
 using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebAPI.Controllers
 {
@@ -26,10 +27,10 @@ namespace WebAPI.Controllers
 
         [HttpGet("own-class")]
         [SwaggerResponse(200, "List of sample student classes", typeof(IEnumerable<StudentClassViewModels>))]
-        public async Task<IActionResult> GetAllByCreator()
+        public async Task<IActionResult> GetAllByCreator([Required] string studyYear)
         {
             var currentUserId = await _studentClassServices.GetCurrentUser();
-            var studentClasses = await _studentClassServices.GetAllStudentClass(currentUserId);
+            var studentClasses = await _studentClassServices.GetAllStudentClass(studyYear, currentUserId);
 
             return Ok(studentClasses);
         }
@@ -37,11 +38,11 @@ namespace WebAPI.Controllers
         [HttpGet]
         [Authorize(Roles = "2")]
         [SwaggerResponse(200, "List of sample student classes", typeof(IEnumerable<StudentClassViewModels>))]
-        public async Task<IActionResult> GetAll(Guid? teacherId)
+        public async Task<IActionResult> GetAll(Guid? teacherId, [Required] string studyYear)
         {
             try
             {
-                var studentClasses = await _studentClassServices.GetAllStudentClass(teacherId);
+                var studentClasses = await _studentClassServices.GetAllStudentClass(studyYear, teacherId);
 
                 return Ok(studentClasses);
             }
@@ -54,6 +55,7 @@ namespace WebAPI.Controllers
             }
         }
         
+
         [HttpGet("{classId}")]
         [SwaggerResponse(200, "Sample student classes", typeof(ClassInfo))]
         public async Task<IActionResult> GetById(Guid classId)
@@ -79,6 +81,7 @@ namespace WebAPI.Controllers
             }
         }
 
+
         [HttpGet("{classId}/students")]
         [SwaggerResponse(200, "List of sample student", typeof(IEnumerable<StudentViewModels>))]
         public async Task<IActionResult> GetStudentsOfMyClass(Guid classId)
@@ -99,6 +102,7 @@ namespace WebAPI.Controllers
             }
         }
         
+
         [HttpPost("{classId}/students")]
         [SwaggerResponse(200, "Is success", typeof(bool))]
         public async Task<IActionResult> AddStudentIntoClass(Guid classId, [FromBody] StudentCreate studentClassCreate)
@@ -122,6 +126,7 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
 
         [HttpDelete("students/{studentId}")]
         [SwaggerResponse(200, "Is success", typeof(bool))]
@@ -147,6 +152,7 @@ namespace WebAPI.Controllers
             }
         }
 
+
         [HttpPost]
         [SwaggerResponse(200, "Is success", typeof(bool))]
         public async Task<IActionResult> CreateClass([FromBody] StudentClassCreate studentClassCreate)
@@ -170,6 +176,7 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
 
         [HttpPut("{classId}")]
         [SwaggerResponse(200, "Is success", typeof(bool))]
@@ -195,6 +202,7 @@ namespace WebAPI.Controllers
             }
         }
 
+
         [HttpDelete("{classId}")]
         [SwaggerResponse(200, "Is success", typeof(bool))]
         public async Task<IActionResult> DeleteClass(Guid classId)
@@ -219,6 +227,7 @@ namespace WebAPI.Controllers
             }
         }
 
+
         [HttpPut("{classId}/status")]
         [SwaggerResponse(200, "Is success", typeof(bool))]
         public async Task<IActionResult> UpdateStatusOfClass(Guid classId, int status)
@@ -242,6 +251,7 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
 
         [HttpPost("{classId}/import-students")]
         [SwaggerResponse(200, "Is success", typeof(IEnumerable<StudentViewModels>))]
@@ -268,6 +278,7 @@ namespace WebAPI.Controllers
             }
             
         }
+
 
         [HttpGet("combo-class")]
         [SwaggerResponse(200, "Combo Class", typeof(IEnumerable<ComboClass>))]

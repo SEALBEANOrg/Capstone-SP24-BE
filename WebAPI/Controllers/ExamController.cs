@@ -5,6 +5,7 @@ using Services.Interfaces.Exam;
 using Services.Interfaces.User;
 using Services.ViewModels;
 using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebAPI.Controllers
 {
@@ -122,12 +123,12 @@ namespace WebAPI.Controllers
         [HttpGet("own-exam")]
         [SwaggerResponse(200, "sample result", typeof(IEnumerable<ExamViewModels>))]
         [Authorize(Roles = "1,2")]
-        public async Task<IActionResult> GetOwnExam(int? grade)
+        public async Task<IActionResult> GetOwnExam(int? grade,[Required] string studyYear)
         {
             try
             {
                 var currentUserId = await _userServices.GetCurrentUser();
-                var result = await _testResultServices.GetOwnExam(currentUserId, grade);
+                var result = await _testResultServices.GetOwnExam(currentUserId, grade, studyYear);
 
                 return Ok(result);
             }
@@ -139,6 +140,7 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
 
         [HttpGet("{examId}")]
         [Authorize(Roles = "1,2")]
@@ -191,6 +193,7 @@ namespace WebAPI.Controllers
             }
         }
 
+
         [HttpGet("{examId}/resource")]
         [Authorize(Roles = "1,2")]
         [SwaggerResponse(200, "List of sample exam sources", typeof(IEnumerable<ExamSourceViewModel>))]
@@ -210,6 +213,7 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
 
         [HttpGet("export-result")]
         [Authorize(Roles = "1,2")]
@@ -231,6 +235,7 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
 
         [HttpPut("{examId}/calculate-all")]
         [Authorize(Roles = "1,2")]

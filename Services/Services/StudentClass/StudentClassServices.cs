@@ -155,9 +155,9 @@ namespace Services.Services.StudentClass
             }
         }
 
-        public async Task<IEnumerable<StudentClassViewModels>> GetAllStudentClass(Guid? teacherId = null)
+        public async Task<IEnumerable<StudentClassViewModels>> GetAllStudentClass(string studyYear, Guid? teacherId = null)
         {
-            var studentClasses = await _unitOfWork.StudentClassRepo.GetAllAsync();
+            var studentClasses = await _unitOfWork.StudentClassRepo.FindListByField(classes => classes.StudyYear == studyYear);
 
             if (teacherId != null)
             {

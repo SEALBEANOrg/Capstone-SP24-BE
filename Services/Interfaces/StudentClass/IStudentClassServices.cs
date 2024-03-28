@@ -9,7 +9,7 @@ namespace Services.Interfaces.StudentClass
         Task<bool> AddStudentIntoClass(Guid classId, StudentCreate studentClassCreate);
         Task<IEnumerable<StudentViewModels>> ImportExcelToAddStudent(Guid classId, IFormFile file);
 
-        Task<IEnumerable<StudentClassViewModels>> GetAllStudentClass(Guid? teacherId = null);
+        Task<IEnumerable<StudentClassViewModels>> GetAllStudentClass(string studyYear, Guid? teacherId = null);
         Task<ClassInfo> GetStudentClassById(Guid id);
         Task<IEnumerable<ComboClass>> GetComboClass(Guid currentUserId, int? grade);
 

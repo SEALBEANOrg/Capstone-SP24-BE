@@ -493,11 +493,11 @@ namespace Services.Services.Exam
             }
         }
 
-        public async Task<IEnumerable<ExamViewModels>> GetOwnExam(Guid currentUserId, int? grade)
+        public async Task<IEnumerable<ExamViewModels>> GetOwnExam(Guid currentUserId, int? grade, string studyYear)
         {
             try
             {
-                var exams = await _unitOfWork.ExamRepo.FindListByField(exam => exam.CreatedBy == currentUserId, includes => includes.Class);
+                var exams = await _unitOfWork.ExamRepo.FindListByField(exam => exam.CreatedBy == currentUserId && exam.StudyYear == studyYear, includes => includes.Class);
                 if (exams == null)
                 {
                     return null;
