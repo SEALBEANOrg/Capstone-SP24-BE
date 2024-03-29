@@ -172,7 +172,7 @@ namespace Services.Services.StudentClass
         {
             var studentClass = await _unitOfWork.StudentClassRepo.FindByField(studentClass => studentClass.ClassId == id);
             var students = await _unitOfWork.StudentRepo.FindListByField(student => student.ClassId == id);
-            var studentInfo = students != null ? _mapper.Map<List<StudentInfo>>(students) : null;
+            var studentInfo = students != null ? _mapper.Map<List<StudentViewModels>>(students) : null;
 
             var examOfClass = await _unitOfWork.ExamRepo.FindListByField(examOfClass => examOfClass.ClassId == id, includes => includes.Class, includes => includes.Subject);
             List<ExamViewModels> examInfo = examOfClass != null ? _mapper.Map<List<ExamViewModels>>(examOfClass) : null;
