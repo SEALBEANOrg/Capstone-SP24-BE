@@ -142,23 +142,32 @@ namespace Services.Services.StudentClass
                                         name += worksheet.Cells[row, column].Value.ToString().Trim() + " ";
                                         break;
                                     case "SĐT Phụ Huynh":
-                                        parentPhoneNumber = worksheet.Cells[row, column].Value.ToString().Trim();
+                                        if (worksheet.Cells[row, column].Value != null && worksheet.Cells[row, column].Value.ToString().Trim() != "")
+                                        {
+                                            parentPhoneNumber = worksheet.Cells[row, column].Value.ToString().Trim();
+                                        }
                                         break;
                                     case "Ngày sinh":
                                         DateTime temp;
-                                        if (DateTime.TryParseExact(worksheet.Cells[row, column].Value.ToString().Trim(), "d/M/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out temp))
+                                        if (worksheet.Cells[row, column].Value != null && worksheet.Cells[row, column].Value.ToString().Trim() != "")
                                         {
-                                            DoB = temp;
+                                            if (DateTime.TryParseExact(worksheet.Cells[row, column].Value.ToString().Trim().Split(' ')[0], "d/M/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out temp))
+                                            {
+                                                DoB = temp;
+                                            }
                                         }
                                         break;
                                     case "Giới tính":
-                                        if (worksheet.Cells[row, column].Value.ToString().Trim().ToLower() == "nam")
-                                        {
-                                            gender = 1;
-                                        }
-                                        else
-                                        {
-                                            gender = 0;
+                                        if (worksheet.Cells[row, column].Value != null && worksheet.Cells[row, column].Value.ToString().Trim() != "")
+                                        { 
+                                            if (worksheet.Cells[row, column].Value.ToString().Trim().ToLower() == "nam")
+                                            {
+                                                gender = 1;
+                                            }
+                                            else
+                                            {
+                                                gender = 0;
+                                            }
                                         }
                                         break;
                                 }
