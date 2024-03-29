@@ -127,13 +127,39 @@ namespace Services.Services.StudentClass
                         for (int row = 2; row <= rowCount; row++)
                         {
                             string name = "";
+                            string parentPhoneNumber = "";
+                            DateTime? DoB = null;
+                            int? gender = null; 
 
                             for (int column = 1; column <= columnCount; column++)
                             {
-                                name += worksheet.Cells[row, column].Value.ToString().Trim() + " ";
+                                switch (worksheet.Cells[1, column].Value.ToString().Trim())
+                                {
+                                    case "Họ":
+                                    case "Tên":
+                                    case "Họ và tên":
+                                        name += worksheet.Cells[row, column].Value.ToString().Trim() + " ";
+                                        break;
+                                    case "SĐT Phụ Huynh":
+                                        parentPhoneNumber = worksheet.Cells[row, column].Value.ToString().Trim();
+                                        break;
+                                    case "Ngày sinh":
+                                        DoB = DateTime.Parse(worksheet.Cells[row, column].Value.ToString().Trim());
+                                        break;
+                                    case "Giới tính":
+                                        if (worksheet.Cells[row, column].Value.ToString().Trim().ToLower() == "nam")
+                                        {
+                                            gender = 1;
+                                        }
+                                        else
+                                        {
+                                            gender = 0;
+                                        }
+                                        break;
+                                }
                             }
 
-                            list.Add(new Repositories.Models.Student { ClassId = classId, FullName = name.Trim() });
+                            list.Add(new Repositories.Models.Student { ClassId = classId, FullName = name.Trim(), DoB = DoB, ParentPhoneNumber = parentPhoneNumber, Gender = gender });
                         }
                     }
 
