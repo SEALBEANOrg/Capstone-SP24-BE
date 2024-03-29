@@ -134,20 +134,23 @@ namespace Services.Services.StudentClass
 
                             for (int column = 1; column <= columnCount; column++)
                             {
-                                switch (worksheet.Cells[1, column].Value.ToString().Trim())
+                                switch (worksheet.Cells[1, column].Value.ToString().ToLower().Trim())
                                 {
-                                    case "Họ":
-                                    case "Tên":
-                                    case "Họ và tên":
-                                        name += worksheet.Cells[row, column].Value.ToString().Trim() + " ";
+                                    case "họ":
+                                    case "tên":
+                                    case "họ và tên":
+                                        if (worksheet.Cells[row, column].Value != null && worksheet.Cells[row, column].Value.ToString().Trim() != "")
+                                        {
+                                            name += worksheet.Cells[row, column].Value.ToString().Trim() + " ";
+                                        }
                                         break;
-                                    case "SĐT Phụ Huynh":
+                                    case "sđt phụ huynh":
                                         if (worksheet.Cells[row, column].Value != null && worksheet.Cells[row, column].Value.ToString().Trim() != "")
                                         {
                                             parentPhoneNumber = worksheet.Cells[row, column].Value.ToString().Trim();
                                         }
                                         break;
-                                    case "Ngày sinh":
+                                    case "ngày sinh":
                                         DateTime temp;
                                         if (worksheet.Cells[row, column].Value != null && worksheet.Cells[row, column].Value.ToString().Trim() != "")
                                         {
@@ -157,7 +160,7 @@ namespace Services.Services.StudentClass
                                             }
                                         }
                                         break;
-                                    case "Giới tính":
+                                    case "giới tính":
                                         if (worksheet.Cells[row, column].Value != null && worksheet.Cells[row, column].Value.ToString().Trim() != "")
                                         { 
                                             if (worksheet.Cells[row, column].Value.ToString().Trim().ToLower() == "nam")
@@ -172,8 +175,10 @@ namespace Services.Services.StudentClass
                                         break;
                                 }
                             }
-
-                            list.Add(new Repositories.Models.Student { ClassId = classId, FullName = name.Trim(), DoB = DoB, ParentPhoneNumber = parentPhoneNumber, Gender = gender });
+                            if (name.Trim() != "")
+                            { 
+                                list.Add(new Repositories.Models.Student { ClassId = classId, FullName = name.Trim(), DoB = DoB, ParentPhoneNumber = parentPhoneNumber, Gender = gender });
+                            }
                         }
                     }
 
