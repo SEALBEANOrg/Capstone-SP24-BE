@@ -145,7 +145,11 @@ namespace Services.Services.StudentClass
                                         parentPhoneNumber = worksheet.Cells[row, column].Value.ToString().Trim();
                                         break;
                                     case "Ngày sinh":
-                                        DoB = DateTime.ParseExact(worksheet.Cells[row, column].Value.ToString().Trim(), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None);
+                                        DateTime temp;
+                                        if (DateTime.TryParseExact(worksheet.Cells[row, column].Value.ToString().Trim(), "d/M/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out temp))
+                                        {
+                                            DoB = temp;
+                                        }
                                         break;
                                     case "Giới tính":
                                         if (worksheet.Cells[row, column].Value.ToString().Trim().ToLower() == "nam")
