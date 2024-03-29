@@ -6,6 +6,7 @@ using Repositories;
 using Services.Interfaces.StudentClass;
 using Services.Interfaces.User;
 using Services.ViewModels;
+using System.Globalization;
 
 namespace Services.Services.StudentClass
 {
@@ -144,7 +145,7 @@ namespace Services.Services.StudentClass
                                         parentPhoneNumber = worksheet.Cells[row, column].Value.ToString().Trim();
                                         break;
                                     case "Ngày sinh":
-                                        DoB = DateTime.Parse(worksheet.Cells[row, column].Value.ToString().Trim());
+                                        DoB = DateTime.ParseExact(worksheet.Cells[row, column].Value.ToString().Trim(), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None);
                                         break;
                                     case "Giới tính":
                                         if (worksheet.Cells[row, column].Value.ToString().Trim().ToLower() == "nam")
