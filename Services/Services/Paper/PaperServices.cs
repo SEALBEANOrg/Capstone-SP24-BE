@@ -49,6 +49,11 @@ namespace Services.Services.Paper
                     document.LoadFromStream(memoryStream, FileFormat.Auto);
                     Spire.Doc.Document newDoc = document.Clone();
 
+                    if (currentUser.SchoolId != null)
+                    {
+                        var school = await _unitOfWork.SchoolRepo.FindByField(school => school.SchoolId == currentUser.SchoolId);
+                        newDoc.Replace("EXAGEN Generator", school.Name, false, true);
+                    }
                     newDoc.Replace("{Name}", $"{detailOfPaper.NameInTest}", false, true);
                     newDoc.Replace("{Subject} - Lớp {Grade}", $"{detailOfPaper.SubjectName} - Lớp {detailOfPaper.Grade}", false, true);
                     newDoc.Replace("Thời gian làm bài: {Time}p", $"Thời gian làm bài: {detailOfPaper.TimeOfTest}p", false, true);
