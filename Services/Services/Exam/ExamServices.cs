@@ -4,6 +4,7 @@ using ExagenSharedProject;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using OfficeOpenXml;
+using OfficeOpenXml.Style.XmlAccess;
 using Repositories;
 using Repositories.Models;
 using Services.Interfaces;
@@ -522,7 +523,7 @@ namespace Services.Services.Exam
         {
             try
             {
-                var exam = await _unitOfWork.ExamRepo.FindByField(exam => exam.ExamId == examId && exam.CreatedBy == currentUseId, includes => includes.Class);
+                var exam = await _unitOfWork.ExamRepo.FindByField(exam => exam.ExamId == examId && exam.CreatedBy == currentUseId, includes => includes.Class, includes => includes.Subject);
                 if (exam == null)
                 {
                     throw new Exception("Không tìm thấy thông tin cuộc thi");
@@ -530,6 +531,7 @@ namespace Services.Services.Exam
 
                 var examInfo = _mapper.Map<ExamInfo>(exam);
                 examInfo.ClassName = exam.Class.Name;
+                examInfo.SubjectName = exam.Subject.Name;
                 
                 var studentInExam = await _unitOfWork.ExamMarkRepo.FindListByField(examMark => examMark.ExamId == examId, includes => includes.Student);
 
