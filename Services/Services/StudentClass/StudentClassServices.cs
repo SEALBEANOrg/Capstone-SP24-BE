@@ -177,7 +177,7 @@ namespace Services.Services.StudentClass
                             }
                             if (name.Trim() != "")
                             { 
-                                list.Add(new Repositories.Models.Student { ClassId = classId, FullName = name.Trim(), DoB = DoB, ParentPhoneNumber = parentPhoneNumber, Gender = gender });
+                                list.Add(new Repositories.Models.Student { ClassId = classId, FullName = name.Trim(), Dob = DoB, ParentPhoneNumber = parentPhoneNumber, Gender = gender });
                             }
                         }
                     }
