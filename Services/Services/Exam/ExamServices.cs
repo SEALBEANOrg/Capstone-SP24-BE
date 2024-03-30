@@ -100,7 +100,6 @@ namespace Services.Services.Exam
                     var examMark = new ExamMark
                     {
                         StudentId = student.StudentId,
-                        StudentNo = student.StudentNo,
                         CreatedOn = DateTime.Now,
                         ModifiedOn = DateTime.Now,
                     };
@@ -535,7 +534,7 @@ namespace Services.Services.Exam
                 
                 var studentInExam = await _unitOfWork.ExamMarkRepo.FindListByField(examMark => examMark.ExamId == examId, includes => includes.Student);
 
-                var students = _mapper.Map<IEnumerable<ResultOfStudent>>(studentInExam.OrderBy(o => o.StudentNo));
+                var students = _mapper.Map<IEnumerable<ResultOfStudent>>(studentInExam.OrderBy(o => o.StudentCode));
                 examInfo.Students = students;
                 return examInfo;
             }
@@ -613,9 +612,9 @@ namespace Services.Services.Exam
                     // Add data to the worksheet
                     // Assuming you have a list of students with their details
                     int row = 4;
-                    foreach (var em in examMark.OrderBy(o => o.StudentNo))
+                    foreach (var em in examMark.OrderBy(o => o.StudentCode))
                     {
-                        worksheet.Cells[row, 1].Value = em.StudentNo;
+                        worksheet.Cells[row, 1].Value = em.StudentCode;
                         worksheet.Cells[row, 2].Value = em.Student.FullName;
                         worksheet.Cells[row, 3].Value = em.PaperCode;
                         worksheet.Cells[row, 4].Value = em.Mark;

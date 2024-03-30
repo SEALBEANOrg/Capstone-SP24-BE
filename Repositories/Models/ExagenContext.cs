@@ -152,9 +152,9 @@ namespace Repositories.Models
 
                 entity.Property(e => e.Status).HasComputedColumnSql("([dbo].[GetStatus]([PaperCode],[AnswersSelected]))", false);
 
-                entity.Property(e => e.StudentId).HasColumnName("StudentID");
+                entity.Property(e => e.StudentCode).HasComputedColumnSql("([dbo].[GetStudentCode]([StudentID]))", false);
 
-                entity.Property(e => e.StudentNo).HasComputedColumnSql("([dbo].[GetStudentNo]([StudentID]))", false);
+                entity.Property(e => e.StudentId).HasColumnName("StudentID");
 
                 entity.HasOne(d => d.Exam)
                     .WithMany(p => p.ExamMarks)
