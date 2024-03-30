@@ -44,6 +44,35 @@ namespace WebAPI.Controllers
             }
         }
 
+        [HttpGet("drop-down")]
+        [Authorize(Roles = "0,1,2")]
+        [AllowAnonymous]
+        [SwaggerResponse(200, "List sample section", typeof(IEnumerable<SubjectSectionViewModels>))]
+        public async Task<IActionResult> GetAllBySubjectEnumAndGrade(int? grade, int? subjectEnum)
+        {
+            try
+            {
+                var subjectId = (await _subjectServices.GetAll(subjectEnum, grade));
+                if (subjectId == null)
+                {
+                    return BadRequest(new
+                    {
+                        Message = "Không tìm thấy môn học"
+                    });
+                }
+                var subjectSections = await _subjectSectionServices.GetAllBySubjectId(subjectId.First().SubjectId);
+
+                return Ok(subjectSections);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
         [HttpGet("{sectionId}")]
         [Authorize(Roles = "0")]
         [SwaggerResponse(200, "Sample section", typeof(SubjectSectionViewModel))]
