@@ -16,6 +16,7 @@ namespace Repositories.Models
         public int NumOfQuestion { get; set; }
         public string? Description { get; set; }
         public int? Grade { get; set; }
+        public string? StudyYear { get; set; }
         public int Status { get; set; }
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }

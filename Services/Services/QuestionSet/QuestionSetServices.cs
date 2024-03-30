@@ -77,11 +77,11 @@ namespace Services.Services.QuestionSet
             }
         }
 
-        public async Task<IEnumerable<OwnQuestionSet>> GetOwnQuestionSet(Guid currentUserId, int? grade, int? subject, int year)
+        public async Task<IEnumerable<OwnQuestionSet>> GetOwnQuestionSet(Guid currentUserId, int? grade, int? subject, string studyYear)
         {
             try
             {
-                var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => questionSet.CreatedBy == currentUserId && questionSet.CreatedOn.Year == year, include => include.Subject);
+                var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => questionSet.CreatedBy == currentUserId && questionSet.StudyYear == studyYear, include => include.Subject);
                 if (grade != null)
                 {
                     questionSets = questionSets.Where(questionSet => questionSet.Grade == grade).ToList();
