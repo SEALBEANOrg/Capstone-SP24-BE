@@ -16,7 +16,7 @@ namespace Repositories.Models
         public string FullName { get; set; } = null!;
         public int? Grade { get; set; }
         public int? Gender { get; set; }
-        public DateTime? DoB{ get; set; }
+        public DateTime? Dob { get; set; }
         public string? ParentPhoneNumber { get; set; }
 
         public virtual StudentClass Class { get; set; } = null!;

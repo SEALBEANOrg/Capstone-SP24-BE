@@ -103,6 +103,11 @@ namespace Repositories.Models
 
                 entity.Property(e => e.SubjectId).HasColumnName("SubjectID");
 
+                entity.Property(e => e.Submitted)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasComputedColumnSql("([dbo].[GetSubmitted]([ExamID]))", false);
+
                 entity.Property(e => e.TestCode).ValueGeneratedOnAdd();
 
                 entity.HasOne(d => d.Class)
@@ -144,6 +149,8 @@ namespace Repositories.Models
                 entity.Property(e => e.Mark).HasColumnType("decimal(4, 2)");
 
                 entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.Status).HasComputedColumnSql("([dbo].[GetStatus]([PaperCode],[AnswersSelected]))", false);
 
                 entity.Property(e => e.StudentId).HasColumnName("StudentID");
 
@@ -308,6 +315,11 @@ namespace Repositories.Models
 
                 entity.Property(e => e.Name).HasMaxLength(255);
 
+                entity.Property(e => e.StudyYear)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .HasComputedColumnSql("([dbo].[GetStudyYear]([CreatedOn]))", false);
+
                 entity.Property(e => e.SubjectId).HasColumnName("SubjectID");
 
                 entity.HasOne(d => d.Subject)
@@ -400,9 +412,17 @@ namespace Repositories.Models
 
                 entity.Property(e => e.ClassId).HasColumnName("ClassID");
 
+                entity.Property(e => e.Dob)
+                    .HasColumnType("date")
+                    .HasColumnName("DOB");
+
                 entity.Property(e => e.FullName).HasMaxLength(255);
 
                 entity.Property(e => e.Grade).HasComputedColumnSql("([dbo].[GetGradeForStudent]([ClassID]))", false);
+
+                entity.Property(e => e.ParentPhoneNumber)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Class)
                     .WithMany(p => p.Students)
