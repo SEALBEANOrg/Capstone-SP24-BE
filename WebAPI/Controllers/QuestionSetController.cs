@@ -26,12 +26,12 @@ namespace WebAPI.Controllers
         [HttpGet("own-questionset")]
         [SwaggerResponse(200, "List of question set", typeof(IEnumerable<OwnQuestionSet>))]
         [Authorize(Roles = "1,2")]
-        public async Task<IActionResult> GetOwnQuestionSet(int? grade, int? subject, [Required]int year)
+        public async Task<IActionResult> GetOwnQuestionSet(int? grade, int? subject, [Required]string studyYear)
         {
             try
             {
                 var currentUser = await _userServices.GetCurrentUser();
-                var result = await _questionSetServices.GetOwnQuestionSet(currentUser, grade, subject, year);
+                var result = await _questionSetServices.GetOwnQuestionSet(currentUser, grade, subject, studyYear);
 
                 return Ok(result);
             }

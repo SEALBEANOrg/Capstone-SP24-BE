@@ -100,6 +100,7 @@ namespace Services.ViewModels
         public int Status { get; set; }
         public int Grade { get; set; }
         public int SubjectEnum { get; set; }
+        public int NumOfQuestion { get; set; }
     }
 
     public class SharedQuestionSet

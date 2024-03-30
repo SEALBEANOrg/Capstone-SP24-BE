@@ -19,7 +19,7 @@ namespace Services.ViewModels
 
     public class ClassInfo
     {
-        public List<StudentInfo>? Students { get; set; }
+        public List<StudentViewModels>? Students { get; set; }
         public List<ExamViewModels>? ExamViews { get; set; }
     }
 

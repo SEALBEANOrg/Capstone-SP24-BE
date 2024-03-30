@@ -6,6 +6,7 @@ using Repositories;
 using Services.Interfaces.StudentClass;
 using Services.Interfaces.User;
 using Services.ViewModels;
+using System.Globalization;
 
 namespace Services.Services.StudentClass
 {
@@ -127,13 +128,57 @@ namespace Services.Services.StudentClass
                         for (int row = 2; row <= rowCount; row++)
                         {
                             string name = "";
+                            string parentPhoneNumber = "";
+                            DateTime? DoB = null;
+                            int? gender = null; 
 
                             for (int column = 1; column <= columnCount; column++)
                             {
-                                name += worksheet.Cells[row, column].Value.ToString().Trim() + " ";
+                                switch (worksheet.Cells[1, column].Value.ToString().ToLower().Trim())
+                                {
+                                    case "họ":
+                                    case "tên":
+                                    case "họ và tên":
+                                        if (worksheet.Cells[row, column].Value != null && worksheet.Cells[row, column].Value.ToString().Trim() != "")
+                                        {
+                                            name += worksheet.Cells[row, column].Value.ToString().Trim() + " ";
+                                        }
+                                        break;
+                                    case "sđt phụ huynh":
+                                        if (worksheet.Cells[row, column].Value != null && worksheet.Cells[row, column].Value.ToString().Trim() != "")
+                                        {
+                                            parentPhoneNumber = worksheet.Cells[row, column].Value.ToString().Trim();
+                                        }
+                                        break;
+                                    case "ngày sinh":
+                                        DateTime temp;
+                                        if (worksheet.Cells[row, column].Value != null && worksheet.Cells[row, column].Value.ToString().Trim() != "")
+                                        {
+                                            if (DateTime.TryParseExact(worksheet.Cells[row, column].Value.ToString().Trim().Split(' ')[0], "d/M/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out temp))
+                                            {
+                                                DoB = temp;
+                                            }
+                                        }
+                                        break;
+                                    case "giới tính":
+                                        if (worksheet.Cells[row, column].Value != null && worksheet.Cells[row, column].Value.ToString().Trim() != "")
+                                        { 
+                                            if (worksheet.Cells[row, column].Value.ToString().Trim().ToLower() == "nam")
+                                            {
+                                                gender = 1;
+                                            }
+                                            else
+                                            {
+                                                gender = 0;
+                                            }
+                                        }
+                                        break;
+                                }
                             }
-
-                            list.Add(new Repositories.Models.Student { ClassId = classId, FullName = name.Trim() });
+                            if (name.Trim() != "")
+                            { 
+                                list.Add(new Repositories.Models.Student { ClassId = classId, FullName = name.Trim(), DoB = DoB, ParentPhoneNumber = parentPhoneNumber, Gender = gender });
+                            }
                         }
                     }
 
@@ -172,7 +217,7 @@ namespace Services.Services.StudentClass
         {
             var studentClass = await _unitOfWork.StudentClassRepo.FindByField(studentClass => studentClass.ClassId == id);
             var students = await _unitOfWork.StudentRepo.FindListByField(student => student.ClassId == id);
-            var studentInfo = students != null ? _mapper.Map<List<StudentInfo>>(students) : null;
+            var studentInfo = students != null ? _mapper.Map<List<StudentViewModels>>(students) : null;
 
             var examOfClass = await _unitOfWork.ExamRepo.FindListByField(examOfClass => examOfClass.ClassId == id, includes => includes.Class, includes => includes.Subject);
             List<ExamViewModels> examInfo = examOfClass != null ? _mapper.Map<List<ExamViewModels>>(examOfClass) : null;

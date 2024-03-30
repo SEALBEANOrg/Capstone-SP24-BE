@@ -73,6 +73,7 @@ namespace Services.ViewModels
         public int TestCode { get; set; }
         public string ClassName { get; set; }
         public string SubjectName { get; set; }
+        public string Submitted { get; set; }
         public int Status { get; set; }
         public DateTime ModifiedOn { get; set; }
         public IEnumerable<ResultOfStudent> Students { get; set; }

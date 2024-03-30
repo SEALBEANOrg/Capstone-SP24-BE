@@ -7,7 +7,7 @@ namespace Services.Interfaces.QuestionSet
         Task<bool> SaveQuestionSet(QuestionSetSave questionSetViewModel, Guid currentUser);
         
         Task<IEnumerable<SectionUse>> GetMatrixOfQuestionSet(Guid questionSetId);
-        Task<IEnumerable<OwnQuestionSet>> GetOwnQuestionSet(Guid currentUser, int? grade, int? subject, int year);
+        Task<IEnumerable<OwnQuestionSet>> GetOwnQuestionSet(Guid currentUser, int? grade, int? subject, string studyYear);
         Task<IEnumerable<SharedQuestionSet>> GetSharedQuestionSet(Guid currentUserId, int? grade, int? subjectEnum, int year);
         Task<QuestionSetViewModel> GetQuestionByQuestionSetId(Guid id);
         Task<IEnumerable<QuestionSetViewModels>> GetQuestionSetBank(int? grade, int? subject, int year, int type);
