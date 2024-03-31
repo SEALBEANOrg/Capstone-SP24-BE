@@ -92,12 +92,12 @@ namespace Services.Services.Exam
                             StudentId = item.StudentId,
                             Name = student.FullName,
                             Status = item.Status,
-                            No = student.StudentNo
+                            StudentCode = item.StudentCode
                         };
                         studentInExam.Add(comboStudent);
                     }
 
-                    infoClassInExam.StudentInExam = studentInExam.OrderBy(o => o.No).ToList();
+                    infoClassInExam.StudentInExam = studentInExam.OrderBy(o => o.StudentCode).ToList();
                 }
 
                 return infoClassInExam;

@@ -49,7 +49,7 @@ namespace Services.ViewModels
     {
         public Guid ExamMarkId { get; set; }
         public Guid StudentId { get; set; }
-        public int No { get; set; }
+        public int? StudentCode { get; set; }
         public string Name { get; set; }
         public int Status { get; set; }
     }
