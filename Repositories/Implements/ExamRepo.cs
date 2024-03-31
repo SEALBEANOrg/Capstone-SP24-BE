@@ -13,5 +13,14 @@ namespace Repositories.Implements
         public ExamRepo(ExagenContext context) : base(context)
         {
         }
+        public void UpdateOnlyStatus(Exam entity)
+        {
+            var existingEntity = _dbSet.Find(entity.ExamId);
+            if (existingEntity != null)
+            {
+                existingEntity.Status = entity.Status;
+            }
+        }
+
     }
 }

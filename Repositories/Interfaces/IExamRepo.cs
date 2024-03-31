@@ -9,5 +9,6 @@ namespace Repositories.Interfaces
 {
     public interface IExamRepo : IGenericRepo<Exam>
     {
+        void UpdateOnlyStatus(Exam entity);
     }
 }

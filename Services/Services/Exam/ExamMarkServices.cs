@@ -88,7 +88,7 @@ namespace Services.Services.Exam
 
                 var exam = await _unitOfWork.ExamRepo.FindByField(exam => exam.ExamId == examId);
                 exam.Status = 1;
-                _unitOfWork.ExamRepo.Update(exam);
+                _unitOfWork.ExamRepo.UpdateOnlyStatus(exam);
                 result = await _unitOfWork.SaveChangesAsync();
 
                 if (result <= 0)
