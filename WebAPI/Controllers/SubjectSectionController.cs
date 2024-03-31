@@ -46,7 +46,6 @@ namespace WebAPI.Controllers
 
         [HttpGet("drop-down")]
         [Authorize(Roles = "0,1,2")]
-        [AllowAnonymous]
         [SwaggerResponse(200, "List sample section", typeof(IEnumerable<SubjectSectionViewModels>))]
         public async Task<IActionResult> GetAllBySubjectEnumAndGrade(int? grade, int? subjectEnum)
         {

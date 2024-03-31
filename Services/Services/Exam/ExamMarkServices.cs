@@ -86,6 +86,16 @@ namespace Services.Services.Exam
                     throw new Exception("Xuất điểm bị lỗi");
                 }
 
+                var exam = await _unitOfWork.ExamRepo.FindByField(exam => exam.ExamId == examId);
+                exam.Status = 1;
+                _unitOfWork.ExamRepo.Update(exam);
+                result = await _unitOfWork.SaveChangesAsync();
+
+                if (result <= 0)
+                {
+                    throw new Exception("Lỗi lưu trạng thái bài thi");
+                }
+
                 currentUser.Point -= examMark.Count;
                 Repositories.Models.Transaction transaction = new Repositories.Models.Transaction
                 {
