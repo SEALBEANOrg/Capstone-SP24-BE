@@ -134,7 +134,7 @@ namespace Services.Services.Exam
             }
         }
 
-        public async Task<bool> SaveResult(ResultToSave resultToSave)
+        public async Task<int> SaveResult(ResultToSave resultToSave)
         {
             try
             {
@@ -146,11 +146,10 @@ namespace Services.Services.Exam
 
                 var exam = await _unitOfWork.ExamRepo.FindByField(exam => exam.ExamId == examMark.ExamId);
 
-                //join exam and paper exam and paper and select paper content
                 var paperExam = await _unitOfWork.PaperRepo.FindByField(paper => paper.PaperSetId == exam.PaperSetId && paper.PaperCode == resultToSave.PaperCode);
                 if (paperExam == null)
                 {
-                    throw new Exception("Không tìm thấy đề thi");
+                    return -2;
                 }
 
                 examMark.AnswersSelected = resultToSave.AnswersSelected;
@@ -159,7 +158,7 @@ namespace Services.Services.Exam
                 _unitOfWork.ExamMarkRepo.Update(examMark);
                 var result = await _unitOfWork.SaveChangesAsync();
 
-                return result > 0;
+                return result;
             }
             catch (Exception e)
             {

@@ -66,7 +66,12 @@ namespace WebAPI.Controllers
             {
                 var result = await _examMobileServices.SaveResult(resultToSave);
 
-                return Ok(result);
+                if (result == -2)
+                {
+                    return NotFound("Mã đề thi không hợp lệ");
+                }
+
+                return Ok(result > 0);
             }
             catch (Exception ex)
             {
