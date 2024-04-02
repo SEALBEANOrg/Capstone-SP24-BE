@@ -160,12 +160,15 @@ namespace Services.Services.QuestionSet
                 var questionSetViewModel = _mapper.Map<QuestionSetViewModel>(questionSet);
                 questionSetViewModel.SubjectName = questionSet.Subject.Name;
 
-                var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == questionSetId);
+                var questions = await _unitOfWork.QuestionRepo.FindListByField(
+                question => question.QuestionSetId == questionSetId,
+                include => include.Section);
+
                 questionSetViewModel.Questions = _mapper.Map<List<QuestionViewModel>>(questions).OrderBy(o => o.QuestionPart).ToList();
 
                 var setConfig = new SetConfig { NB = questions.Count(q => q.Difficulty == 0), TH = questions.Count(q => q.Difficulty == 1), VDT = questions.Count(q => q.Difficulty == 2), VDC = questions.Count(q => q.Difficulty == 3) };
 
-                questionSetViewModel.Price = setConfig.NB * 200 + setConfig.TH * 500 + setConfig.VDT * 1000 + setConfig.VDC * 3000;
+                questionSetViewModel.Price = setConfig.NB * 2 + setConfig.TH * 5 + setConfig.VDT * 10 + setConfig.VDC * 30;
 
                 return questionSetViewModel;
             }

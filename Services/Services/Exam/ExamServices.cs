@@ -604,7 +604,7 @@ namespace Services.Services.Exam
                     // Set column names
                     worksheet.Cells[1, 1].Value = $"Kì thi: {exam.Name} - Mã cuộc thi: {exam.TestCode}";
                     worksheet.Cells[2, 1].Value = $"Lớp: {exam.Class.Name}";
-                    worksheet.Cells[3, 1].Value = "Mã số sinh viên";
+                    worksheet.Cells[3, 1].Value = "Mã số học sinh";
                     worksheet.Cells[3, 2].Value = "Họ và tên";
                     worksheet.Cells[3, 3].Value = "Mã đề";
                     worksheet.Cells[3, 4].Value = "Điểm";

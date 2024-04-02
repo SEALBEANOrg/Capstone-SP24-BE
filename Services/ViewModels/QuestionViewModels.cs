@@ -31,6 +31,7 @@ namespace Services.ViewModels
         public string CorrectAnswer { get; set; } = null!;
         public int Difficulty { get; set; }
         public Guid SectionId { get; set; }
+        public string SectionName { get; set; } = null!;
     }
 
     public class QuestionCreate
