@@ -34,7 +34,7 @@ namespace Services.Services.Document
                 var keyS3 = "";
                 if (documentCreate.Type == 0)
                 {
-                    keyS3 = "templates/answer-sheet/" + $"{Utils.FormatFileName(documentCreate.Name).Trim()}-{DateTime.Now.Ticks}.docx";
+                    keyS3 = "templates/answer-sheet/" + $"{Utils.FormatFileName(documentCreate.Name).Trim()}-{DateTime.Now.Ticks}.pdf";
                 }
                 else if (documentCreate.Type == 1)
                 {
