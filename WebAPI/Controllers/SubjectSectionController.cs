@@ -24,6 +24,26 @@ namespace WebAPI.Controllers
             _subjectServices = subjectServices;
         }
 
+        [HttpGet("manage")]
+        [Authorize(Roles = "0,1,2")]
+        [SwaggerResponse(200, "List sample section", typeof(IEnumerable<SubjectSectionViewModels>))]
+        public async Task<IActionResult> GetAllBySubjectId(Guid? subjectId)
+        {
+            try
+            {
+                var subjectSections = await _subjectSectionServices.GetAllBySubjectId(subjectId);
+
+                return Ok(subjectSections);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
         [HttpGet("drop-down")]
         [Authorize(Roles = "0,1,2")]
         [SwaggerResponse(200, "List sample section", typeof(IEnumerable<SubjectSectionViewModels>))]

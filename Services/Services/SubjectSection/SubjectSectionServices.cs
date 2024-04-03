@@ -105,7 +105,7 @@ namespace Services.Services.SubjectSection
 
                 if (subjectId != null)
                 {
-                    subjectSections = subjectSections.Where(section => section.SubjectId == subjectId).ToList();
+                    subjectSections = subjectSections.Where(section => section.SubjectId == subjectId).OrderBy(section => section.SectionNo).ToList();
                 }
 
                 var subjectSectionsViewModels = _mapper.Map<IEnumerable<SubjectSectionViewModels>>(subjectSections);
