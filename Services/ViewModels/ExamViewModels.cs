@@ -149,6 +149,7 @@ namespace Services.ViewModels
     public class FileTotalAnswer
     {
         public string S3Url { get; set; }
+        public string Name { get; set; }
     }
 
 }

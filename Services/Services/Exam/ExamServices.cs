@@ -572,12 +572,14 @@ namespace Services.Services.Exam
                     answerSheetToDownload.Add(a);
                 }
 
+                var subjectName = (await _unitOfWork.SubjectRepo.FindByField(subject => subject.SubjectId == exam.SubjectId)).Name;
+
                 var result = new ExamSourceViewModel
                 {
-                    ExamName = exam.Name + " - " + exam.Class.Name + " - Môn " + (await _unitOfWork.SubjectRepo.FindByField(subject => subject.SubjectId == exam.SubjectId)).Name,
+                    ExamName = exam.Name + " - " + exam.Class.Name + " - Môn " + subjectName,
                     PaperOfExams = papersToDownload,
                     AnserSheets = answerSheetToDownload,
-                    FileTotalAnswer = new FileTotalAnswer { S3Url = await _s3Services.GetObjectUrlAsync(exam.PaperSet.KeyS3) }
+                    FileTotalAnswer = new FileTotalAnswer { S3Url = await _s3Services.GetObjectUrlAsync(exam.PaperSet.KeyS3), Name = exam.Name + " - " + exam.Class.Name + " - Môn " + subjectName + " Đáp án tổng hợp"}
                 };
                 return result;
             }
