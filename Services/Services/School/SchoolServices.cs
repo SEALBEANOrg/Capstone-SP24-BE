@@ -129,6 +129,11 @@ namespace Services.Services.School
                 }
 
                 var result = _mapper.Map<IEnumerable<SchoolList>>(schools);
+                //Update AddressComposite = Address + City + Province
+                foreach (var school in result)
+                {
+                    school.AddressComposite = $"{school.Address}, {school.City}, {school.Province}";
+                }
 
                 return result;
             }

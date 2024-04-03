@@ -13,6 +13,7 @@ namespace Services.ViewModels
         public string Address { get; set; } = null!;
         public string? City { get; set; }
         public string? Province { get; set; }
+        public string AddressComposite { get; set; } = null!;
         public int Status { get; set; }
     }
 
