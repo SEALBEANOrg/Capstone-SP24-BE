@@ -21,7 +21,15 @@ namespace Services.Services.SubjectSection
             try
             {
                 var subjectSection = _mapper.Map<Repositories.Models.SubjectSection>(subjectSectionCreate);
-                subjectSection.SectionNo = (await _unitOfWork.SubjectSectionRepo.FindListByField(section => section.SubjectId == subjectSectionCreate.SubjectId)).Count + 1;
+                //If the section number is not provided, it will be set to max of the current sections + 1
+                if (subjectSection.SectionNo == 0)
+                {
+                    int maxSectionNo = (await _unitOfWork.SubjectSectionRepo.FindListByField(section => section.SubjectId == subjectSectionCreate.SubjectId))
+                        .Select(section => section.SectionNo)
+                        .DefaultIfEmpty()
+                        .Max();
+                    subjectSection.SectionNo = maxSectionNo + 1;
+                } 
                 subjectSection.CreatedOn = DateTime.Now;
                 subjectSection.CreatedBy = currentUser;
                 subjectSection.ModifiedOn = DateTime.Now;

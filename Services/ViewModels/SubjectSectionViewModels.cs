@@ -41,6 +41,7 @@ namespace Services.ViewModels
     {
         public string? Description { get; set; }
         public string Name { get; set; } = null!;
+        public int? SectionNo { get; set; }
         public Guid SubjectId { get; set; }
     }
 
