@@ -27,8 +27,7 @@ namespace Services.Services.StudentClass
         public async Task<bool> CreateStudentClass(StudentClassCreate studentClassCreate)
         {
             var currentUserId = await GetCurrentUser();
-            var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
-
+            
             if (studentClassCreate.Grade != null && (studentClassCreate.Grade < 0 || studentClassCreate.Grade > 12))
             {
                 throw new Exception("Khối không hợp lệ");
