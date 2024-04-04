@@ -51,6 +51,15 @@ namespace WebAPI.Controllers
         {
             try
             {
+                //Check null grade and subjectEnum
+                if (grade == null || subjectEnum == null)
+                {
+                    return BadRequest(new
+                    {
+                        Message = "Không tìm thấy môn học"
+                    });
+                }
+               
                 var subjectId = (await _subjectServices.GetAll(subjectEnum, grade));
                 if (subjectId == null)
                 {

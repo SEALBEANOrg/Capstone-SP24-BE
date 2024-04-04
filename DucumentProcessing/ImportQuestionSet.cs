@@ -88,60 +88,67 @@ namespace DucumentProcessing
 
         public static Question SplitQuestionAndAnswer(string strDocxContent)
         {
-            Question question = new Question();
-            //QuestionPart = text before the first "A. " or "A/ "
-            int questionType = 0; // 0: A. 1: A/
-            int endOfQuestion = strDocxContent.IndexOf("A. ");
-            if (endOfQuestion == -1)
+            try
             {
-                questionType = 1;
-                endOfQuestion = strDocxContent.IndexOf("A/ ");
+                Question question = new Question();
+                //QuestionPart = text before the first "A. " or "A/ "
+                int questionType = 0; // 0: A. 1: A/
+                int endOfQuestion = strDocxContent.IndexOf("A. ");
+                if (endOfQuestion == -1)
+                {
+                    questionType = 1;
+                    endOfQuestion = strDocxContent.IndexOf("A/ ");
+                }
+                question.QuestionPart = strDocxContent.Substring(0, endOfQuestion);
+                string[] answerDelimiters = questionType == 0 ? new[] { "A. ", "B. ", "C. ", "D. " } : new[] { "A/ ", "B/ ", "C/ ", "D/ " };
+                int startOfAnswer = endOfQuestion + 3;
+                for (int i = 1; i < answerDelimiters.Length; i++)
+                {
+                    int endOfAnswer = strDocxContent.IndexOf(answerDelimiters[i]);
+                    if (endOfAnswer == -1)
+                    {
+                        endOfAnswer = strDocxContent.Length;
+                    }
+                    string answer = strDocxContent.Substring(startOfAnswer, endOfAnswer - startOfAnswer).Trim();
+                    switch (i)
+                    {
+                        case 1:
+                            question.Answer1 = answer;
+                            break;
+                        case 2:
+                            question.Answer2 = answer;
+                            break;
+                        case 3:
+                            question.Answer3 = answer;
+                            break;
+                    }
+                    startOfAnswer = endOfAnswer + 3;
+                }
+                int endOfAnswer4;
+                if (strDocxContent.IndexOf("Độ khó") * strDocxContent.IndexOf("Đáp án đúng: ") > 1) // Both Độ khó and Đáp án đúng:  are found
+                    endOfAnswer4 = Math.Min(strDocxContent.IndexOf("Độ khó"), strDocxContent.IndexOf("Đáp án đúng: "));
+                else
+                {
+                    endOfAnswer4 = Math.Max(strDocxContent.IndexOf("Độ khó"), strDocxContent.IndexOf("Đáp án đúng: "));
+                    //=1 if Độ khó is not found, =0 if Đáp án đúng:  is not found then endOfAnswer4 = strDocxContent.Length
+                    if (endOfAnswer4 == -1)
+                    {
+                        endOfAnswer4 = strDocxContent.Length;
+                    }
+                }
+
+                question.Answer4 = strDocxContent.Substring(startOfAnswer, endOfAnswer4 - startOfAnswer).Trim();
+
+
+                question.CorrectAnswer = GetAnswer(strDocxContent.Substring(endOfAnswer4));
+                question.Difficulty = GetDifficulty(strDocxContent.Substring(endOfAnswer4));
+
+                return question;
             }
-            question.QuestionPart = strDocxContent.Substring(0, endOfQuestion);
-            string[] answerDelimiters = questionType == 0 ? new[] { "A. ", "B. ", "C. ", "D. " } : new[] { "A/ ", "B/ ", "C/ ", "D/ " };
-            int startOfAnswer = endOfQuestion + 3;
-            for (int i = 1; i < answerDelimiters.Length; i++)
+            catch (Exception e)
             {
-                int endOfAnswer = strDocxContent.IndexOf(answerDelimiters[i]);
-                if (endOfAnswer == -1)
-                {
-                    endOfAnswer = strDocxContent.Length;
-                }
-                string answer = strDocxContent.Substring(startOfAnswer, endOfAnswer - startOfAnswer).Trim();
-                switch (i)
-                {
-                    case 1:
-                        question.Answer1 = answer;
-                        break;
-                    case 2:
-                        question.Answer2 = answer;
-                        break;
-                    case 3:
-                        question.Answer3 = answer;
-                        break;
-                }
-                startOfAnswer = endOfAnswer + 3;
+                throw new Exception("Lỗi ở Format câu hỏi: " + strDocxContent);
             }
-            int endOfAnswer4;
-            if (strDocxContent.IndexOf("Độ khó")*strDocxContent.IndexOf("Đáp án") > 1) // Both Độ khó and Đáp án are found
-                endOfAnswer4 = Math.Min(strDocxContent.IndexOf("Độ khó"), strDocxContent.IndexOf("Đáp án"));
-            else
-            {
-                endOfAnswer4 = Math.Max(strDocxContent.IndexOf("Độ khó"), strDocxContent.IndexOf("Đáp án"));
-                //=1 if Độ khó is not found, =0 if Đáp án is not found then endOfAnswer4 = strDocxContent.Length
-                if (endOfAnswer4 == -1)
-                {
-                    endOfAnswer4 = strDocxContent.Length;
-                }
-            }
-
-            question.Answer4 = strDocxContent.Substring(startOfAnswer, endOfAnswer4 - startOfAnswer).Trim();
-
-
-            question.CorrectAnswer = GetAnswer(strDocxContent.Substring(endOfAnswer4));
-            question.Difficulty = GetDifficulty(strDocxContent.Substring(endOfAnswer4));
-
-            return question;
         }
 
         private static int? GetDifficulty(string strQuestionContext)
@@ -191,35 +198,46 @@ namespace DucumentProcessing
 
         public static List<Question> ImportQuestions(IFormFile file)
         {
-            List<Question> questions = new List<Question>();
-            string strDocxContent = ReadDocx(file);
-
-            //Delete before "Câu"
-            int index = strDocxContent.IndexOf("Câu");
-            strDocxContent = strDocxContent.Substring(index);
-
-            //Split by "Câu"
-            string[] arrDocxContent = strDocxContent.Split("Câu");
-
-            //First element is empty
-            for (int i = 1; i < arrDocxContent.Length; i++)
+            try
             {
-                //Delete until meet the first letter 
-                int index1 = 0;
-                for (int j = 0; j < arrDocxContent[i].Length; j++)
-                {
-                    if (char.IsLetter(arrDocxContent[i][j]))
-                    {
-                        index1 = j;
-                        break;
-                    }
-                }
-                arrDocxContent[i] = arrDocxContent[i].Substring(index1);
-                //Console.WriteLine(SplitQuestionAndAnswer(arrDocxContent[i]).ToString() + '\n');
-                questions.Add(SplitQuestionAndAnswer(arrDocxContent[i]));
-            }
+                List<Question> questions = new List<Question>();
+                string strDocxContent = ReadDocx(file);
 
-            return questions;
+                //Delete before "Câu"
+                int index = strDocxContent.IndexOf("Câu");
+                strDocxContent = strDocxContent.Substring(index);
+
+                //Split by "Câu [Số]"
+                string[] arrDocxContent = Regex.Split(strDocxContent, @"Câu \d+");
+
+                //First element is empty
+                for (int i = 1; i < arrDocxContent.Length; i++)
+                {
+                    //Delete until meet the first letter 
+                    int index1 = 0;
+                    for (int j = 0; j < arrDocxContent[i].Length; j++)
+                    {
+                        if (char.IsLetter(arrDocxContent[i][j]))
+                        {
+                            index1 = j;
+                            break;
+                        }
+                    }
+                    arrDocxContent[i] = arrDocxContent[i].Substring(index1);
+                    //Console.WriteLine(SplitQuestionAndAnswer(arrDocxContent[i]).ToString() + '\n');
+                    if (i == 9)
+                    {
+                        Console.WriteLine(arrDocxContent[i]);
+                    }
+                    questions.Add(SplitQuestionAndAnswer(arrDocxContent[i]));
+                }
+
+                return questions;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở ImportQuestions: " + e.Message);
+            }
         }
     }
 
@@ -231,12 +249,12 @@ namespace DucumentProcessing
         public string Answer3 { get; set; }
         public string Answer4 { get; set; }
         public string? CorrectAnswer { get; set; }
-        public int? Difficulty { get; set;} 
+        public int? Difficulty { get; set; }
 
         public override string? ToString()
         {
             //Print the question and its answers
-            return "Question: " + QuestionPart + '\n' + "A: " + Answer1 + '\n' + "B: " + Answer2 + '\n' + "C: " + Answer3 + '\n' + "D: " + Answer4 + '\n' + "Đáp án: " + CorrectAnswer + '\n' + "Độ khó: " +
+            return "Question: " + QuestionPart + '\n' + "A: " + Answer1 + '\n' + "B: " + Answer2 + '\n' + "C: " + Answer3 + '\n' + "D: " + Answer4 + '\n' + "Đáp án đúng: : " + CorrectAnswer + '\n' + "Độ khó: " +
                 //Display the value of Difficulty in SharedProject
                 EnumStatus.Difficulty.FirstOrDefault(x => x.Key == Difficulty).Value;
 
