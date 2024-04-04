@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Office2013.Word;
 using ExagenSharedProject;
+using Firebase.Auth;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using OfficeOpenXml;
@@ -38,35 +40,10 @@ namespace Services.Services.Exam
             try
             {
                 var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
-                if (examCreate.NumOfDiffPaper * examCreate.NumOfPaperCode * 10 > user.Point)
-                {
-                    throw new Exception("Không đủ điểm để phát sinh đề");
-                }
-                if (examCreate.Sections.Count == 0)
-                {
-                    throw new Exception("Không có phần tử nào trong sections");
-                }
-                if (examCreate.ClassId == null)
-                {
-                    throw new Exception("Không có lớp");
-                }
-                if (examCreate.NumOfDiffPaper == 0)
-                {
-                    throw new Exception("Số lượng đề thi phải lớn hơn 0");
-                }
-                if (examCreate.NumOfPaperCode == 0)
-                {
-                    throw new Exception("Số lượng mã đề thi phải lớn hơn 0");
-                }
-                foreach (var section in examCreate.Sections)
-                {
-                    if (section.CHCN + section.NHD < section.Use)
-                    {
-                        throw new Exception("Số lượng câu hỏi phát sinh it hơn số lượng câu hỏi sử dụng");
-                    }
-                };
+                
+                this.ValidateExamCreate(examCreate, user);
 
-                Guid templatePaperId = Guid.Parse("2C49C9EB-8AF2-EE11-910F-92610CA5F0A3");
+                Guid templatePaperId = (await _unitOfWork.DocumentRepo.FindByField(template => template.Type == 1)).DocumentId;
                 // create paper set
                 var paperSet = new PaperSet();
                 paperSet.SubjectId = (await _unitOfWork.SubjectRepo.FindByField(subject => subject.Grade == examCreate.Grade && EnumStatus.Subject[examCreate.SubjectEnum].Contains(subject.Name))).SubjectId;
@@ -632,6 +609,37 @@ namespace Services.Services.Exam
                 return new ExportResult { Bytes = memoryStream.ToArray(), FileName = fileName };
             }
 
+        }
+
+        private void ValidateExamCreate(ExamCreate examCreate, Repositories.Models.User user)
+        {
+            if (examCreate.NumOfDiffPaper * examCreate.NumOfPaperCode * 10 > user.Point)
+            {
+                throw new Exception("Không đủ điểm để phát sinh đề");
+            }
+            if (examCreate.Sections.Count == 0)
+            {
+                throw new Exception("Không có phần tử nào trong sections");
+            }
+            if (examCreate.ClassId == null)
+            {
+                throw new Exception("Không có lớp");
+            }
+            if (examCreate.NumOfDiffPaper == 0)
+            {
+                throw new Exception("Số lượng đề thi phải lớn hơn 0");
+            }
+            if (examCreate.NumOfPaperCode == 0)
+            {
+                throw new Exception("Số lượng mã đề thi phải lớn hơn 0");
+            }
+            foreach (var section in examCreate.Sections)
+            {
+                if (section.CHCN + section.NHD < section.Use)
+                {
+                    throw new Exception("Số lượng câu hỏi phát sinh it hơn số lượng câu hỏi sử dụng");
+                }
+            };
         }
     }
 }
