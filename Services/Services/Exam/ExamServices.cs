@@ -91,6 +91,7 @@ namespace Services.Services.Exam
                 exam.ModifiedOn = DateTime.Now;
                 exam.ModifiedBy = currentUserId;
                 exam.PaperSetId = paperSet.PaperSetId;
+                exam.SubjectId = paperSet.SubjectId;
 
                 //add exam mark
                 var students = await _unitOfWork.StudentRepo.FindListByField(student => student.ClassId == examCreate.ClassId);
