@@ -62,8 +62,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("buy-point")]
-        //[Authorize]
-        [AllowAnonymous]
+        [Authorize]
         [SwaggerResponse(200, "url redirect to momo", typeof(string))]
         public async Task<IActionResult> MomoReturn([FromQuery] TransactionPoint transaction)
         {
