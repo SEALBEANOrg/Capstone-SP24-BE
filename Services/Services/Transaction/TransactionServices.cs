@@ -108,5 +108,67 @@ namespace Services.Services.Transaction
                 throw new Exception("Lỗi ở TransactionServices - CallbackMomo: " + e.Message);
             }
         }
+
+        public async Task<bool> MomoCallBackIpn(CallbackViaMomo callbackViaMomo)
+        {
+            try
+            {
+                Console.WriteLine("call back đã đc gọi");
+                var verify = _momoServices.VerifyMomoCallback(callbackViaMomo);
+                if (verify)
+                {
+                    var isSuccess = callbackViaMomo.ResultCode == 0;
+                    if (!isSuccess)
+                    {
+                        throw new Exception("Giao dịch Momo không thành công");
+                    }
+
+                    var orderId = callbackViaMomo.OrderId;
+                    var orderInfo = callbackViaMomo.OrderInfo;
+                    var pointValue = callbackViaMomo.Amount / 100;
+                    Guid currentUserId = Guid.Parse(callbackViaMomo.ExtraData);
+
+                    if (callbackViaMomo.Amount == 10000)
+                    {
+                        pointValue = 100;
+                    }
+                    else if (callbackViaMomo.Amount == 45000)
+                    {
+                        pointValue = 500;
+                    }
+                    else if (callbackViaMomo.Amount == 85000)
+                    {
+                        pointValue = 1000;
+                    }
+
+                    var transaction = new Repositories.Models.Transaction()
+                    {
+                        UserId = currentUserId,
+                        PointValue = (int)pointValue,
+                        TransactionCode = callbackViaMomo.TransId.ToString(),
+                        CreatedOn = DateTime.Now,
+                        Type = 0,
+
+                    };
+                    _unitOfWork.TransactionRepo.AddAsync(transaction);
+
+                    var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
+                    user.Point += (int)pointValue;
+                    _unitOfWork.UserRepo.Update(user);
+
+                    var result = await _unitOfWork.SaveChangesAsync();
+
+                    return result > 0 ? true : false;
+                }
+                else
+                {
+                    throw new Exception("Giao dịch Momo không hợp lệ");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở TransactionServices - CallbackMomo: " + e.Message);
+            }
+        }
     }
 }

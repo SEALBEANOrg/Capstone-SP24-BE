@@ -15,5 +15,6 @@ namespace Services.Interfaces.Transaction
         Task<IEnumerable<TransactionViewModels>> GetMyTransactions(Guid currentUser);
 
         Task<bool> MomoCallBackRedirect(CallbackViaMomo transaction);
+        Task<bool> MomoCallBackIpn(CallbackViaMomo callbackViaMomo);
     }
 }
