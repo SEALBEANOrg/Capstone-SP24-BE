@@ -117,7 +117,7 @@ namespace Services.Services.User
             try
             {
                 var currentUserId = _claimsService.GetCurrentUser;
-                var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId);
+                var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == currentUserId, includes => includes.School);
 
                 if (user == null)
                 {
@@ -125,7 +125,7 @@ namespace Services.Services.User
                 }
 
                 var userViewModels = _mapper.Map<UserViewModel>(user);
-                
+
                 if (user.SchoolId != null)
                 {
                     userViewModels.DropdownSchools = new DropdownSchools
