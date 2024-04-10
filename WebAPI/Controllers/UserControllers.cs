@@ -29,7 +29,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Roles = "0,2")] //chỉ 0, 2
-        [SwaggerResponse(200, "Sample user", typeof(UserViewModels))]
+        [SwaggerResponse(200, "Sample user", typeof(UserViewModel))]
         public async Task<IActionResult> GetUserById(Guid id)
         {
             try
@@ -54,7 +54,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("profile")]
         [Authorize]
-        [SwaggerResponse(200, "Sample profile", typeof(UserViewModels))]
+        [SwaggerResponse(200, "Sample profile", typeof(UserViewModel))]
         public async Task<IActionResult> GetProfile()
         {
             var user = await _userServices.GetProfile();

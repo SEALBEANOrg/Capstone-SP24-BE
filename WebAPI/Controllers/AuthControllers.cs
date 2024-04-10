@@ -81,12 +81,12 @@ namespace WebAPI.Controllers
                     });
                 }
 
-                bool isExistInFirebase = await _userServices.CheckExistInFirebase(userLogin.email);
+                //bool isExistInFirebase = await _userServices.CheckExistInFirebase(userLogin.email);
 
-                if (!isExistInFirebase)
-                {
-                    var uid = await _userServices.RegisterAsync(userLogin.email);
-                }
+                //if (!isExistInFirebase)
+                //{
+                //    var uid = await _userServices.RegisterAsync(userLogin.email);
+                //}
 
                 var accessToken = loginResponse.UserInfo.GenerateToken(AuthJWT.ACCESS_TOKEN_EXPIRED);
                 var refreshToken = loginResponse.UserInfo.GenerateToken(AuthJWT.REFRESH_TOKEN_EXPIRED);
