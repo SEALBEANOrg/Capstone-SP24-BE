@@ -48,12 +48,12 @@ namespace WebAPI.Controllers
         [HttpGet("shared")]
         [Authorize(Roles = "1")]
         [SwaggerResponse(200, "List of shared question set", typeof(IEnumerable<SharedQuestionSet>))]
-        public async Task<IActionResult> GetSharedQuestionSet(int? grade, int? subjectEnum, string studyYear)
+        public async Task<IActionResult> GetSharedQuestionSet(int? grade, int? subjectEnum, int year)
         {
             try
             {
                 var currentUserId = await _userServices.GetCurrentUser();
-                var result = await _questionSetServices.GetSharedQuestionSet(currentUserId, grade, subjectEnum, studyYear);
+                var result = await _questionSetServices.GetSharedQuestionSet(currentUserId, grade, subjectEnum, year);
 
                 return Ok(result);
             }
@@ -70,11 +70,11 @@ namespace WebAPI.Controllers
         [HttpGet("bank")]
         [SwaggerResponse(200, "List of question set", typeof(IEnumerable<QuestionSetViewModels>))]
         [Authorize(Roles = "2")]
-        public async Task<IActionResult> GetQuestionSetByBank(int? grade, int? subject, [Required]int year, int type)
+        public async Task<IActionResult> GetQuestionSetByBank(int? grade, int? subject, [Required]string studyYear, int type)
         {
             try
             {
-                var result = await _questionSetServices.GetQuestionSetBank(grade, subject, year, type);
+                var result = await _questionSetServices.GetQuestionSetBank(grade, subject, studyYear, type);
 
                 return Ok(result);
             }
