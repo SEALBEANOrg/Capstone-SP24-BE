@@ -178,7 +178,7 @@ namespace Services.Services.QuestionSet
             }
         }
 
-        public async Task<IEnumerable<QuestionSetViewModels>> GetQuestionSetBank(int? grade, int? subject, int year, int type)
+        public async Task<IEnumerable<QuestionSetViewModels>> GetQuestionSetBank(int? grade, int? subject, string studyYear, int type)
         {
             var resutl = new List<QuestionSetViewModels>();
             if (type == 0)
@@ -187,7 +187,7 @@ namespace Services.Services.QuestionSet
                 var distinctQuestionSetIds = shares.Select(s => s.QuestionSetId).Distinct().ToList();
 
                 var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionset => distinctQuestionSetIds.Contains(questionset.QuestionSetId)
-                                                                                            && questionset.CreatedOn.Year == year, includes => includes.Subject, includes => includes.Questions);
+                                                                                            && questionset.StudyYear == studyYear, includes => includes.Subject, includes => includes.Questions);
                 if (grade != null)
                 {
                     questionSets = questionSets.Where(questionSet => questionSet.Grade == grade).ToList();
@@ -216,7 +216,7 @@ namespace Services.Services.QuestionSet
                 var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.Type == 2 && share.Status == 1);
 
                 var distinctQuestionSetIds = shares.Select(s => s.QuestionSetId).Distinct().ToList();
-                var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionset => (distinctQuestionSetIds.Contains(questionset.QuestionSetId) || questionset.Status == 2) && questionset.CreatedOn.Year == year, include => include.Subject);
+                var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionset => (distinctQuestionSetIds.Contains(questionset.QuestionSetId) || questionset.Status == 2) && questionset.StudyYear == studyYear, include => include.Subject);
                 if (grade != null)
                 {
                     questionSets = questionSets.Where(questionSet => questionSet.Grade == grade).ToList();
