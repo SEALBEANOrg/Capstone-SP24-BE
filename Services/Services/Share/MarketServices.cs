@@ -35,7 +35,7 @@ namespace Services.Services.Share
                     VDT = questions.Count(q => q.Difficulty == 2),
                     VDC = questions.Count(q => q.Difficulty == 3)
                 };
-                int price = (setConfig.NB * 200 + setConfig.TH * 500 + setConfig.VDT * 1000 + setConfig.VDC * 3000) / 5;
+                int price = (setConfig.NB * 2 + setConfig.TH * 5 + setConfig.VDT * 10 + setConfig.VDC * 30) / 5;
 
                 var creator = await _unitOfWork.UserRepo.FindByField(u => u.UserId == share.CreatedBy);
                 var currentUserInfo = await _unitOfWork.UserRepo.FindByField(u => u.UserId == currentUser);
@@ -139,7 +139,7 @@ namespace Services.Services.Share
 
                     var shareInMarket = _mapper.Map<ShareInMarket>(s);
 
-                    shareInMarket.Price = (config.NB * 200 + config.TH * 500 + config.VDT * 1000 + config.VDC * 3000) / 5;
+                    shareInMarket.Price = (config.NB * 2 + config.TH * 5 + config.VDT * 10 + config.VDC * 30) / 5;
                     result.Add(shareInMarket);
                 }
 
@@ -199,7 +199,7 @@ namespace Services.Services.Share
                     var shareInMarket = _mapper.Map<MySold>(s);
 
                     shareInMarket.CountSold = s.Status == 1 ? (await _unitOfWork.ShareRepo.FindListByField(share => share.QuestionSetId == s.QuestionSetId && share.UserId != null)).Count : null;
-                    shareInMarket.Price = (config.NB * 200 + config.TH * 500 + config.VDT * 1000 + config.VDC * 3000) / 5;
+                    shareInMarket.Price = (config.NB * 2 + config.TH * 5 + config.VDT * 10 + config.VDC * 30) / 5;
                     result.Add(shareInMarket);
                 }
 
@@ -253,7 +253,7 @@ namespace Services.Services.Share
 
                     var shareInMarket = _mapper.Map<ShareInMarket>(s);
 
-                    shareInMarket.Price = (config.NB * 200 + config.TH * 500 + config.VDT * 1000 + config.VDC * 3000) / 5;
+                    shareInMarket.Price = (config.NB * 2 + config.TH * 5 + config.VDT * 10 + config.VDC * 30) / 5;
                     result.Add(shareInMarket);
                 }
 

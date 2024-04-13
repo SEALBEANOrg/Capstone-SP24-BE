@@ -207,7 +207,7 @@ namespace Services.Services.QuestionSet
                     };
                     var qsvm = _mapper.Map<QuestionSetViewModels>(qs);
                     qsvm.Type = 0;
-                    qsvm.Price = (config.NB * 200 + config.TH * 500 + config.VDT * 1000 + config.VDC * 3000) / 5; // 1/5 giá gốc nếu là type 0
+                    qsvm.Price = (config.NB * 2 + config.TH * 5 + config.VDT * 10 + config.VDC * 30) / 5; // 1/5 giá gốc nếu là type 0
                     resutl.Add(qsvm);
                 }
             }
