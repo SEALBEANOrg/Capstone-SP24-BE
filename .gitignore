@@ -532,6 +532,8 @@ FodyWeavers.xsd
 #appsettings
 appsettings.json
 
+**/Properties/launchSettings.json
+
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
