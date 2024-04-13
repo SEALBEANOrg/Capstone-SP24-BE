@@ -239,6 +239,9 @@ namespace Services.Services.Share
                     return null;
                 }
 
+                // Fetch all users at once
+                var users = await _unitOfWork.UserRepo.GetAllAsync();
+
                 var result = new List<ShareInMarket>();
 
                 foreach (var s in shares)
@@ -252,6 +255,7 @@ namespace Services.Services.Share
                     };
 
                     var shareInMarket = _mapper.Map<ShareInMarket>(s);
+                    shareInMarket.NameOfSeller = users.First(u => u.UserId == s.CreatedBy).FullName;
 
                     shareInMarket.Price = (config.NB * 2 + config.TH * 5 + config.VDT * 10 + config.VDC * 30) / 5;
                     result.Add(shareInMarket);
