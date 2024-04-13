@@ -26,11 +26,11 @@ namespace WebAPI.Controllers
         [HttpGet("requests")]
         [Authorize(Roles = "2")]
         [SwaggerResponse(200, "List of request to share", typeof(IEnumerable<ShareViewModels>))]
-        public async Task<IActionResult> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, [Required] int year)
+        public async Task<IActionResult> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, [Required] string studyYear)
         {
             try
             {
-                var result = await _shareServices.GetRequestToShare(status, grade, subjectEnum, type, year);
+                var result = await _shareServices.GetRequestToShare(status, grade, subjectEnum, type, studyYear);
 
                 return Ok(result);
             }

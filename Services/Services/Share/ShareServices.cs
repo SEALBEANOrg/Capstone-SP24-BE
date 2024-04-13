@@ -102,11 +102,11 @@ namespace Services.Services.Share
             }
         }
 
-        public async Task<IEnumerable<ShareViewModels>> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, int year)
+        public async Task<IEnumerable<ShareViewModels>> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, string studyYear)
         {
             try
             {
-                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.CreatedOn.Year == year, includes => includes.QuestionSet);
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.StudyYear == studyYear, includes => includes.QuestionSet);
 
                 if (type != null)
                 {

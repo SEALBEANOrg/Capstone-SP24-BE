@@ -8,7 +8,7 @@ namespace Services.Interfaces.Share
         Task<bool> ShareIndividual(ShareCreateForIndividual shareIndividual, Guid currentUser);
         Task<bool> RequestToShare(ShareCreateRequest shareCreate, Guid currentUser);
         
-        Task<IEnumerable<ShareViewModels>> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, int year);
+        Task<IEnumerable<ShareViewModels>> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, string studyYear);
         Task<ShareViewModel> GetRequestToShareById(Guid id);
         Task<List<string>> GetUserEmailOfSharedQuestionSet(Guid questionSetId, Guid currentUserId, int? type);
         

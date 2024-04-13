@@ -48,12 +48,12 @@ namespace WebAPI.Controllers
         [HttpGet("shared")]
         [Authorize(Roles = "1")]
         [SwaggerResponse(200, "List of shared question set", typeof(IEnumerable<SharedQuestionSet>))]
-        public async Task<IActionResult> GetSharedQuestionSet(int? grade, int? subjectEnum, int year)
+        public async Task<IActionResult> GetSharedQuestionSet(int? grade, int? subjectEnum, string studyYear)
         {
             try
             {
                 var currentUserId = await _userServices.GetCurrentUser();
-                var result = await _questionSetServices.GetSharedQuestionSet(currentUserId, grade, subjectEnum, year);
+                var result = await _questionSetServices.GetSharedQuestionSet(currentUserId, grade, subjectEnum, studyYear);
 
                 return Ok(result);
             }

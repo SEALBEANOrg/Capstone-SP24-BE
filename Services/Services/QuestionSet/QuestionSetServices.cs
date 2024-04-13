@@ -122,13 +122,13 @@ namespace Services.Services.QuestionSet
             }
         }
 
-        public async Task<IEnumerable<SharedQuestionSet>> GetSharedQuestionSet(Guid currentUserId, int? grade, int? subjectEnum, int year)
+        public async Task<IEnumerable<SharedQuestionSet>> GetSharedQuestionSet(Guid currentUserId, int? grade, int? subjectEnum, string studyYear)
         {
             try
             {
                 var sharedQuestionSetIds = (await _unitOfWork.ShareRepo.FindListByField(share => (share.UserId == currentUserId && share.Type == 1 && share.Status == 1) || 
                                                                                                 (share.Type == 2 && share.Status == 1))).Select(s => s.QuestionSetId).Distinct().ToList();
-                var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => sharedQuestionSetIds.Contains(questionSet.QuestionSetId) && questionSet.CreatedOn.Year == year, include => include.Subject);
+                var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => sharedQuestionSetIds.Contains(questionSet.QuestionSetId) && questionSet.StudyYear == studyYear, include => include.Subject);
 
                 if (grade != null)
                 {
