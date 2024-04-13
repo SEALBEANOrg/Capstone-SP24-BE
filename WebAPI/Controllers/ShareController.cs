@@ -205,12 +205,12 @@ namespace WebAPI.Controllers
         [HttpGet("market")]
         [Authorize(Roles = "1")]
         [SwaggerResponse(200, "List of question set in market", typeof(IEnumerable<ShareInMarket>))]
-        public async Task<IActionResult> GetQuestionSetInMarket(int? grade, int? subjectEnum, int year)
+        public async Task<IActionResult> GetQuestionSetInMarket(int? grade, int? subjectEnum, string studyYear)
         {
             try
             {
                 var currentUser = await _userServices.GetCurrentUser();
-                var result = await _marketServices.GetQuestionSetInMarket(grade, subjectEnum, year, currentUser);
+                var result = await _marketServices.GetQuestionSetInMarket(grade, subjectEnum, studyYear, currentUser);
 
                 return Ok(result);
             }
@@ -257,12 +257,12 @@ namespace WebAPI.Controllers
         [HttpGet("bought-list")]
         [Authorize(Roles = "1")]
         [SwaggerResponse(200, "List of bought question set", typeof(IEnumerable<ShareInMarket>))]
-        public async Task<IActionResult> GetBoughtList(int? grade, int? subjectEnum, int year)
+        public async Task<IActionResult> GetBoughtList(int? grade, int? subjectEnum, string studyYear)
         {
             try
             {
                 var currentUser = await _userServices.GetCurrentUser();
-                var result = await _marketServices.GetBoughtList(currentUser, grade, subjectEnum, year);
+                var result = await _marketServices.GetBoughtList(currentUser, grade, subjectEnum, studyYear);
 
                 return Ok(result);
             }
@@ -279,12 +279,12 @@ namespace WebAPI.Controllers
         [HttpGet("sell-list")]
         [Authorize(Roles = "1")]
         [SwaggerResponse(200, "List of sell question set", typeof(IEnumerable<ShareInMarket>))]
-        public async Task<IActionResult> GetSellList(int? grade, int? subjectEnum, int? status, int year)
+        public async Task<IActionResult> GetSellList(int? grade, int? subjectEnum, int? status, string studyYear)
         {
             try
             {
                 var currentUser = await _userServices.GetCurrentUser();
-                var result = await _marketServices.GetSoldList(currentUser, grade, subjectEnum, status, year);
+                var result = await _marketServices.GetSoldList(currentUser, grade, subjectEnum, status, studyYear);
 
                 return Ok(result);
             }

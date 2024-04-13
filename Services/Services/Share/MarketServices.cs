@@ -99,11 +99,11 @@ namespace Services.Services.Share
             }
         }
 
-        public async Task<List<ShareInMarket>> GetBoughtList(Guid currentUser, int? grade, int? subjectEnum, int year)
+        public async Task<List<ShareInMarket>> GetBoughtList(Guid currentUser, int? grade, int? subjectEnum, string studyYear)
         {
             try
             {
-                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.CreatedOn.Year == year && share.Type == 0 && share.CreatedBy != currentUser && share.UserId == currentUser, includes => includes.QuestionSet);
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.StudyYear == studyYear && share.Type == 0 && share.CreatedBy != currentUser && share.UserId == currentUser, includes => includes.QuestionSet);
 
                 if (grade != null && subjectEnum != null)
                 {
@@ -152,11 +152,11 @@ namespace Services.Services.Share
             }
         }
 
-        public async Task<List<MySold>> GetSoldList(Guid currentUser, int? grade, int? subjectEnum, int? status, int year)
+        public async Task<List<MySold>> GetSoldList(Guid currentUser, int? grade, int? subjectEnum, int? status, string studyYear)
         {
             try
             {
-                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.CreatedOn.Year == year && share.Type == 0 && share.CreatedBy == currentUser &&
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.StudyYear == studyYear && share.Type == 0 && share.CreatedBy == currentUser &&
                                                                                     share.User == null, includes => includes.QuestionSet);
 
                 if (grade != null && subjectEnum != null)
@@ -212,11 +212,11 @@ namespace Services.Services.Share
             }
         }
 
-        public async Task<IEnumerable<ShareInMarket>> GetQuestionSetInMarket(int? grade, int? subjectEnum, int year, Guid currentUserId)
+        public async Task<IEnumerable<ShareInMarket>> GetQuestionSetInMarket(int? grade, int? subjectEnum, string studyYear, Guid currentUserId)
         {
             try
             {
-                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.CreatedOn.Year == year && share.Type == 0 && share.Status == 1 &&
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.StudyYear == studyYear && share.Type == 0 && share.Status == 1 &&
                                                                                 share.CreatedBy != currentUserId && share.UserId != currentUserId, includes => includes.QuestionSet);
 
                 if (grade != null && subjectEnum != null)
