@@ -203,7 +203,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("market")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "1,2")]
         [SwaggerResponse(200, "List of question set in market", typeof(IEnumerable<ShareInMarket>))]
         public async Task<IActionResult> GetQuestionSetInMarket(int? grade, int? subjectEnum, string studyYear)
         {
