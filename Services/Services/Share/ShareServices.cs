@@ -146,7 +146,7 @@ namespace Services.Services.Share
                 {
                     return null;
                 }
-
+                var users = await _unitOfWork.UserRepo.GetAllAsync();
                 var result = new List<ShareViewModels>();
 
                 foreach (var s in shares)
@@ -163,7 +163,7 @@ namespace Services.Services.Share
                     shareViewModel.Price = s.Type == 0 ? (config.NB * 2 + config.TH * 5 + config.VDT * 10 + config.VDC * 30) / 5 : null;
                     shareViewModel.NameOfQuestionSet = s.QuestionSet.Name;
                     shareViewModel.NameOfSubject = (await _unitOfWork.SubjectRepo.FindByField(subject => subject.SubjectId == s.QuestionSet.SubjectId)).Name;
-
+                    shareViewModel.NameOfRequester = users.First(u => u.UserId == s.CreatedBy).FullName;
                     result.Add(shareViewModel);
                 }
 
