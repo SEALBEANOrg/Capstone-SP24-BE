@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Repositories.Models
 {
     public partial class Share
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid ShareId { get; set; }
         public Guid QuestionSetId { get; set; }
         public Guid? UserId { get; set; }
