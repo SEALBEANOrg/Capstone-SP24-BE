@@ -9,7 +9,8 @@ namespace Services.Interfaces.SubjectSection
         Task<IEnumerable<SubjectSectionViewModels>> GetAllBySubjectId(Guid? subjectId);
         Task<IEnumerable<SubjectSectionNav>> GetAllBySubjectIdForNav(Guid? subjectId, Guid currentUserId);
         Task<SubjectSectionViewModel> GetSectionBySectionId(Guid sectionId);
-     
+        Task<IEnumerable<SubjectSectionNav>> GetAllByQuestionSet(Guid questionSetId, Guid currentUserId);
+
         Task<bool> UpdateSubjectSection(SubjectSectionUpdate subjectSectionUpdate, Guid currentUser);
 
         Task<bool> DeleteSubjectSection(Guid sectionId);

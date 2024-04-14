@@ -228,5 +228,29 @@ namespace WebAPI.Controllers
                 });
             }
         }
+
+
+
+        [HttpGet("nav-by-set")]
+        [Authorize(Roles = "0,1,2")]
+        [SwaggerResponse(200, "List sample section", typeof(IEnumerable<SubjectSectionNav>))]
+        public async Task<IActionResult> GetAllByQuestionSet(Guid questionSetId)
+        {
+            try
+            {
+                var currentUserId = await _userServices.GetCurrentUser();
+                var subjectSections = await _subjectSectionServices.GetAllByQuestionSet(questionSetId, currentUserId);
+
+                return Ok(subjectSections);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Message = ex.Message
+                });
+            }
+        }
+
     }
 }

@@ -99,7 +99,64 @@ namespace Services.Services.SubjectSection
                 throw new Exception("Lỗi ở SubjectSectionServices - GetAllBySubjectIdAndGrade: " + e.Message);
             }
         }
-        
+
+        public async Task<IEnumerable<SubjectSectionNav>> GetAllByQuestionSet(Guid questionSetId, Guid currentUserId)
+        {
+            try
+            {
+                var questionSet = await _unitOfWork.QuestionSetRepo.FindByField(item => item.QuestionSetId == questionSetId);
+                var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == questionSetId, includes => includes.Section);               
+                var subjectSections = questions.Select(question => question.Section).Distinct().ToList(); 
+
+                List<SubjectSectionNav> result = new List<SubjectSectionNav>();
+                foreach (var section in subjectSections)
+                {
+                    var nbCount = questions.Count(question => question.SectionId == section.SectionId && question.Difficulty == 0);
+                    var thCount = questions.Count(question => question.SectionId == section.SectionId && question.Difficulty == 1);
+                    var vdtCount = questions.Count(question => question.SectionId == section.SectionId && question.Difficulty == 2);
+                    var vdcCount = questions.Count(question => question.SectionId == section.SectionId && question.Difficulty == 3);
+
+                    var nb = new NumOfEachDifficulty { Difficulty = 0, CHCN = 0, NHD = 0 };
+                    var th = new NumOfEachDifficulty { Difficulty = 1, CHCN = 0, NHD = 0 };
+                    var vdt = new NumOfEachDifficulty { Difficulty = 2, CHCN = 0, NHD = 0 };
+                    var vdc = new NumOfEachDifficulty { Difficulty = 3, CHCN = 0, NHD = 0 }; 
+
+                    if (currentUserId == questionSet.CreatedBy)
+                    {
+                        nb.CHCN = nbCount;
+                        th.CHCN = thCount;
+                        vdt.CHCN = vdtCount;
+                        vdc.CHCN = vdcCount;
+                    }
+                    else
+                    {
+                        nb.NHD = nbCount;
+                        th.NHD = thCount;
+                        vdt.NHD = vdtCount;
+                        vdc.NHD = vdcCount;
+                    }
+
+                    SubjectSectionNav subjectSectionNav = new SubjectSectionNav
+                    {
+                        SectionId = section.SectionId,
+                        SectionNo = section.SectionNo,
+                        Name = section.Name,
+                        NumOfEachDifficulties = new List<NumOfEachDifficulty> { nb, th, vdt, vdc }
+                    };
+
+                    result.Add(subjectSectionNav);
+                }
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở SubjectSectionServices - GetAllBySubjectIdAndGrade: " + e.Message);
+            }
+        }
+
+
+
         public async Task<IEnumerable<SubjectSectionViewModels>> GetAllBySubjectId(Guid? subjectId)
         {
             try
