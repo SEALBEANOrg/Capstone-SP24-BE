@@ -371,7 +371,7 @@ namespace Repositories.Models
 
             modelBuilder.Entity<Share>(entity =>
             {
-                entity.HasKey(e => new { e.ShareId });
+                entity.HasKey(e => new { e.ShareId }).HasName("pk_share");
 
                 entity.ToTable("Share");
 

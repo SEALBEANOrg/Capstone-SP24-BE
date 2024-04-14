@@ -21,7 +21,7 @@ namespace Services.Services.Share
         {
             try
             {
-                var share = await _unitOfWork.ShareRepo.FindByField(s => s.QuestionSetId == buyQuestionSet.ShareId);
+                var share = await _unitOfWork.ShareRepo.FindByField(s => s.ShareId == buyQuestionSet.ShareId);
                 if (share == null)
                 {
                     return false;
@@ -56,7 +56,7 @@ namespace Services.Services.Share
                     ModifiedBy = currentUser,
                     ModifiedOn = DateTime.Now
                 };
-                _unitOfWork.ShareRepo.AddAsync(share);
+                _unitOfWork.ShareRepo.AddAsync(shareNew);
 
                 // tru tien
                 currentUserInfo.Point = currentUserInfo.Point - price;
@@ -219,7 +219,7 @@ namespace Services.Services.Share
             try
             {
                 var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.StudyYear == studyYear && share.Type == 0 && share.Status == 1 &&
-                                                                                share.CreatedBy != currentUserId && share.UserId != currentUserId, includes => includes.QuestionSet);
+                                                                                share.CreatedBy != currentUserId && share.UserId == null, includes => includes.QuestionSet);
 
                 if (grade != null && subjectEnum != null)
                 {
