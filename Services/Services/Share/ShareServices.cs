@@ -146,23 +146,24 @@ namespace Services.Services.Share
                 {
                     return null;
                 }
-
+                var users = await _unitOfWork.UserRepo.GetAllAsync();
                 var result = new List<ShareViewModels>();
 
                 foreach (var s in shares)
                 {
+                    var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == s.QuestionSetId);
                     var config = new SetConfig
                     {
-                        NB = s.QuestionSet.Questions.Count(c => c.Difficulty == 0),
-                        TH = s.QuestionSet.Questions.Count(c => c.Difficulty == 1),
-                        VDT = s.QuestionSet.Questions.Count(c => c.Difficulty == 2),
-                        VDC = s.QuestionSet.Questions.Count(c => c.Difficulty == 3),
+                        NB = questions.Count(c => c.Difficulty == 0),
+                        TH = questions.Count(c => c.Difficulty == 1),
+                        VDT = questions.Count(c => c.Difficulty == 2),
+                        VDC = questions.Count(c => c.Difficulty == 3),
                     };
                     var shareViewModel = _mapper.Map<ShareViewModels>(s);
                     shareViewModel.Price = s.Type == 0 ? (config.NB * 2 + config.TH * 5 + config.VDT * 10 + config.VDC * 30) / 5 : null;
                     shareViewModel.NameOfQuestionSet = s.QuestionSet.Name;
                     shareViewModel.NameOfSubject = (await _unitOfWork.SubjectRepo.FindByField(subject => subject.SubjectId == s.QuestionSet.SubjectId)).Name;
-
+                    shareViewModel.NameOfRequester = users.First(u => u.UserId == s.CreatedBy).FullName;
                     result.Add(shareViewModel);
                 }
 

@@ -18,6 +18,7 @@ namespace Services.ViewModels
         public int Status { get; set; }
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }
+        public string NameOfRequester { get; set; }
     }
 
     public class ShareInMarket
