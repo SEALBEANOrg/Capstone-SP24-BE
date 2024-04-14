@@ -103,7 +103,7 @@ namespace Services.Services.Share
         {
             try
             {
-                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.StudyYear == studyYear && share.Type == 0 && share.CreatedBy != currentUser && share.UserId == currentUser, includes => includes.QuestionSet);
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.StudyYear == studyYear && share.Type == 0 && share.UserId == currentUser, includes => includes.QuestionSet);
 
                 if (grade != null && subjectEnum != null)
                 {
