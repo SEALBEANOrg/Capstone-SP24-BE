@@ -105,16 +105,16 @@ namespace Services.Services.SubjectSection
             try
             {
                 var questionSet = await _unitOfWork.QuestionSetRepo.FindByField(item => item.QuestionSetId == questionSetId);
-                var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == questionSetId, includes => includes.Section);               
-                var subjectSections = questions.Select(question => question.Section).Distinct().ToList(); 
-
+                var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == questionSetId, includes => includes.Section);
+                var subjectSectionIds = questions.Select(question => question.SectionId).Distinct().ToList();
+               
                 List<SubjectSectionNav> result = new List<SubjectSectionNav>();
-                foreach (var section in subjectSections)
+                foreach (var sectionId in subjectSectionIds)
                 {
-                    var nbCount = questions.Count(question => question.SectionId == section.SectionId && question.Difficulty == 0);
-                    var thCount = questions.Count(question => question.SectionId == section.SectionId && question.Difficulty == 1);
-                    var vdtCount = questions.Count(question => question.SectionId == section.SectionId && question.Difficulty == 2);
-                    var vdcCount = questions.Count(question => question.SectionId == section.SectionId && question.Difficulty == 3);
+                    var nbCount = questions.Count(question => question.SectionId == sectionId && question.Difficulty == 0);
+                    var thCount = questions.Count(question => question.SectionId == sectionId && question.Difficulty == 1);
+                    var vdtCount = questions.Count(question => question.SectionId == sectionId && question.Difficulty == 2);
+                    var vdcCount = questions.Count(question => question.SectionId == sectionId && question.Difficulty == 3);
 
                     var nb = new NumOfEachDifficulty { Difficulty = 0, CHCN = 0, NHD = 0 };
                     var th = new NumOfEachDifficulty { Difficulty = 1, CHCN = 0, NHD = 0 };
@@ -136,11 +136,12 @@ namespace Services.Services.SubjectSection
                         vdc.NHD = vdcCount;
                     }
 
+                    var sectio = await _unitOfWork.SubjectSectionRepo.FindByField(item => item.SectionId == sectionId);
                     SubjectSectionNav subjectSectionNav = new SubjectSectionNav
                     {
-                        SectionId = section.SectionId,
-                        SectionNo = section.SectionNo,
-                        Name = section.Name,
+                        SectionId = (Guid)sectionId,
+                        SectionNo = sectio.SectionNo,
+                        Name = sectio.Name,
                         NumOfEachDifficulties = new List<NumOfEachDifficulty> { nb, th, vdt, vdc }
                     };
 

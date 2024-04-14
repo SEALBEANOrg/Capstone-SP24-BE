@@ -229,8 +229,6 @@ namespace WebAPI.Controllers
             }
         }
 
-
-
         [HttpGet("nav-by-set")]
         [Authorize(Roles = "0,1,2")]
         [SwaggerResponse(200, "List sample section", typeof(IEnumerable<SubjectSectionNav>))]
