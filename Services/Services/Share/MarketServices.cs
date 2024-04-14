@@ -246,12 +246,13 @@ namespace Services.Services.Share
 
                 foreach (var s in shares)
                 {
+                    var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == s.QuestionSetId);
                     var config = new SetConfig
                     {
-                        NB = s.QuestionSet.Questions.Count(c => c.Difficulty == 0),
-                        TH = s.QuestionSet.Questions.Count(c => c.Difficulty == 1),
-                        VDT = s.QuestionSet.Questions.Count(c => c.Difficulty == 2),
-                        VDC = s.QuestionSet.Questions.Count(c => c.Difficulty == 3),
+                        NB = questions.Count(c => c.Difficulty == 0),
+                        TH = questions.Count(c => c.Difficulty == 1),
+                        VDT = questions.Count(c => c.Difficulty == 2),
+                        VDC = questions.Count(c => c.Difficulty == 3),
                     };
 
                     var shareInMarket = _mapper.Map<ShareInMarket>(s);
