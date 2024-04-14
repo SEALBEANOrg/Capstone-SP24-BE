@@ -102,11 +102,11 @@ namespace Services.Services.Share
             }
         }
 
-        public async Task<IEnumerable<ShareViewModels>> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, int year)
+        public async Task<IEnumerable<ShareViewModels>> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, string studyYear)
         {
             try
             {
-                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.CreatedOn.Year == year, includes => includes.QuestionSet);
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.StudyYear == studyYear, includes => includes.QuestionSet);
 
                 if (type != null)
                 {
@@ -159,7 +159,7 @@ namespace Services.Services.Share
                         VDC = s.QuestionSet.Questions.Count(c => c.Difficulty == 3),
                     };
                     var shareViewModel = _mapper.Map<ShareViewModels>(s);
-                    shareViewModel.Price = s.Type == 0 ? (config.NB * 200 + config.TH * 500 + config.VDT * 1000 + config.VDC * 3000) / 5 : null;
+                    shareViewModel.Price = s.Type == 0 ? (config.NB * 2 + config.TH * 5 + config.VDT * 10 + config.VDC * 30) / 5 : null;
                     shareViewModel.NameOfQuestionSet = s.QuestionSet.Name;
                     shareViewModel.NameOfSubject = (await _unitOfWork.SubjectRepo.FindByField(subject => subject.SubjectId == s.QuestionSet.SubjectId)).Name;
 
@@ -254,14 +254,14 @@ namespace Services.Services.Share
                         VDC = questionSet.Questions.Count(q => q.Difficulty == 3)
                     };
                     var user = await _unitOfWork.UserRepo.FindByField(u => u.UserId == share.UserId);
-                    user.Point += setConfig.NB * 200 + setConfig.TH * 500 + setConfig.VDT * 1000 + setConfig.VDC * 3000;
+                    user.Point += setConfig.NB * 2 + setConfig.TH * 5 + setConfig.VDT * 10 + setConfig.VDC * 30;
                     _unitOfWork.UserRepo.Update(user);
 
                     var transaction = new Repositories.Models.Transaction
                     {
                         UserId = currentUserId,
                         Type = 6, //public bo cau hoi
-                        PointValue = setConfig.NB * 200 + setConfig.TH * 500 + setConfig.VDT * 1000 + setConfig.VDC * 3000,
+                        PointValue = setConfig.NB * 2 + setConfig.TH * 5 + setConfig.VDT * 10 + setConfig.VDC * 30,
                         CreatedOn = DateTime.Now
                     };
                     _unitOfWork.TransactionRepo.AddAsync(transaction);

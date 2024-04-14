@@ -122,13 +122,13 @@ namespace Services.Services.QuestionSet
             }
         }
 
-        public async Task<IEnumerable<SharedQuestionSet>> GetSharedQuestionSet(Guid currentUserId, int? grade, int? subjectEnum, int year)
+        public async Task<IEnumerable<SharedQuestionSet>> GetSharedQuestionSet(Guid currentUserId, int? grade, int? subjectEnum, string studyYear)
         {
             try
             {
                 var sharedQuestionSetIds = (await _unitOfWork.ShareRepo.FindListByField(share => (share.UserId == currentUserId && share.Type == 1 && share.Status == 1) || 
                                                                                                 (share.Type == 2 && share.Status == 1))).Select(s => s.QuestionSetId).Distinct().ToList();
-                var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => sharedQuestionSetIds.Contains(questionSet.QuestionSetId) && questionSet.CreatedOn.Year == year, include => include.Subject);
+                var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => sharedQuestionSetIds.Contains(questionSet.QuestionSetId) && questionSet.StudyYear == studyYear, include => include.Subject);
 
                 if (grade != null)
                 {
@@ -178,7 +178,7 @@ namespace Services.Services.QuestionSet
             }
         }
 
-        public async Task<IEnumerable<QuestionSetViewModels>> GetQuestionSetBank(int? grade, int? subject, int year, int type)
+        public async Task<IEnumerable<QuestionSetViewModels>> GetQuestionSetBank(int? grade, int? subject, string studyYear, int type)
         {
             var resutl = new List<QuestionSetViewModels>();
             if (type == 0)
@@ -187,7 +187,7 @@ namespace Services.Services.QuestionSet
                 var distinctQuestionSetIds = shares.Select(s => s.QuestionSetId).Distinct().ToList();
 
                 var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionset => distinctQuestionSetIds.Contains(questionset.QuestionSetId)
-                                                                                            && questionset.CreatedOn.Year == year, includes => includes.Subject, includes => includes.Questions);
+                                                                                            && questionset.StudyYear == studyYear, includes => includes.Subject, includes => includes.Questions);
                 if (grade != null)
                 {
                     questionSets = questionSets.Where(questionSet => questionSet.Grade == grade).ToList();
@@ -207,7 +207,7 @@ namespace Services.Services.QuestionSet
                     };
                     var qsvm = _mapper.Map<QuestionSetViewModels>(qs);
                     qsvm.Type = 0;
-                    qsvm.Price = (config.NB * 200 + config.TH * 500 + config.VDT * 1000 + config.VDC * 3000) / 5; // 1/5 giá gốc nếu là type 0
+                    qsvm.Price = (config.NB * 2 + config.TH * 5 + config.VDT * 10 + config.VDC * 30) / 5; // 1/5 giá gốc nếu là type 0
                     resutl.Add(qsvm);
                 }
             }
@@ -216,7 +216,7 @@ namespace Services.Services.QuestionSet
                 var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.Type == 2 && share.Status == 1);
 
                 var distinctQuestionSetIds = shares.Select(s => s.QuestionSetId).Distinct().ToList();
-                var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionset => (distinctQuestionSetIds.Contains(questionset.QuestionSetId) || questionset.Status == 2) && questionset.CreatedOn.Year == year, include => include.Subject);
+                var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionset => (distinctQuestionSetIds.Contains(questionset.QuestionSetId) || questionset.Status == 2) && questionset.StudyYear == studyYear, include => include.Subject);
                 if (grade != null)
                 {
                     questionSets = questionSets.Where(questionSet => questionSet.Grade == grade).ToList();

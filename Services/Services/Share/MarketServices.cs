@@ -35,7 +35,7 @@ namespace Services.Services.Share
                     VDT = questions.Count(q => q.Difficulty == 2),
                     VDC = questions.Count(q => q.Difficulty == 3)
                 };
-                int price = (setConfig.NB * 200 + setConfig.TH * 500 + setConfig.VDT * 1000 + setConfig.VDC * 3000) / 5;
+                int price = (setConfig.NB * 2 + setConfig.TH * 5 + setConfig.VDT * 10 + setConfig.VDC * 30) / 5;
 
                 var creator = await _unitOfWork.UserRepo.FindByField(u => u.UserId == share.CreatedBy);
                 var currentUserInfo = await _unitOfWork.UserRepo.FindByField(u => u.UserId == currentUser);
@@ -99,11 +99,11 @@ namespace Services.Services.Share
             }
         }
 
-        public async Task<List<ShareInMarket>> GetBoughtList(Guid currentUser, int? grade, int? subjectEnum, int year)
+        public async Task<List<ShareInMarket>> GetBoughtList(Guid currentUser, int? grade, int? subjectEnum, string studyYear)
         {
             try
             {
-                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.CreatedOn.Year == year && share.Type == 0 && share.CreatedBy != currentUser && share.UserId == currentUser, includes => includes.QuestionSet);
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.StudyYear == studyYear && share.Type == 0 && share.CreatedBy != currentUser && share.UserId == currentUser, includes => includes.QuestionSet);
 
                 if (grade != null && subjectEnum != null)
                 {
@@ -139,7 +139,7 @@ namespace Services.Services.Share
 
                     var shareInMarket = _mapper.Map<ShareInMarket>(s);
 
-                    shareInMarket.Price = (config.NB * 200 + config.TH * 500 + config.VDT * 1000 + config.VDC * 3000) / 5;
+                    shareInMarket.Price = (config.NB * 2 + config.TH * 5 + config.VDT * 10 + config.VDC * 30) / 5;
                     result.Add(shareInMarket);
                 }
 
@@ -152,11 +152,11 @@ namespace Services.Services.Share
             }
         }
 
-        public async Task<List<MySold>> GetSoldList(Guid currentUser, int? grade, int? subjectEnum, int? status, int year)
+        public async Task<List<MySold>> GetSoldList(Guid currentUser, int? grade, int? subjectEnum, int? status, string studyYear)
         {
             try
             {
-                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.CreatedOn.Year == year && share.Type == 0 && share.CreatedBy == currentUser &&
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.StudyYear == studyYear && share.Type == 0 && share.CreatedBy == currentUser &&
                                                                                     share.User == null, includes => includes.QuestionSet);
 
                 if (grade != null && subjectEnum != null)
@@ -199,7 +199,7 @@ namespace Services.Services.Share
                     var shareInMarket = _mapper.Map<MySold>(s);
 
                     shareInMarket.CountSold = s.Status == 1 ? (await _unitOfWork.ShareRepo.FindListByField(share => share.QuestionSetId == s.QuestionSetId && share.UserId != null)).Count : null;
-                    shareInMarket.Price = (config.NB * 200 + config.TH * 500 + config.VDT * 1000 + config.VDC * 3000) / 5;
+                    shareInMarket.Price = (config.NB * 2 + config.TH * 5 + config.VDT * 10 + config.VDC * 30) / 5;
                     result.Add(shareInMarket);
                 }
 
@@ -212,11 +212,11 @@ namespace Services.Services.Share
             }
         }
 
-        public async Task<IEnumerable<ShareInMarket>> GetQuestionSetInMarket(int? grade, int? subjectEnum, int year, Guid currentUserId)
+        public async Task<IEnumerable<ShareInMarket>> GetQuestionSetInMarket(int? grade, int? subjectEnum, string studyYear, Guid currentUserId)
         {
             try
             {
-                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.CreatedOn.Year == year && share.Type == 0 && share.Status == 1 &&
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.StudyYear == studyYear && share.Type == 0 && share.Status == 1 &&
                                                                                 share.CreatedBy != currentUserId && share.UserId != currentUserId, includes => includes.QuestionSet);
 
                 if (grade != null && subjectEnum != null)
@@ -239,6 +239,9 @@ namespace Services.Services.Share
                     return null;
                 }
 
+                // Fetch all users at once
+                var users = await _unitOfWork.UserRepo.GetAllAsync();
+
                 var result = new List<ShareInMarket>();
 
                 foreach (var s in shares)
@@ -252,8 +255,9 @@ namespace Services.Services.Share
                     };
 
                     var shareInMarket = _mapper.Map<ShareInMarket>(s);
+                    shareInMarket.NameOfSeller = users.First(u => u.UserId == s.CreatedBy).FullName;
 
-                    shareInMarket.Price = (config.NB * 200 + config.TH * 500 + config.VDT * 1000 + config.VDC * 3000) / 5;
+                    shareInMarket.Price = (config.NB * 2 + config.TH * 5 + config.VDT * 10 + config.VDC * 30) / 5;
                     result.Add(shareInMarket);
                 }
 

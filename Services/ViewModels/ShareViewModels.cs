@@ -29,6 +29,7 @@ namespace Services.ViewModels
         public int Type { get; set; }
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }
+        public string NameOfSeller { get; set; }
     }
 
     public class MySold

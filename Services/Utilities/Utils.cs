@@ -27,7 +27,7 @@ namespace Services.Utilities
         {
             return string.Concat(name.Normalize(NormalizationForm.FormD)
                         .Where(ch => CharUnicodeInfo.GetUnicodeCategory(ch) != UnicodeCategory.NonSpacingMark))
-                        .Normalize(NormalizationForm.FormC).Replace(" ", "").Replace("Đ", "D").Trim();
+                        .Normalize(NormalizationForm.FormC).Replace(" ", "").Replace("Đ", "D").Replace("đ", "d").Trim();
         }
 
     }

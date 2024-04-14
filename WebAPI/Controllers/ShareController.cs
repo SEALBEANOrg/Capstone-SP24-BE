@@ -26,11 +26,11 @@ namespace WebAPI.Controllers
         [HttpGet("requests")]
         [Authorize(Roles = "2")]
         [SwaggerResponse(200, "List of request to share", typeof(IEnumerable<ShareViewModels>))]
-        public async Task<IActionResult> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, [Required] int year)
+        public async Task<IActionResult> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, [Required] string studyYear)
         {
             try
             {
-                var result = await _shareServices.GetRequestToShare(status, grade, subjectEnum, type, year);
+                var result = await _shareServices.GetRequestToShare(status, grade, subjectEnum, type, studyYear);
 
                 return Ok(result);
             }
@@ -203,14 +203,14 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("market")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "1,2")]
         [SwaggerResponse(200, "List of question set in market", typeof(IEnumerable<ShareInMarket>))]
-        public async Task<IActionResult> GetQuestionSetInMarket(int? grade, int? subjectEnum, int year)
+        public async Task<IActionResult> GetQuestionSetInMarket(int? grade, int? subjectEnum, string studyYear)
         {
             try
             {
                 var currentUser = await _userServices.GetCurrentUser();
-                var result = await _marketServices.GetQuestionSetInMarket(grade, subjectEnum, year, currentUser);
+                var result = await _marketServices.GetQuestionSetInMarket(grade, subjectEnum, studyYear, currentUser);
 
                 return Ok(result);
             }
@@ -257,12 +257,12 @@ namespace WebAPI.Controllers
         [HttpGet("bought-list")]
         [Authorize(Roles = "1")]
         [SwaggerResponse(200, "List of bought question set", typeof(IEnumerable<ShareInMarket>))]
-        public async Task<IActionResult> GetBoughtList(int? grade, int? subjectEnum, int year)
+        public async Task<IActionResult> GetBoughtList(int? grade, int? subjectEnum, string studyYear)
         {
             try
             {
                 var currentUser = await _userServices.GetCurrentUser();
-                var result = await _marketServices.GetBoughtList(currentUser, grade, subjectEnum, year);
+                var result = await _marketServices.GetBoughtList(currentUser, grade, subjectEnum, studyYear);
 
                 return Ok(result);
             }
@@ -279,12 +279,12 @@ namespace WebAPI.Controllers
         [HttpGet("sell-list")]
         [Authorize(Roles = "1")]
         [SwaggerResponse(200, "List of sell question set", typeof(IEnumerable<ShareInMarket>))]
-        public async Task<IActionResult> GetSellList(int? grade, int? subjectEnum, int? status, int year)
+        public async Task<IActionResult> GetSellList(int? grade, int? subjectEnum, int? status, string studyYear)
         {
             try
             {
                 var currentUser = await _userServices.GetCurrentUser();
-                var result = await _marketServices.GetSoldList(currentUser, grade, subjectEnum, status, year);
+                var result = await _marketServices.GetSoldList(currentUser, grade, subjectEnum, status, studyYear);
 
                 return Ok(result);
             }
