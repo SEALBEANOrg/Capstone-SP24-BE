@@ -21,7 +21,7 @@ namespace Services.Services.Share
         {
             try
             {
-                var share = await _unitOfWork.ShareRepo.FindByField(s => s.QuestionSetId == buyQuestionSet.ShareId);
+                var share = await _unitOfWork.ShareRepo.FindByField(s => s.ShareId == buyQuestionSet.ShareId);
                 if (share == null)
                 {
                     return false;
