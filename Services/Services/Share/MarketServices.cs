@@ -218,8 +218,14 @@ namespace Services.Services.Share
         {
             try
             {
+                var boughtQuestionSet = await _unitOfWork.ShareRepo.FindListByField(share => share.UserId == currentUserId && share.Type == 0);
                 var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.StudyYear == studyYear && share.Type == 0 && share.Status == 1 &&
                                                                                 share.CreatedBy != currentUserId && share.UserId == null, includes => includes.QuestionSet);
+
+                if (boughtQuestionSet.Count > 0)
+                {
+                    shares = shares.Where(share => !boughtQuestionSet.Select(s => s.QuestionSetId).Contains(share.QuestionSetId)).ToList();
+                }
 
                 if (grade != null && subjectEnum != null)
                 {
