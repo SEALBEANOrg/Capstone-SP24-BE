@@ -82,6 +82,12 @@ namespace Services.Services.QuestionSet
             try
             {
                 var questionSets = await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => questionSet.CreatedBy == currentUserId && questionSet.StudyYear == studyYear, include => include.Subject);
+                var boughtQuestionSets = await _unitOfWork.ShareRepo.FindListByField(share => share.UserId == currentUserId);
+                //Merge questionSets and boughtQuestionSets by ID of questionSet in boughtQuestionSets
+                var questionSetIds = boughtQuestionSets.Select(boughtQuestionSet => boughtQuestionSet.QuestionSetId).ToList();
+                var boughtQuestionSetsFromRepo = await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => questionSetIds.Contains(questionSet.QuestionSetId), include => include.Subject);
+                questionSets.AddRange(boughtQuestionSetsFromRepo);
+
                 if (grade != null)
                 {
                     questionSets = questionSets.Where(questionSet => questionSet.Grade == grade).ToList();
@@ -97,6 +103,7 @@ namespace Services.Services.QuestionSet
                 }
 
                 var questionSetViewModels = new List<OwnQuestionSet>();
+
                 foreach (var questionSet in questionSets)
                 {
                     var questionSetViewModel = _mapper.Map<OwnQuestionSet>(questionSet);
@@ -110,6 +117,9 @@ namespace Services.Services.QuestionSet
                     {
                         questionSetViewModel.SubjectEnum = (int)subject;
                     }
+
+                    // Set the Type property
+                    questionSetViewModel.Type = boughtQuestionSetsFromRepo.Contains(questionSet) ? 0 : 1;
 
                     questionSetViewModels.Add(questionSetViewModel);
                 }
@@ -289,7 +299,7 @@ namespace Services.Services.QuestionSet
                 var questionSet = await _unitOfWork.QuestionSetRepo.FindByField(questionSet => questionSet.QuestionSetId == questionSetId && questionSet.CreatedBy == currentUser);
                 if (questionSet == null)
                 {
-                    return false;
+                    throw new Exception("Không tìm thấy bộ câu hỏi này hoặc bản không phải chủ sở hữu");
                 }
 
                 var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == questionSet.QuestionSetId, includes => includes.QuestionInExams, include => include.QuestionInPapers);
