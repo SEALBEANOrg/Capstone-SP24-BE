@@ -112,9 +112,13 @@ namespace Services.Services.Share
                 {
                     throw new Exception("Không thể lấy thông tin về loại chia sẻ này");
                 }
-                else
+                else if(type == null)
                 {
                     shares = shares.Where(share => share.Type == OptionSet.Share.Type.ForSell || share.Type == OptionSet.Share.Type.Public).ToList();
+                }
+                else 
+                {
+                    shares = shares.Where(share => share.Type == type).ToList();
                 }
 
                 if (grade != null && subjectEnum != null)
