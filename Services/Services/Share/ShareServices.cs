@@ -106,13 +106,9 @@ namespace Services.Services.Share
         {
             try
             {
-                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.StudyYear == studyYear, includes => includes.QuestionSet);
+                var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.StudyYear == studyYear && share.UserId == null, includes => includes.QuestionSet);
 
-                if (type != null)
-                {
-                    shares = shares.Where(share => share.Type == type).ToList();
-                }
-                else if (type == 1)
+                if (type == 1)
                 {
                     throw new Exception("Không thể lấy thông tin về loại chia sẻ này");
                 }
