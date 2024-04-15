@@ -10,5 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)EnumStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OptionSet.cs" />
   </ItemGroup>
 </Project>

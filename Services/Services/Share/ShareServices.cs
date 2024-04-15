@@ -108,13 +108,13 @@ namespace Services.Services.Share
             {
                 var shares = await _unitOfWork.ShareRepo.FindListByField(share => share.StudyYear == studyYear && share.UserId == null, includes => includes.QuestionSet);
 
-                if (type == 1)
+                if (type == OptionSet.Share.Type.Private)
                 {
                     throw new Exception("Không thể lấy thông tin về loại chia sẻ này");
                 }
                 else
                 {
-                    shares = shares.Where(share => share.Type == 0 || share.Type == 2).ToList();
+                    shares = shares.Where(share => share.Type == OptionSet.Share.Type.ForSell || share.Type == OptionSet.Share.Type.Public).ToList();
                 }
 
                 if (grade != null && subjectEnum != null)
