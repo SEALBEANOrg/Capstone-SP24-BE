@@ -1,21 +1,13 @@
 ﻿using AutoMapper;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Office2013.Word;
 using ExagenSharedProject;
-using Firebase.Auth;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using OfficeOpenXml;
-using OfficeOpenXml.Style.XmlAccess;
 using Repositories;
 using Repositories.Models;
 using Services.Interfaces;
-using Services.Interfaces.Exam;
 using Services.Interfaces.Paper;
 using Services.Interfaces.Storage;
 using Services.Utilities;
 using Services.ViewModels;
-using System.Text;
 using LicenseContext = OfficeOpenXml.LicenseContext;
 
 namespace Services.Services.Exam
@@ -72,10 +64,10 @@ namespace Services.Services.Exam
 
                 //add exam mark
                 var students = await _unitOfWork.StudentRepo.FindListByField(student => student.ClassId == examCreate.ClassId);
-                var examMarks = new List<ExamMark>();
+                var examMarks = new List<Repositories.Models.ExamMark>();
                 foreach (var student in students)
                 {
-                    var examMark = new ExamMark
+                    var examMark = new Repositories.Models.ExamMark
                     {
                         StudentId = student.StudentId,
                         CreatedOn = DateTime.Now,
@@ -167,47 +159,21 @@ namespace Services.Services.Exam
                 else
                 {
                     var questionIdsUse = new List<Guid>();
-                    var questionsFromSet = (await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == examCreate.QuestionSetIdUse)).Select(s => s.SectionId);
+                    var questionSetUse = await _unitOfWork.QuestionSetRepo.FindByField(item => item.QuestionSetId == examCreate.QuestionSetIdUse);
+                    var questionsFromSet = (await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == examCreate.QuestionSetIdUse, includes => includes.QuestionSet));
                     foreach (var sectionUse in examCreate.Sections)
                     {
-                        var sharedQuestionSetId = (await _unitOfWork.ShareRepo.FindListByField(share => share.UserId == currentUserId, includes => includes.QuestionSet)).Select(share => share.QuestionSetId).ToList();
-                        var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.SectionId == sectionUse.SectionId && question.Difficulty == sectionUse.Difficulty,
-                                                                                        includes => includes.QuestionSet);
+                        var questions = questionsFromSet.Where(question => question.SectionId == sectionUse.SectionId && question.Difficulty == sectionUse.Difficulty).ToList();
                         Utils.Shuffle(questions);
-                        if (sectionUse.CHCN > 0 && sectionUse.NHD > 0)
-                        {
-                            // CHCN là được createdBy currentUserId
-                            if (questionsFromSet.Contains(sectionUse.SectionId))
-                            {
-                                questionIdsUse.AddRange(questions.Where(question => question.QuestionSetId == examCreate.QuestionSetIdUse).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
-                            }
-                            else
-                            {
-                                questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).OrderBy(o => new Guid()).Take(sectionUse.CHCN));
-                            }
-
-                            // NHD là được public và được share 
-                            questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy != currentUserId && question.QuestionSet.Status == 2 ||
-                                                                                sharedQuestionSetId.Contains((Guid)question.QuestionSetId) && question.Difficulty == sectionUse.Difficulty).Select(question => question.QuestionId).Take(sectionUse.NHD));
-                        }
-                        else if (sectionUse.NHD > 0)
+                        if (sectionUse.NHD > 0)
                         {
                             // NHD là được public và được share
-                            questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy != currentUserId && question.QuestionSet.Status == 2 ||
-                                                                                sharedQuestionSetId.Contains((Guid)question.QuestionSetId) && question.Difficulty == sectionUse.Difficulty).Select(question => question.QuestionId).Take(sectionUse.NHD));
+                            questionIdsUse.AddRange(questions.Select(question => question.QuestionId).Take(sectionUse.NHD));
                         }
                         else if (sectionUse.CHCN > 0)
                         {
                             // CHCN là được createdBy currentUserId
-                            if (questionsFromSet.Contains(sectionUse.SectionId))
-                            {
-                                questionIdsUse.AddRange(questions.Where(question => question.QuestionSetId == examCreate.QuestionSetIdUse).Select(question => question.QuestionId).Take(sectionUse.CHCN));
-                            }
-                            else
-                            {
-                                questionIdsUse.AddRange(questions.Where(question => question.QuestionSet.CreatedBy == currentUserId).Select(question => question.QuestionId).Take(sectionUse.CHCN));
-
-                            }
+                            questionIdsUse.AddRange(questions.Select(question => question.QuestionId).Take(sectionUse.CHCN));
                         }
 
                         src.Add(new SourceUse
