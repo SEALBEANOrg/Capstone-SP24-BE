@@ -84,46 +84,45 @@ public class OptionSet
         public static int Information = 11;
         public static int MilitaryEducation = 12;
     }
-}
-
-public class Status
-{
-    public class User
+    public class Status
     {
-        public static int Inactive = 0;
-        public static int Active = 1;
-    }
+        public class User
+        {
+            public static int Inactive = 0;
+            public static int Active = 1;
+        }
 
-    public class QuestionSet
-    {
-        public static int Inactive = 0;
-        public static int Published = 1;
-        public static int Public = 2;
-    }
+        public class QuestionSet
+        {
+            public static int Inactive = 0;
+            public static int Published = 1;
+            public static int Public = 2;
+        }
 
-    public class StudentClass
-    {
-        public static int Inactive = 0;
-        public static int Active = 1;
-    }
+        public class StudentClass
+        {
+            public static int Inactive = 0;
+            public static int Active = 1;
+        }
 
-    public class Share
-    {
-        public static int Pending = 0;
-        public static int Approved = 1;
-        public static int Rejected = 2;
-    }
+        public class Share
+        {
+            public static int Pending = 0;
+            public static int Approved = 1;
+            public static int Rejected = 2;
+        }
 
-    public class  Exam
-    {
-        public static int NotCalculated = 0;
-        public static int Calculated = 1;
-    }
+        public class Exam
+        {
+            public static int NotCalculated = 0;
+            public static int Calculated = 1;
+        }
 
-    public class ExamMark
-    {
-        public static int Pending = 0;
-        public static int Submitted = 1;
-        public static int NotSubmitted = 2;
+        public class ExamMark
+        {
+            public static int Pending = 0;
+            public static int Submitted = 1;
+            public static int NotSubmitted = 2;
+        }
     }
 }

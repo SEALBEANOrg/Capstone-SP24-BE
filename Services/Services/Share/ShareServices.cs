@@ -150,13 +150,13 @@ namespace Services.Services.Share
                     var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == s.QuestionSetId);
                     var config = new SetConfig
                     {
-                        NB = questions.Count(c => c.Difficulty == 0),
-                        TH = questions.Count(c => c.Difficulty == 1),
-                        VDT = questions.Count(c => c.Difficulty == 2),
-                        VDC = questions.Count(c => c.Difficulty == 3),
+                        NB = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.NB),
+                        TH = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.TH),
+                        VDT = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.VD),
+                        VDC = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.VDC),
                     };
                     var shareViewModel = _mapper.Map<ShareViewModels>(s);
-                    shareViewModel.Price = s.Type == 0 ? (config.NB * 2 + config.TH * 5 + config.VDT * 10 + config.VDC * 30) / 5 : null;
+                    shareViewModel.Price = s.Type == OptionSet.Share.Type.ForSell ? (config.NB * 2 + config.TH * 5 + config.VDT * 10 + config.VDC * 30) / 5 : null;
                     shareViewModel.NameOfQuestionSet = s.QuestionSet.Name;
                     shareViewModel.NameOfSubject = (await _unitOfWork.SubjectRepo.FindByField(subject => subject.SubjectId == s.QuestionSet.SubjectId)).Name;
                     shareViewModel.NameOfRequester = users.First(u => u.UserId == s.CreatedBy).FullName;
@@ -229,26 +229,26 @@ namespace Services.Services.Share
         {
             try
             {
-                var share = await _unitOfWork.ShareRepo.FindByField(share => share.ShareId == id && share.Status == 0);
+                var share = await _unitOfWork.ShareRepo.FindByField(share => share.ShareId == id && share.Status == OptionSet.Status.Share.Pending);
                 if (share == null)
                 {
                     return false;
                 }
 
-                share.Status = responseRequest.IsAccept ? 1 : 2;
+                share.Status = responseRequest.IsAccept ? OptionSet.Status.Share.Approved : OptionSet.Status.Share.Rejected;
                 share.Note = responseRequest.Note;
                 share.ModifiedBy = currentUserId;
                 share.ModifiedOn = DateTime.Now;
 
-                if (share.Type == 2 && share.Status == 1)
+                if (share.Type == OptionSet.Share.Type.Public && share.Status == OptionSet.Status.Share.Approved)
                 {
                     var questionSet = await _unitOfWork.QuestionSetRepo.FindByField(q => q.QuestionSetId == share.QuestionSetId, include => include.Questions);
                     SetConfig setConfig = new SetConfig
                     {
-                        NB = questionSet.Questions.Count(q => q.Difficulty == 0),
-                        TH = questionSet.Questions.Count(q => q.Difficulty == 1),
-                        VDT = questionSet.Questions.Count(q => q.Difficulty == 2),
-                        VDC = questionSet.Questions.Count(q => q.Difficulty == 3)
+                        NB = questionSet.Questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.NB),
+                        TH = questionSet.Questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.TH),
+                        VDT = questionSet.Questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.VD),
+                        VDC = questionSet.Questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.VDC)
                     };
                     var user = await _unitOfWork.UserRepo.FindByField(u => u.UserId == share.UserId);
                     user.Point += setConfig.NB * 2 + setConfig.TH * 5 + setConfig.VDT * 10 + setConfig.VDC * 30;
@@ -257,7 +257,7 @@ namespace Services.Services.Share
                     var transaction = new Repositories.Models.Transaction
                     {
                         UserId = currentUserId,
-                        Type = 6, //public bo cau hoi
+                        Type = OptionSet.Transaction.Type.PublicQuestionSet, //public bo cau hoi
                         PointValue = setConfig.NB * 2 + setConfig.TH * 5 + setConfig.VDT * 10 + setConfig.VDC * 30,
                         CreatedOn = DateTime.Now
                     };
