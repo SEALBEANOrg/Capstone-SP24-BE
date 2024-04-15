@@ -258,19 +258,19 @@ namespace Services.Services.Exam
                         foreach (var s in src)
                         {
                             Utils.Shuffle(s.QuestionIds);
-                            if (s.Difficulty == 0)
+                            if (s.Difficulty == OptionSet.Question.Difficulty.NB)
                             {
                                 nb.AddRange(s.QuestionIds.Take(s.Use));
                             }
-                            else if (s.Difficulty == 1)
+                            else if (s.Difficulty == OptionSet.Question.Difficulty.TH)
                             {
                                 th.AddRange(s.QuestionIds.Take(s.Use));
                             }
-                            else if (s.Difficulty == 2)
+                            else if (s.Difficulty == OptionSet.Question.Difficulty.VD)
                             {
                                 vdt.AddRange(s.QuestionIds.Take(s.Use));
                             }
-                            else if (s.Difficulty == 3)
+                            else if (s.Difficulty == OptionSet.Question.Difficulty.VDC)
                             {
                                 vdc.AddRange(s.QuestionIds.Take(s.Use));
                             }

@@ -30,10 +30,10 @@ namespace Services.Services.Share
 
                 var setConfig = new SetConfig
                 {
-                    NB = questions.Count(q => q.Difficulty == 0),
-                    TH = questions.Count(q => q.Difficulty == 1),
-                    VDT = questions.Count(q => q.Difficulty == 2),
-                    VDC = questions.Count(q => q.Difficulty == 3)
+                    NB = questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.NB),
+                    TH = questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.TH),
+                    VDT = questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.VD),
+                    VDC = questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.VDC)
                 };
                 int price = (setConfig.NB * 2 + setConfig.TH * 5 + setConfig.VDT * 10 + setConfig.VDC * 30) / 5;
 
@@ -132,10 +132,10 @@ namespace Services.Services.Share
                     var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == s.QuestionSetId);
                     var config = new SetConfig
                     {
-                        NB = questions.Count(c => c.Difficulty == 0),
-                        TH = questions.Count(c => c.Difficulty == 1),
-                        VDT = questions.Count(c => c.Difficulty == 2),
-                        VDC = questions.Count(c => c.Difficulty == 3),
+                        NB = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.NB),
+                        TH = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.TH),
+                        VDT = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.VD),
+                        VDC = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.VDC),
                     };
 
                     var shareInMarket = _mapper.Map<ShareInMarket>(s);
@@ -192,10 +192,10 @@ namespace Services.Services.Share
                     var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == s.QuestionSetId);
                     var config = new SetConfig
                     {
-                        NB = questions.Count(c => c.Difficulty == 0),
-                        TH = questions.Count(c => c.Difficulty == 1),
-                        VDT = questions.Count(c => c.Difficulty == 2),
-                        VDC = questions.Count(c => c.Difficulty == 3),
+                        NB = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.NB),
+                        TH = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.TH),
+                        VDT = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.VD),
+                        VDC = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.VDC),
                     };
 
                     var shareInMarket = _mapper.Map<MySold>(s);
@@ -257,10 +257,10 @@ namespace Services.Services.Share
                     var questions = await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == s.QuestionSetId);
                     var config = new SetConfig
                     {
-                        NB = questions.Count(c => c.Difficulty == 0),
-                        TH = questions.Count(c => c.Difficulty == 1),
-                        VDT = questions.Count(c => c.Difficulty == 2),
-                        VDC = questions.Count(c => c.Difficulty == 3),
+                        NB = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.NB),
+                        TH = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.TH),
+                        VDT = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.VD),
+                        VDC = questions.Count(c => c.Difficulty == OptionSet.Question.Difficulty.VDC),
                     };
 
                     var shareInMarket = _mapper.Map<ShareInMarket>(s);

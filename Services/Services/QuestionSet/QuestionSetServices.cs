@@ -166,7 +166,7 @@ namespace Services.Services.QuestionSet
 
                 questionSetViewModel.Questions = _mapper.Map<List<QuestionViewModel>>(questions).OrderBy(o => o.QuestionPart).ToList();
 
-                var setConfig = new SetConfig { NB = questions.Count(q => q.Difficulty == 0), TH = questions.Count(q => q.Difficulty == 1), VDT = questions.Count(q => q.Difficulty == 2), VDC = questions.Count(q => q.Difficulty == 3) };
+                var setConfig = new SetConfig { NB = questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.NB), TH = questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.TH), VDT = questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.VD), VDC = questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.VDC) };
 
                 questionSetViewModel.Price = setConfig.NB * 2 + setConfig.TH * 5 + setConfig.VDT * 10 + setConfig.VDC * 30;
 
@@ -200,10 +200,10 @@ namespace Services.Services.QuestionSet
                 {
                     var config = new SetConfig
                     {
-                        NB = qs.Questions.Count(q => q.Difficulty == 0),
-                        TH = qs.Questions.Count(q => q.Difficulty == 1),
-                        VDT = qs.Questions.Count(q => q.Difficulty == 2),
-                        VDC = qs.Questions.Count(q => q.Difficulty == 3)
+                        NB = qs.Questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.NB),
+                        TH = qs.Questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.TH),
+                        VDT = qs.Questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.VD),
+                        VDC = qs.Questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.VDC)
                     };
                     var qsvm = _mapper.Map<QuestionSetViewModels>(qs);
                     qsvm.Type = 0;
@@ -229,10 +229,10 @@ namespace Services.Services.QuestionSet
                 {
                     var config = new SetConfig
                     {
-                        NB = qs.Questions.Count(q => q.Difficulty == 0),
-                        TH = qs.Questions.Count(q => q.Difficulty == 1),
-                        VDT = qs.Questions.Count(q => q.Difficulty == 2),
-                        VDC = qs.Questions.Count(q => q.Difficulty == 3)
+                        NB = qs.Questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.NB),
+                        TH = qs.Questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.TH),
+                        VDT = qs.Questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.VD),
+                        VDC = qs.Questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.VDC)
                     };
                     var qsvm = _mapper.Map<QuestionSetViewModels>(qs);
                     qsvm.Type = 2;

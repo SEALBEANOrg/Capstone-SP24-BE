@@ -74,19 +74,19 @@ namespace Services.Services.SubjectSection
                     var cn = await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => questionSet.CreatedBy == currentUserId, includes => includes.Questions);
                     foreach (var item in cn)
                     {
-                        nb.CHCN += item.Questions.Count(question => question.Difficulty == 0 && question.SectionId == section.SectionId);
-                        th.CHCN += item.Questions.Count(question => question.Difficulty == 1 && question.SectionId == section.SectionId);
-                        vdt.CHCN += item.Questions.Count(question => question.Difficulty == 2 && question.SectionId == section.SectionId);
-                        vdc.CHCN += item.Questions.Count(question => question.Difficulty == 3 && question.SectionId == section.SectionId);
+                        nb.CHCN += item.Questions.Count(question => question.Difficulty == OptionSet.Question.Difficulty.NB && question.SectionId == section.SectionId);
+                        th.CHCN += item.Questions.Count(question => question.Difficulty == OptionSet.Question.Difficulty.TH && question.SectionId == section.SectionId);
+                        vdt.CHCN += item.Questions.Count(question => question.Difficulty == OptionSet.Question.Difficulty.VD && question.SectionId == section.SectionId);
+                        vdc.CHCN += item.Questions.Count(question => question.Difficulty == OptionSet.Question.Difficulty.VDC && question.SectionId == section.SectionId);
                     }
 
                     var nh = await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => questionSet.CreatedBy != currentUserId && questionSet.Status == 2, includes => includes.Questions);
                     foreach (var item in nh)
                     {
-                        nb.NHD += item.Questions.Count(question => question.Difficulty == 0 && question.SectionId == section.SectionId);
-                        th.NHD += item.Questions.Count(question => question.Difficulty == 1 && question.SectionId == section.SectionId);
-                        vdt.NHD += item.Questions.Count(question => question.Difficulty == 2 && question.SectionId == section.SectionId);
-                        vdc.NHD += item.Questions.Count(question => question.Difficulty == 3 && question.SectionId == section.SectionId);
+                        nb.NHD += item.Questions.Count(question => question.Difficulty == OptionSet.Question.Difficulty.NB && question.SectionId == section.SectionId);
+                        th.NHD += item.Questions.Count(question => question.Difficulty == OptionSet.Question.Difficulty.TH && question.SectionId == section.SectionId);
+                        vdt.NHD += item.Questions.Count(question => question.Difficulty == OptionSet.Question.Difficulty.VD && question.SectionId == section.SectionId);
+                        vdc.NHD += item.Questions.Count(question => question.Difficulty == OptionSet.Question.Difficulty.VDC && question.SectionId == section.SectionId);
                     }
 
                     section.NumOfEachDifficulties = new List<NumOfEachDifficulty> { nb, th, vdt, vdc };
@@ -111,10 +111,10 @@ namespace Services.Services.SubjectSection
                 List<SubjectSectionNav> result = new List<SubjectSectionNav>();
                 foreach (var sectionId in subjectSectionIds)
                 {
-                    var nbCount = questions.Count(question => question.SectionId == sectionId && question.Difficulty == 0);
-                    var thCount = questions.Count(question => question.SectionId == sectionId && question.Difficulty == 1);
-                    var vdtCount = questions.Count(question => question.SectionId == sectionId && question.Difficulty == 2);
-                    var vdcCount = questions.Count(question => question.SectionId == sectionId && question.Difficulty == 3);
+                    var nbCount = questions.Count(question => question.SectionId == sectionId && question.Difficulty == OptionSet.Question.Difficulty.NB);
+                    var thCount = questions.Count(question => question.SectionId == sectionId && question.Difficulty == OptionSet.Question.Difficulty.TH);
+                    var vdtCount = questions.Count(question => question.SectionId == sectionId && question.Difficulty == OptionSet.Question.Difficulty.VD);
+                    var vdcCount = questions.Count(question => question.SectionId == sectionId && question.Difficulty == OptionSet.Question.Difficulty.VDC);
 
                     var nb = new NumOfEachDifficulty { Difficulty = 0, CHCN = 0, NHD = 0 };
                     var th = new NumOfEachDifficulty { Difficulty = 1, CHCN = 0, NHD = 0 };
