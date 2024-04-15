@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("requests")]
-        [Authorize(Roles = "2")]
+        [Authorize(Roles = "2")] // Expert
         [SwaggerResponse(200, "List of request to share", typeof(IEnumerable<ShareViewModels>))]
         public async Task<IActionResult> GetRequestToShare(int? status, int? grade, int? subjectEnum, int? type, [Required] string studyYear)
         {
@@ -45,7 +45,7 @@ namespace WebAPI.Controllers
 
 
         [HttpPut("response/{shareId}")]
-        [Authorize(Roles = "2")]
+        [Authorize(Roles = "2")] // Expert
         [SwaggerResponse(200, "Response request to share", typeof(string))]
         public async Task<IActionResult> ResponseRequestShare(Guid shareId, [FromBody] ResponseRequest responseRequest)
         {
@@ -75,7 +75,7 @@ namespace WebAPI.Controllers
 
 
         [HttpPost("requests")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "1")] // Teacher
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> RequestToShare([FromBody] ShareCreateRequest shareCreate)
         {
@@ -110,7 +110,7 @@ namespace WebAPI.Controllers
 
 
         [HttpPost("individual")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "1")] // Teacher
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> ShareIndividual([FromBody] ShareCreateForIndividual shareIndividual)
         {
@@ -145,7 +145,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("{questionSetId}")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "1")] // Teacher
         [SwaggerResponse(200, "Question set sample", typeof(List<string>))]
         public async Task<IActionResult> UserEmailOfSharedQuestionSet(Guid questionSetId, int? type)
         {
@@ -168,7 +168,7 @@ namespace WebAPI.Controllers
 
 
         [HttpPost("buy")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "1")] // Teacher
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> BuyQuestionSet([FromBody] BuyQuestionSet buyQuestionSet)
         {
@@ -203,7 +203,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("market")]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1,2")] // Teacher, Expert
         [SwaggerResponse(200, "List of question set in market", typeof(IEnumerable<ShareInMarket>))]
         public async Task<IActionResult> GetQuestionSetInMarket(int? grade, int? subjectEnum, string studyYear)
         {
@@ -225,7 +225,7 @@ namespace WebAPI.Controllers
 
 
         [HttpPut("report/{shareId}")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "1")] // Teacher
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> ReportShare(Guid shareId, NoteReport noteReport)
         {
@@ -255,7 +255,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("bought-list")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "1")] // Teacher
         [SwaggerResponse(200, "List of bought question set", typeof(IEnumerable<ShareInMarket>))]
         public async Task<IActionResult> GetBoughtList(int? grade, int? subjectEnum, string studyYear)
         {
@@ -277,7 +277,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("sell-list")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "1")] // Teacher
         [SwaggerResponse(200, "List of sell question set", typeof(IEnumerable<ShareInMarket>))]
         public async Task<IActionResult> GetSellList(int? grade, int? subjectEnum, int? status, string studyYear)
         {

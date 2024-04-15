@@ -18,7 +18,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "0")] //chỉ 0
+        [Authorize(Roles = "0")] // Admin //chỉ 0
         [SwaggerResponse(200, "List of sample users", typeof(IEnumerable<UserViewModels>))]
         public async Task<IActionResult> GetAll(string? search, int? role, int? status)
         {
@@ -96,7 +96,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("{id}/role")]
-        [Authorize(Roles = "0")]
+        [Authorize(Roles = "0")] // Admin
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> UpdateRoleUser(Guid id, [FromBody] RoleUpdate roleUpdate)
         {
@@ -129,7 +129,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("change-status/{id}")]
-        [Authorize(Roles = "0")]
+        [Authorize(Roles = "0")] // Admin
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> ChangeStatusOfUser(Guid id, [FromBody] ActiveUser isActive)
         {

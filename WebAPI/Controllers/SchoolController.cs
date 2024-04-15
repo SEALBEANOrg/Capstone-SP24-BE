@@ -23,7 +23,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = "0")] //chỉ 0
+        [Authorize(Roles = "0")] // Admin //chỉ 0
         [SwaggerResponse(200, "List of sample schools", typeof(IEnumerable<SchoolList>))]
         public async Task<IActionResult> GetAllSchool(string? search, int status = 1)
         {
@@ -104,7 +104,7 @@ namespace WebAPI.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "0")]
+        [Authorize(Roles = "0")] // Admin
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> AddNewSchool([FromBody] SchoolForCreateViewModel schoolForCreateViewModel)
         {
@@ -140,7 +140,7 @@ namespace WebAPI.Controllers
 
 
         [HttpPut]
-        [Authorize(Roles = "0")] //chỉ 0
+        [Authorize(Roles = "0")] // Admin //chỉ 0
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> UpdateSchool([FromBody] SchoolForUpdateViewModel schoolForUpdateViewModel)
         {
@@ -177,7 +177,7 @@ namespace WebAPI.Controllers
 
 
         [HttpPut("{schoolId}/change-status")]
-        [Authorize(Roles = "0")]
+        [Authorize(Roles = "0")] // Admin
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> ChangeStatusSchool(Guid schoolId, [FromBody] ChangeStatusViewModel statusSchool)
         {
@@ -214,7 +214,7 @@ namespace WebAPI.Controllers
 
 
         [HttpDelete("{schoolId}")]
-        [Authorize(Roles = "0")] //chỉ 0
+        [Authorize(Roles = "0")] // Admin //chỉ 0
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> DeleteSchool(Guid schoolId)
         {

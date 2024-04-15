@@ -62,7 +62,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "0")]
+        [Authorize(Roles = "0")] // Admin
         //[AllowAnonymous]
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> AddDocument([FromForm] DocumentCreate documentCreate)
@@ -119,7 +119,7 @@ namespace WebAPI.Controllers
         //}
 
         [HttpDelete("{documentId}")]
-        [Authorize(Roles = "0")]
+        [Authorize(Roles = "0")] // Admin
         //[AllowAnonymous]
         [SwaggerResponse(200, "Is success", typeof(string))]
         public async Task<IActionResult> DeleteDocument(Guid documentId)

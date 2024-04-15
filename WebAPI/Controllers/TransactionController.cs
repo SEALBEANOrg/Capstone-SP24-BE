@@ -21,7 +21,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "0")]
+        [Authorize(Roles = "0")] // Admin
         [SwaggerResponse(200, "List of my transactions", typeof(IEnumerable<TransactionViewModels>))]
         public async Task<IActionResult> GetAll()
         {
@@ -41,7 +41,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("mine")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "1")] // Teacher
         [SwaggerResponse(200, "List of my transactions", typeof(IEnumerable<TransactionViewModels>))]
         public async Task<IActionResult> GetMyTransactions()
         {

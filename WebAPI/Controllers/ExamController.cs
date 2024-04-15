@@ -127,7 +127,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("own-exam")]
         [SwaggerResponse(200, "sample result", typeof(IEnumerable<ExamViewModels>))]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1,2")] // Teacher, Expert
         public async Task<IActionResult> GetOwnExam(int? grade,[Required] string studyYear)
         {
             try
@@ -148,7 +148,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("{examId}")]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1,2")] // Teacher, Expert
         [SwaggerResponse(200, "sample exam info", typeof(ExamInfo))]
         public async Task<IActionResult> GetExamInfo(Guid examId)
         {
@@ -169,7 +169,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("matrix")]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1,2")] // Teacher, Expert
         //[AllowAnonymous]
         [SwaggerResponse(200, "Exam ID", typeof(string))]
         public async Task<IActionResult> AddExamByMatrixIntoClass(ExamCreate examCreate)
@@ -200,7 +200,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("{examId}/resource")]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1,2")] // Teacher, Expert
         [SwaggerResponse(200, "List of sample exam sources", typeof(IEnumerable<ExamSourceViewModel>))]
         public async Task<IActionResult> GetAllExamSource(Guid examId)
         {
@@ -221,7 +221,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("export-result")]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1,2")] // Teacher, Expert
         //[AllowAnonymous]
         [SwaggerResponse(200, "Export result", typeof(ExportResult))]
         public async Task<IActionResult> ExportResult(Guid examId)
@@ -243,7 +243,7 @@ namespace WebAPI.Controllers
 
 
         [HttpPut("{examId}/calculate-all")]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1,2")] // Teacher, Expert
         [SwaggerResponse(200, "exam info", typeof(ExamInfo))]
         public async Task<IActionResult> CalculateAllMark(Guid examId)
         {

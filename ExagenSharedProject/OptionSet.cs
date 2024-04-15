@@ -57,7 +57,7 @@ public class OptionSet
         public static int Grade1 = 1;
         public static int Grade2 = 2;
         public static int Grade3 = 3;
-            public static int Grade4 = 4;
+        public static int Grade4 = 4;
         public static int Grade5 = 5;
         public static int Grade6 = 6;
         public static int Grade7 = 7;

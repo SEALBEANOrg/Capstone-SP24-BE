@@ -25,7 +25,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("own-questionset")]
         [SwaggerResponse(200, "List of question set", typeof(IEnumerable<OwnQuestionSet>))]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1,2")] // Teacher, Expert
         public async Task<IActionResult> GetOwnQuestionSet(int? grade, int? subject, [Required]string studyYear)
         {
             try
@@ -46,7 +46,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("shared")]
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "1")] // Teacher
         [SwaggerResponse(200, "List of shared question set", typeof(IEnumerable<SharedQuestionSet>))]
         public async Task<IActionResult> GetSharedQuestionSet(int? grade, int? subjectEnum, string studyYear)
         {
@@ -69,7 +69,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("bank")]
         [SwaggerResponse(200, "List of question set", typeof(IEnumerable<QuestionSetViewModels>))]
-        [Authorize(Roles = "2")]
+        [Authorize(Roles = "2")] // Expert
         public async Task<IActionResult> GetQuestionSetByBank(int? grade, int? subject, [Required]string studyYear, int type)
         {
             try
@@ -90,7 +90,7 @@ namespace WebAPI.Controllers
 
         [HttpDelete("{questionSetId}")]
         [SwaggerResponse(200, "Is success", typeof(string))]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1,2")] // Teacher, Expert
         public async Task<IActionResult> DeleteQuestionSet(Guid questionSetId)
         {
             try
@@ -120,7 +120,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("{questionSetId}")]
         [SwaggerResponse(200, "Question set sample", typeof(QuestionSetViewModel))]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1,2")] // Teacher, Expert
         public async Task<IActionResult> GetQuestionByQuestionSetId(Guid questionSetId)
         {
             try
@@ -141,7 +141,7 @@ namespace WebAPI.Controllers
 
         [HttpPost("import-questionset")]
         [SwaggerResponse(200, "Detail question set from import", typeof(QuestionReturn))]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1,2")] // Teacher, Expert
         public async Task<IActionResult> GetQuestionSetFromFile([FromForm] ImportQuestionSet importQuestionSet)
         {
             try
@@ -163,7 +163,7 @@ namespace WebAPI.Controllers
 
         [HttpPost("save")]
         [SwaggerResponse(200, "Is success", typeof(string))]
-        [Authorize(Roles = "1,2")] 
+        [Authorize(Roles = "1,2")] // Teacher, Expert 
         public async Task<IActionResult> SaveQuestionSet([FromBody] QuestionSetSave questionSetSave)
         {
             try
@@ -193,7 +193,7 @@ namespace WebAPI.Controllers
 
         [HttpPut("{questionSetId}/change-status")]
         [SwaggerResponse(200, "Is success", typeof(string))]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1,2")] // Teacher, Expert
         public async Task<IActionResult> ChangeStatusQuestionSet(Guid questionSetId, [FromBody] StatusQuestionSet statusQuestionSet)
         {
             try
@@ -223,7 +223,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("matrix-of-questionset/{questionSetId}")]
         [SwaggerResponse(200, "List of matrix", typeof(IEnumerable<SectionUse>))]
-        [Authorize(Roles = "1,2")]
+        [Authorize(Roles = "1,2")] // Teacher, Expert
         public async Task<IActionResult> GetMatrixOfQuestionSet(Guid questionSetId)
         {
             try

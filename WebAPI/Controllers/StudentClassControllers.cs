@@ -36,7 +36,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "2")]
+        [Authorize(Roles = "2")] // Expert
         [SwaggerResponse(200, "List of sample student classes", typeof(IEnumerable<StudentClassViewModels>))]
         public async Task<IActionResult> GetAll(Guid? teacherId, [Required] string studyYear)
         {
