@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ExagenSharedProject;
 using Repositories;
 using Services.Interfaces.SubjectSection;
 using Services.ViewModels;
