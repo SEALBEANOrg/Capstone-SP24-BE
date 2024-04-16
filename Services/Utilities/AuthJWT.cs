@@ -11,7 +11,7 @@ namespace MiniStore.Service.Utilities
 {
     public static class AuthJWT
     {
-        public static readonly int ACCESS_TOKEN_EXPIRED = 24;
+        public static readonly int ACCESS_TOKEN_EXPIRED = 24 * 30;
         public static readonly int REFRESH_TOKEN_EXPIRED = 2 * 24;
 
         public static string GenerateToken(this UserInfo user, int expiredDate)
