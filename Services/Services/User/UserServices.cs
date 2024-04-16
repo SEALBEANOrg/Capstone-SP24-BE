@@ -59,26 +59,6 @@ namespace Services.Services.User
 
         }
 
-        public async Task<string> RegisterAsync(string email)
-        {
-            var userArgs = new UserRecordArgs()
-            {
-                Email = email,
-
-            };
-
-            var userRecord = await FirebaseAuth.DefaultInstance.CreateUserAsync(userArgs);
-
-            //add role into firebase
-            var claims = new Dictionary<string, object>()
-            {
-                {"role", "1"}
-            };
-            await FirebaseAuth.DefaultInstance.SetCustomUserClaimsAsync(userRecord.Uid, claims);
-
-            return userRecord.Uid;
-        }
-
         public async Task<Guid> GetCurrentUser()
         {
             return _claimsService.GetCurrentUser;
@@ -179,9 +159,9 @@ namespace Services.Services.User
             }
         }
 
-        public async Task<UserInfo> FindUserById(Guid guid)
+        public async Task<UserInfo> FindUserById(Guid id)
         {
-            var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == guid);
+            var user = await _unitOfWork.UserRepo.FindByField(user => user.UserId == id);
 
             if (user == null)
             {
@@ -288,24 +268,6 @@ namespace Services.Services.User
             {
                 throw new Exception("Lỗi ở UserServices - ChangeStatusOfUser: " + e.Message);
             }
-        }
-
-        public async Task<bool> CheckExistInFirebase(string email)
-        {
-            try
-            {
-                var userRecord = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(email);
-
-                if (userRecord == null)
-                {
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-            return true;
         }
     }
 }

@@ -80,14 +80,6 @@ namespace WebAPI.Controllers
                         Message = "Access denied, you are deactivated"
                     });
                 }
-
-                //bool isExistInFirebase = await _userServices.CheckExistInFirebase(userLogin.email);
-
-                //if (!isExistInFirebase)
-                //{
-                //    var uid = await _userServices.RegisterAsync(userLogin.email);
-                //}
-
                 var accessToken = loginResponse.UserInfo.GenerateToken(AuthJWT.ACCESS_TOKEN_EXPIRED);
                 var refreshToken = loginResponse.UserInfo.GenerateToken(AuthJWT.REFRESH_TOKEN_EXPIRED);
 
@@ -123,8 +115,8 @@ namespace WebAPI.Controllers
             var userLogin = JsonSerializer.Deserialize<RefreshLogin>(payload);
 
 
-            Guid email = Guid.Parse(userLogin.nameid);
-            UserInfo userInfo = await _userServices.FindUserById(email);
+            Guid userId = Guid.Parse(userLogin.nameid);
+            UserInfo userInfo = await _userServices.FindUserById(userId);
             
             if (userInfo == null)
             {
