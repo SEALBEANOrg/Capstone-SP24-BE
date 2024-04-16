@@ -178,7 +178,7 @@ namespace Services.Services.QuestionSet
 
                 var setConfig = new SetConfig { NB = questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.NB), TH = questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.TH), VDT = questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.VD), VDC = questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.VDC) };
 
-                questionSetViewModel.Price = setConfig.NB * 2 + setConfig.TH * 5 + setConfig.VDT * 10 + setConfig.VDC * 30;
+                questionSetViewModel.Price = (setConfig.NB * 2 + setConfig.TH * 5 + setConfig.VDT * 10 + setConfig.VDC * 30)/5;
 
                 return questionSetViewModel;
             }
