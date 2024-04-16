@@ -84,22 +84,6 @@ namespace WebAPI.Controllers
 
         //mobile
         [AllowAnonymous]
-        [HttpGet("check-permission/{testCode}/{email}")]
-        [SwaggerResponse(200, "Permission", typeof(bool))]
-        public async Task<IActionResult> CheckPermissionAccessTest(string testCode, string email)
-        {
-            if (string.IsNullOrEmpty(testCode) || string.IsNullOrEmpty(email))
-            {
-                return BadRequest();
-            }
-
-            var result = await _examMobileServices.CheckPermissionAccessTest(testCode, email);
-
-            return Ok(result);
-        }
-
-        //mobile
-        [AllowAnonymous]
         [HttpGet("access-exam/{testCode}/{email}")]
         [SwaggerResponse(200, "sample info of class in exam", typeof(InfoClassInExam))]
         public async Task<IActionResult> GetInfoOfClassInExam(string testCode, string email)
