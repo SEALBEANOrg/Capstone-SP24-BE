@@ -11,44 +11,12 @@ namespace Services.Services.Exam
     public class ExamMobileServices : IExamMobileServices
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
         private readonly HttpClient _httpClient;
 
-        public ExamMobileServices(IUnitOfWork unitOfWork, IMapper mapper, HttpClient httpClient)
+        public ExamMobileServices(IUnitOfWork unitOfWork, HttpClient httpClient)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _httpClient = httpClient;
-        }
-
-        public async Task<bool> CheckPermissionAccessTest(string testCode, string email)
-        {
-            try
-            {
-
-                var user = await _unitOfWork.UserRepo.FindByField(user => user.Email == email);
-
-                if (user == null)
-                {
-                    return false;
-                }
-
-                int testCodeInt = int.Parse(testCode);
-
-                var testResult = await _unitOfWork.ExamRepo.FindByField(testResult => testResult.TestCode == testCodeInt && testResult.CreatedBy == user.UserId);
-
-                if (testResult == null)
-                {
-                    return false;
-                }
-
-                return true;
-
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Lỗi ở ExamMobileServices - CheckPermissionAccerssTest: " + e.Message);
-            }
         }
 
         public async Task<InfoClassInExam> GetInfoOfClassInExam(string testCode, string email)

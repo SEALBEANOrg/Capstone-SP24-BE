@@ -40,8 +40,8 @@ namespace Services.ViewModels
     public class InfoClassInExam 
     {
         public int TestCode { get; set; }
-        public List<ComboStudent> StudentInExam { get; set; }
         public string DescriptionOfTest { get; set; }
+        public List<ComboStudent> StudentInExam { get; set; }
 
     }
 
