@@ -72,7 +72,7 @@ namespace Services.Services.Transaction
                     return null;
                 }
 
-                return _mapper.Map<IEnumerable<TransactionViewModels>>(transactions);
+                return _mapper.Map<IEnumerable<TransactionViewModels>>(transactions.OrderByDescending(o => o.CreatedOn));
             }
             catch (Exception e)
             {
