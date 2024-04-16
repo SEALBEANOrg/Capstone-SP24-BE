@@ -97,27 +97,6 @@ namespace WebAPI.Controllers
             }
         }
 
-        //[HttpPost("test/create-test-paper")]
-        //[AllowAnonymous]
-        //[SwaggerResponse(200, "Is success", typeof(File))]
-        //public async Task<IActionResult> CreateTestPaper([FromBody] DetailOfPaper detailOfPaper)
-        //{
-        //    try
-        //    {
-        //        var currentUserId = await _userServices.GetCurrentUser();
-        //        var result = await _documentServices.CreateTestPaper(currentUserId, detailOfPaper);
-        //        return File(result, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "ModifiedFile.docx");
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(new
-        //        {
-        //            Message = ex.Message
-        //        });
-        //    }
-        //}
-
         [HttpDelete("{documentId}")]
         [Authorize(Roles = "0")] // Admin
         //[AllowAnonymous]
