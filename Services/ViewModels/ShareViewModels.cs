@@ -82,7 +82,7 @@ namespace Services.ViewModels
     public class ShareCreateForIndividual
     {
         public Guid QuestionSetId { get; set; }
-        public List<string> Email { get; set; }
+        public string Email { get; set; }
 
     }
 

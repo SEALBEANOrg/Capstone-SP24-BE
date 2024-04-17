@@ -21,13 +21,13 @@ namespace Services.Services.Share
         {
             try
             {
-                var userID = await _unitOfWork.UserRepo.FindListByField(u => shareIndividual.Email.Contains(u.Email));
+                var userID = (await _unitOfWork.UserRepo.FindListByField(u => shareIndividual.Email.Contains(u.Email))).FirstOrDefault();
                 if (userID == null)
                 {
                     throw new Exception("Người dùng không tồn tại");
                 }
 
-                var shared = await _unitOfWork.ShareRepo.FindByField(share => share.QuestionSetId == shareIndividual.QuestionSetId && share.Type == 1 && share.UserId == currentUser);
+                var shared = await _unitOfWork.ShareRepo.FindByField(share => share.QuestionSetId == shareIndividual.QuestionSetId && share.Type == 1 && share.UserId == userID.UserId);
                 if (shared != null && shared.Status == 1)
                 {
                     throw new Exception("Bộ câu hỏi đã được chia sẻ cho người dùng này");
@@ -53,22 +53,19 @@ namespace Services.Services.Share
                 else
                 {
                     var shareResult = new List<Repositories.Models.Share>();
-                    foreach (var user in userID)
+                    var share = new Repositories.Models.Share
                     {
-                        var share = new Repositories.Models.Share
-                        {
-                            QuestionSetId = shareIndividual.QuestionSetId,
-                            UserId = user.UserId,
-                            Type = 1,
-                            Status = 1,
-                            CreatedBy = currentUser,
-                            CreatedOn = DateTime.Now,
-                            ModifiedBy = currentUser,
-                            ModifiedOn = DateTime.Now
-                        };
+                        QuestionSetId = shareIndividual.QuestionSetId,
+                        UserId = userID.UserId,
+                        Type = 1,
+                        Status = 1,
+                        CreatedBy = currentUser,
+                        CreatedOn = DateTime.Now,
+                        ModifiedBy = currentUser,
+                        ModifiedOn = DateTime.Now
+                    };
 
-                        shareResult.Add(share);
-                    }
+                    shareResult.Add(share);
 
                     _unitOfWork.ShareRepo.AddRangeAsync(shareResult);
 
