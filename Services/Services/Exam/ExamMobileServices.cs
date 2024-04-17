@@ -77,7 +77,7 @@ namespace Services.Services.Exam
             }
         }
 
-        public async Task<Response> SendImage(ResultForScanViewModel Image)
+        public async Task<ResultForScan> SendImage(ResultForScanViewModel Image)
         {
             try
             {
@@ -94,7 +94,20 @@ namespace Services.Services.Exam
                 var resp = JsonConvert.DeserializeObject<Response>(apiContent);
                 resp.result = EliminateMultipleChoice(resp.result);
 
-                return resp;
+                if (resp == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return new ResultForScan
+                    {
+                        image = resp.image,
+                        result = resp.result,
+                        paperCode = resp.paper_code,
+                        studentNo = resp.student_no
+                    };
+                }
             }
             catch (Exception e)
             {
