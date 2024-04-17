@@ -17,7 +17,7 @@ namespace Services.Services.Share
             _mapper = mapper;
         }
 
-        public async Task<bool> ShareIndividual(ShareCreateForIndividual shareIndividual, Guid currentUser)
+        public async Task<string> ShareIndividual(ShareCreateForIndividual shareIndividual, Guid currentUser)
         {
             try
             {
@@ -41,7 +41,14 @@ namespace Services.Services.Share
                     _unitOfWork.ShareRepo.Update(shared);
                     var result = await _unitOfWork.SaveChangesAsync();
 
-                    return result > 0;
+                    if (result > 0)
+                    {
+                        return userID.First().FullName;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
                 else
                 {
@@ -67,7 +74,15 @@ namespace Services.Services.Share
 
                     var result = await _unitOfWork.SaveChangesAsync();
 
-                    return result > 0;
+
+                    if (result > 0)
+                    {
+                        return userID.First().FullName;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
             }
             catch (Exception ex)

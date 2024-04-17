@@ -124,15 +124,15 @@ namespace WebAPI.Controllers
                 var currentUser = await _userServices.GetCurrentUser();
                 var result = await _shareServices.ShareIndividual(shareIndividual, currentUser);
 
-                if (!result)
+                if (result == null)
                 {
-                    return NotFound(new
+                    return BadRequest(new
                     {
                         Message = "Chia sẻ thất bại"
                     });
                 }
 
-                return Ok("Chia sẻ thành công");
+                return Ok(result);
             }
             catch (Exception ex)
             {
