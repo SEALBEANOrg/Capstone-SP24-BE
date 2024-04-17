@@ -81,7 +81,8 @@ namespace Services.Services.SubjectSection
                         vdc.CHCN += item.Questions.Count(question => question.Difficulty == OptionSet.Question.Difficulty.VDC && question.SectionId == section.SectionId);
                     }
 
-                    var nh = await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => questionSet.CreatedBy != currentUserId && questionSet.Status == 2, includes => includes.Questions);
+                    var nh = await _unitOfWork.QuestionSetRepo.FindListByField(questionSet => questionSet.CreatedBy != currentUserId && questionSet.Status == 2 ||
+                                                                    sharedQuestionSetId.Contains(questionSet.QuestionSetId), includes => includes.Questions);
                     foreach (var item in nh)
                     {
                         nb.NHD += item.Questions.Count(question => question.Difficulty == OptionSet.Question.Difficulty.NB && question.SectionId == section.SectionId);
