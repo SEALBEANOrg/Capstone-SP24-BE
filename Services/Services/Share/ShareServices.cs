@@ -43,7 +43,7 @@ namespace Services.Services.Share
 
                     if (result > 0)
                     {
-                        return userID.First().FullName;
+                        return userID.FullName;
                     }
                     else
                     {
@@ -74,7 +74,7 @@ namespace Services.Services.Share
 
                     if (result > 0)
                     {
-                        return userID.First().FullName;
+                        return userID.FullName;
                     }
                     else
                     {
