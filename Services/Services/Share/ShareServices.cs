@@ -269,7 +269,7 @@ namespace Services.Services.Share
                         VDT = questionSet.Questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.VD),
                         VDC = questionSet.Questions.Count(q => q.Difficulty == OptionSet.Question.Difficulty.VDC)
                     };
-                    var user = await _unitOfWork.UserRepo.FindByField(u => u.UserId == share.UserId);
+                    var user = await _unitOfWork.UserRepo.FindByField(u => u.UserId == share.CreatedBy);
                     user.Point += setConfig.NB * 2 + setConfig.TH * 5 + setConfig.VDT * 10 + setConfig.VDC * 30;
                     _unitOfWork.UserRepo.Update(user);
 
