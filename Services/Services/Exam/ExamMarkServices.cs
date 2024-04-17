@@ -16,17 +16,11 @@ namespace Services.Services.Exam
     public class ExamMarkServices : IExamMarkServices
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        private readonly IPaperServices _paperServices;
         private readonly IExamServices _examServices;
-        private readonly IS3Services _s3Services;
 
         public ExamMarkServices(IUnitOfWork unitOfWork, IExamServices examServices, IMapper mapper, IS3Services s3Services, IPaperServices paperServices)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
-            _paperServices = paperServices;
-            _s3Services = s3Services;
             _examServices = examServices;
         }
 
