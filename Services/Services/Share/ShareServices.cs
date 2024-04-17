@@ -26,6 +26,9 @@ namespace Services.Services.Share
                 {
                     throw new Exception("Người dùng không tồn tại");
                 }
+                if (userID.UserId == currentUser) {
+                    throw new Exception("Không thể chia sẻ cho chính bản thân");
+                }
 
                 var shared = await _unitOfWork.ShareRepo.FindByField(share => share.QuestionSetId == shareIndividual.QuestionSetId && share.Type == 1 && share.UserId == userID.UserId);
                 if (shared != null && shared.Status == 1)
