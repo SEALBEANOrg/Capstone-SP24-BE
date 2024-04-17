@@ -39,11 +39,11 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest();
                 }
-                var resp = await _examMobileServices.SendImage(Image);
+                var result = await _examMobileServices.SendImage(Image);
 
-                if (resp != null)
+                if (result != null)
                 {
-                    return Ok(new ResultForScan { image = resp.image, result = resp.result, paperCode = resp.paper_code, studentNo = resp.student_no});
+                    return Ok(result);
                 }
                 else
                 {
