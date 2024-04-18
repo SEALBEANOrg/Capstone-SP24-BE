@@ -14,9 +14,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace DucumentProcessing
 {
-    public class ImportQuestionSet
+    public class ImportQuestionSetUtils
     {
-        public static string ReadDocx(IFormFile file)
+        private static string ReadDocx(IFormFile file)
         {
             using (MemoryStream ms = new MemoryStream())
             {
@@ -68,7 +68,7 @@ namespace DucumentProcessing
             }
         }
 
-        public static string ConvertMathMLToLatex(string mathML)
+        private static string ConvertMathMLToLatex(string mathML)
         {
             // Load the MathML
             using (var reader = XmlReader.Create(new StringReader(mathML)))
@@ -86,11 +86,11 @@ namespace DucumentProcessing
             }
         }
 
-        public static Question SplitQuestionAndAnswer(string strDocxContent)
+        private static QuestionInfo SplitQuestionAndAnswer(string strDocxContent)
         {
             try
             {
-                Question question = new Question();
+                QuestionInfo question = new QuestionInfo();
                 //QuestionPart = text before the first "A. " or "A/ "
                 int questionType = 0; // 0: A. 1: A/
                 int endOfQuestion = strDocxContent.IndexOf("A. ");
@@ -196,11 +196,11 @@ namespace DucumentProcessing
             }
         }
 
-        public static List<Question> ImportQuestions(IFormFile file)
+        public static List<QuestionInfo> ImportQuestions(IFormFile file)
         {
             try
             {
-                List<Question> questions = new List<Question>();
+                List<QuestionInfo> questions = new List<QuestionInfo>();
                 string strDocxContent = ReadDocx(file);
 
                 //Delete before "Câu"
@@ -241,7 +241,7 @@ namespace DucumentProcessing
         }
     }
 
-    public class Question
+    public class QuestionInfo
     {
         public string QuestionPart { get; set; }
         public string Answer1 { get; set; }
@@ -255,67 +255,9 @@ namespace DucumentProcessing
         {
             //Print the question and its answers
             return "Question: " + QuestionPart + '\n' + "A: " + Answer1 + '\n' + "B: " + Answer2 + '\n' + "C: " + Answer3 + '\n' + "D: " + Answer4 + '\n' + "Đáp án đúng: : " + CorrectAnswer + '\n' + "Độ khó: " +
-                //Display the value of Difficulty in SharedProject
-                EnumStatus.Difficulty.FirstOrDefault(x => x.Key == Difficulty).Value;
+            //Display the value of Difficulty in SharedProject
+            EnumStatus.Difficulty.FirstOrDefault(x => x.Key == Difficulty).Value;
 
         }
     }
 }
-
-
-
-
-//public static string ReadDocx(string filePath)
-//{
-//    // Load the document
-//    Document document = new Document();
-//    document.LoadFromFile(filePath);
-
-//    StringBuilder sb = new StringBuilder();
-
-//    // Iterate through sections
-//    foreach (Section section in document.Sections)
-//    {
-//        // Iterate through paragraphs
-//        foreach (Paragraph paragraph in section.Paragraphs)
-//        {
-//            // Iterate through document objects in paragraph
-//            foreach (DocumentObject docObject in paragraph.ChildObjects)
-//            {
-//                switch (docObject.DocumentObjectType)
-//                {
-//                    case DocumentObjectType.TextRange:
-//                        TextRange? textRange = docObject as TextRange;
-//                        if (textRange != null)
-//                        {
-//                            sb.Append(textRange.Text);
-//                        }
-//                        break;
-//                    case DocumentObjectType.Picture:
-//                        DocPicture? pic = docObject as DocPicture;
-//                        if (pic != null && pic.Image != null)
-//                        {
-//                            ImageConverter converter = new ImageConverter();
-//                            byte[] imageBytes = (byte[])converter.ConvertTo(pic.Image, typeof(byte[]));
-
-//                            // Convert byte array to Base64 String
-//                            string base64String = "<img>" + Convert.ToBase64String(imageBytes) + "</img>";
-//                            sb.Append(base64String);
-//                        }
-//                        break;
-//                    case DocumentObjectType.OfficeMath:
-//                        OfficeMath? math = docObject as OfficeMath;
-//                        if (math != null)
-//                        {
-//                            string mathML = math.ToMathMLCode();
-//                            mathML = "<latex>" + ConvertMathMLToLatex(mathML).Replace("$ ", "").Replace("$", "") + "</latex>";
-//                            //mathML = "<latex>" + mathML + "</latex>";
-//                            sb.Append(mathML);
-//                        }
-//                        break;
-//                }
-//            }
-//        }
-//    }
-//    return sb.ToString();
-//}

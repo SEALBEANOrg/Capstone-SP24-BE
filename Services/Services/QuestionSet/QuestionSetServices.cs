@@ -258,7 +258,7 @@ namespace Services.Services.QuestionSet
             {
                 var questionSet = _mapper.Map<QuestionReturn>(importQuestionSet);
                 questionSet.SubjectId = (await _unitOfWork.SubjectRepo.FindByField(subject => EnumStatus.Subject[(int)importQuestionSet.Subject].ToLower().Contains(subject.Name.ToLower()) && subject.Grade == importQuestionSet.Grade)).SubjectId;
-                questionSet.Questions = DucumentProcessing.ImportQuestionSet.ImportQuestions(importQuestionSet.File).OrderBy(o => o.QuestionPart).ToList();
+                questionSet.Questions = DucumentProcessing.ImportQuestionSetUtils.ImportQuestions(importQuestionSet.File).OrderBy(o => o.QuestionPart).ToList();
 
                 return questionSet;
             }
