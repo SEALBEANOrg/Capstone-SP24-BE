@@ -184,7 +184,7 @@ namespace WebAPI.Controllers
 
                 if (!result)
                 {
-                    return NotFound(new
+                    return BadRequest(new
                     {
                         Message = "Mua thất bại"
                     });
