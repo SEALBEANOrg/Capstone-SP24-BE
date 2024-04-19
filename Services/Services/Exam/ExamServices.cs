@@ -105,8 +105,8 @@ namespace Services.Services.Exam
                 result = await _unitOfWork.SaveChangesAsync();
                 if (result < sectionConfigs.Count)
                 {
-                    _unitOfWork.PaperSetRepo.Remove(paperSet);
                     _unitOfWork.ExamRepo.Remove(exam);
+                    _unitOfWork.PaperSetRepo.Remove(paperSet);
                     await _unitOfWork.SaveChangesAsync();
                     return null;
                 }
@@ -159,7 +159,6 @@ namespace Services.Services.Exam
                 else
                 {
                     var questionIdsUse = new List<Guid>();
-                    var questionSetUse = await _unitOfWork.QuestionSetRepo.FindByField(item => item.QuestionSetId == examCreate.QuestionSetIdUse);
                     var questionsFromSet = (await _unitOfWork.QuestionRepo.FindListByField(question => question.QuestionSetId == examCreate.QuestionSetIdUse, includes => includes.QuestionSet));
                     foreach (var sectionUse in examCreate.Sections)
                     {

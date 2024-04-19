@@ -146,7 +146,7 @@ namespace Services.Services.Transaction
                         UserId = currentUserId,
                         PointValue = (int)pointValue,
                         TransactionCode = callbackViaMomo.TransId.ToString(),
-                        CreatedOn = DateTime.Now,
+                        CreatedOn = DateTime.Now.AddHours(7),
                         Type = 0,
 
                     };
