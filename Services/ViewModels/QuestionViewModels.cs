@@ -142,7 +142,7 @@ namespace Services.ViewModels
         public string? Description { get; set; }
         public int? Grade { get; set; }
         public Guid SubjectId { get; set; }
-        public List<Question> Questions { get; set; }
+        public List<QuestionInfo> Questions { get; set; }
     }
 
     public class QuestionSetSave
