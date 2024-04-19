@@ -95,6 +95,15 @@ namespace Services.Services.Share
         {
             try
             {
+                var existedShare = await _unitOfWork.ShareRepo.FindByField(share => share.QuestionSetId == shareCreate.QuestionSetId && 
+                                                                                    (share.Type == OptionSet.Share.Type.ForSell || share.Type == OptionSet.Share.Type.Public) &&
+                                                                                    (share.Status == OptionSet.Status.Share.Pending || share.Status == OptionSet.Status.Share.Approved));
+
+                if (existedShare != null)
+                {
+                    throw new Exception("Bộ câu hỏi đã được chia sẻ hoặc đang chờ duyệt để bán / công cộng");
+                }
+
                 var share = new Repositories.Models.Share
                 {
                     QuestionSetId = shareCreate.QuestionSetId,
