@@ -21,7 +21,7 @@ namespace Services.Services.Share
         {
             try
             {
-                var userID = (await _unitOfWork.UserRepo.FindListByField(u => shareIndividual.Email.Contains(u.Email))).FirstOrDefault();
+                var userID = await _unitOfWork.UserRepo.FindByField(u => shareIndividual.Email.Contains(u.Email));
                 if (userID == null)
                 {
                     throw new Exception("Người dùng không tồn tại");
@@ -55,7 +55,6 @@ namespace Services.Services.Share
                 }
                 else
                 {
-                    var shareResult = new List<Repositories.Models.Share>();
                     var share = new Repositories.Models.Share
                     {
                         QuestionSetId = shareIndividual.QuestionSetId,
@@ -68,9 +67,7 @@ namespace Services.Services.Share
                         ModifiedOn = DateTime.Now
                     };
 
-                    shareResult.Add(share);
-
-                    _unitOfWork.ShareRepo.AddRangeAsync(shareResult);
+                    _unitOfWork.ShareRepo.AddAsync(share);
 
                     var result = await _unitOfWork.SaveChangesAsync();
 
