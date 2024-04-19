@@ -19,6 +19,36 @@ namespace Services.Services.Exam
             _httpClient = httpClient;
         }
 
+        public async Task<bool> CheckPermissionAccessTest(string testCode, string email)
+        {
+            try
+            {
+
+                var user = await _unitOfWork.UserRepo.FindByField(user => user.Email == email);
+
+                if (user == null)
+                {
+                    return false;
+                }
+
+                int testCodeInt = int.Parse(testCode);
+
+                var testResult = await _unitOfWork.ExamRepo.FindByField(testResult => testResult.TestCode == testCodeInt && testResult.CreatedBy == user.UserId);
+
+                if (testResult == null)
+                {
+                    return false;
+                }
+
+                return true;
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Lỗi ở ExamMobileServices - CheckPermissionAccerssTest: " + e.Message);
+            }
+        }
+
         public async Task<InfoClassInExam> GetInfoOfClassInExam(string testCode, string email)
         {
             try
