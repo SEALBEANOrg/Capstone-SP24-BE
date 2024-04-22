@@ -20,14 +20,12 @@ namespace Services.Services.Transaction
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IMomoServices _momoServices;
-        private readonly IOptions<MomoModel> _options;
 
-        public TransactionServices(IUnitOfWork unitOfWork, IMomoServices momoServices, IMapper mapper, IOptions<MomoModel> options)
+        public TransactionServices(IUnitOfWork unitOfWork, IMomoServices momoServices, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _momoServices = momoServices;
-            _options = options;
         }
 
         public async Task<string> CreatePaymentAsync(TransactionPoint model, Guid currentUserId)
