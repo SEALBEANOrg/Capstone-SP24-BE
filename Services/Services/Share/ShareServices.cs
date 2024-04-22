@@ -281,7 +281,7 @@ namespace Services.Services.Share
 
                     var transaction = new Repositories.Models.Transaction
                     {
-                        UserId = currentUserId,
+                        UserId = share.CreatedBy,
                         Type = OptionSet.Transaction.Type.PublicQuestionSet, //public bo cau hoi
                         PointValue = setConfig.NB * 2 + setConfig.TH * 5 + setConfig.VDT * 10 + setConfig.VDC * 30,
                         CreatedOn = DateTime.Now
