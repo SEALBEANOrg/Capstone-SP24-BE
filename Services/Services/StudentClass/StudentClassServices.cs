@@ -37,8 +37,8 @@ namespace Services.Services.StudentClass
             studentClass.Status = 1;
             studentClass.CreatedBy = currentUserId;
             studentClass.ModifiedBy = currentUserId;
-            studentClass.CreatedOn = DateTime.Now;
-            studentClass.ModifiedOn = DateTime.Now;
+            studentClass.CreatedOn = DateTime.Now.AddHours(7);
+            studentClass.ModifiedOn = DateTime.Now.AddHours(7);
 
             try
             {
@@ -79,7 +79,7 @@ namespace Services.Services.StudentClass
                 throw new Exception("Bạn không có quyền thêm học sinh vào lớp học này");
             }
 
-            studentClass.ModifiedOn = DateTime.Now;
+            studentClass.ModifiedOn = DateTime.Now.AddHours(7);
             studentClass.ModifiedBy = currentUser;
 
             try
@@ -265,7 +265,7 @@ namespace Services.Services.StudentClass
             }
 
             studentClass.Status = status;
-            studentClass.ModifiedOn = DateTime.Now;
+            studentClass.ModifiedOn = DateTime.Now.AddHours(7);
             studentClass.ModifiedBy = await GetCurrentUser();
 
             try
@@ -305,7 +305,7 @@ namespace Services.Services.StudentClass
             }
 
             studentClass.ModifiedBy = currentUser;
-            studentClass.ModifiedOn = DateTime.Now;
+            studentClass.ModifiedOn = DateTime.Now.AddHours(7);
 
             studentClass = _mapper.Map(studentClassUpdate, studentClass);
             studentClass.ClassId = classId;
@@ -384,7 +384,7 @@ namespace Services.Services.StudentClass
                     throw new Exception("Bạn không có quyền xóa học sinh khỏi lớp học này");
                 }
 
-                studentClass.ModifiedOn = DateTime.Now;
+                studentClass.ModifiedOn = DateTime.Now.AddHours(7);
                 studentClass.ModifiedBy = currentUser;
 
                 var studentMark = await _unitOfWork.ExamMarkRepo.FindListByField(examMark => examMark.StudentId == studentId);

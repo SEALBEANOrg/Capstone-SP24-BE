@@ -55,9 +55,9 @@ namespace Services.Services.Exam
                 //add exam
                 var exam = _mapper.Map<Repositories.Models.Exam>(examCreate);
                 exam.Status = 0;  // mới tạo exam nên chưa chốt kq
-                exam.CreatedOn = DateTime.Now;
+                exam.CreatedOn = DateTime.Now.AddHours(7);
                 exam.CreatedBy = currentUserId;
-                exam.ModifiedOn = DateTime.Now;
+                exam.ModifiedOn = DateTime.Now.AddHours(7);
                 exam.ModifiedBy = currentUserId;
                 exam.PaperSetId = paperSet.PaperSetId;
                 exam.SubjectId = paperSet.SubjectId;
@@ -70,8 +70,8 @@ namespace Services.Services.Exam
                     var examMark = new Repositories.Models.ExamMark
                     {
                         StudentId = student.StudentId,
-                        CreatedOn = DateTime.Now,
-                        ModifiedOn = DateTime.Now,
+                        CreatedOn = DateTime.Now.AddHours(7),
+                        ModifiedOn = DateTime.Now.AddHours(7),
                     };
                     examMarks.Add(examMark);
                 }
@@ -185,7 +185,7 @@ namespace Services.Services.Exam
                     }
                 }
 
-                string nameOfExam = Utils.FormatFileName(examCreate.Name + $"-{DateTime.Now.Ticks}");
+                string nameOfExam = Utils.FormatFileName(examCreate.Name + $"-{DateTime.Now.AddHours(7).Ticks}");
                 // Tạo file Excel để lưu điểm 
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 var package = new ExcelPackage();
@@ -407,7 +407,7 @@ namespace Services.Services.Exam
                     Type = 1, // tạo đề
                     UserId = currentUserId,
                     PointValue = -(examCreate.NumOfDiffPaper * examCreate.NumOfPaperCode * 10),
-                    CreatedOn = DateTime.Now
+                    CreatedOn = DateTime.Now.AddHours(7)
                 };
 
                 _unitOfWork.PaperSetRepo.Update(paperSet);

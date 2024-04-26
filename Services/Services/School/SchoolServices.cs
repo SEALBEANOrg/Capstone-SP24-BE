@@ -44,9 +44,9 @@ namespace Services.Services.School
                     Province = schoolForCreateViewModel.Province,
                     Status = 1,
                     CreatedBy = currentUserId,
-                    CreatedOn = DateTime.Now,
+                    CreatedOn = DateTime.Now.AddHours(7),
                     ModifiedBy = currentUserId,
-                    ModifiedOn = DateTime.Now
+                    ModifiedOn = DateTime.Now.AddHours(7)
                 };
 
                 _unitOfWork.SchoolRepo.AddAsync(school);
@@ -72,7 +72,7 @@ namespace Services.Services.School
 
                 school.Status = changeStatusViewModel.Status;
                 school.ModifiedBy = currentUserId;
-                school.ModifiedOn = DateTime.Now;
+                school.ModifiedOn = DateTime.Now.AddHours(7);
 
                 _unitOfWork.SchoolRepo.Update(school);
                 var result = await _unitOfWork.SaveChangesAsync();
@@ -204,7 +204,7 @@ namespace Services.Services.School
                 school.City = schoolForUpdateViewModel.City;
                 school.Province = schoolForUpdateViewModel.Province;
                 school.ModifiedBy = currentUserId;
-                school.ModifiedOn = DateTime.Now;
+                school.ModifiedOn = DateTime.Now.AddHours(7);
 
                 _unitOfWork.SchoolRepo.Update(school);
                 var result = await _unitOfWork.SaveChangesAsync();

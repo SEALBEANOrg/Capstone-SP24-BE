@@ -150,7 +150,7 @@ namespace Services.Services.Paper
                     var paper = new Repositories.Models.Paper
                     {
                         CreatedBy = currentUserId,
-                        CreatedOn = DateTime.Now,
+                        CreatedOn = DateTime.Now.AddHours(7),
                         KeyS3 = $"papers/{currentUserId}/{detailOfPaper.NameOfTest}/{detailOfPaper.PaperCode}.docx",
                         PaperAnswer = correctAnswer,
                         PaperCode = detailOfPaper.PaperCode,

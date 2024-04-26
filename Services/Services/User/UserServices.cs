@@ -25,8 +25,8 @@ namespace Services.Services.User
             user.Point = 200;
             user.Status = 1;
             user.UserType = 1;
-            user.CreatedOn = DateTime.Now;
-            user.ModifiedOn = DateTime.Now;
+            user.CreatedOn = DateTime.Now.AddHours(7);
+            user.ModifiedOn = DateTime.Now.AddHours(7);
 
             try
             {
@@ -42,7 +42,7 @@ namespace Services.Services.User
                     UserId = user.UserId,
                     PointValue = 200,
                     Type = 5, // đăng nhập lần đầu
-                    CreatedOn = DateTime.Now
+                    CreatedOn = DateTime.Now.AddHours(7)
                 };
 
                 _unitOfWork.TransactionRepo.AddAsync(transaction);
@@ -202,7 +202,7 @@ namespace Services.Services.User
                 user.FullName = userUpdate.FullName;
                 user.Phone = userUpdate.Phone;
                 user.SchoolId = userUpdate.SchoolId;
-                user.ModifiedOn = DateTime.Now;
+                user.ModifiedOn = DateTime.Now.AddHours(7);
                 user.ModifiedBy = currentUserId;
 
                 _unitOfWork.UserRepo.Update(user);
@@ -232,7 +232,7 @@ namespace Services.Services.User
                 }
 
                 user.UserType = roleUpdate.UserType;
-                user.ModifiedOn = DateTime.Now;
+                user.ModifiedOn = DateTime.Now.AddHours(7);
                 user.ModifiedBy = _claimsService.GetCurrentUser;
 
                 _unitOfWork.UserRepo.Update(user);
@@ -257,7 +257,7 @@ namespace Services.Services.User
 
                 user.Status = isActive ? 1 : 0;
 
-                user.ModifiedOn = DateTime.Now;
+                user.ModifiedOn = DateTime.Now.AddHours(7);
                 user.ModifiedBy = _claimsService.GetCurrentUser;
 
                 _unitOfWork.UserRepo.Update(user);

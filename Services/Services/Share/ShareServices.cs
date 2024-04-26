@@ -39,7 +39,7 @@ namespace Services.Services.Share
                 {
                     shared.Status = 1;
                     shared.ModifiedBy = currentUser;
-                    shared.ModifiedOn = DateTime.Now;
+                    shared.ModifiedOn = DateTime.Now.AddHours(7);
 
                     _unitOfWork.ShareRepo.Update(shared);
                     var result = await _unitOfWork.SaveChangesAsync();
@@ -62,9 +62,9 @@ namespace Services.Services.Share
                         Type = 1,
                         Status = 1,
                         CreatedBy = currentUser,
-                        CreatedOn = DateTime.Now,
+                        CreatedOn = DateTime.Now.AddHours(7),
                         ModifiedBy = currentUser,
-                        ModifiedOn = DateTime.Now
+                        ModifiedOn = DateTime.Now.AddHours(7)
                     };
 
                     _unitOfWork.ShareRepo.AddAsync(share);
@@ -107,9 +107,9 @@ namespace Services.Services.Share
                     Type = shareCreate.Type,
                     Status = 0,
                     CreatedBy = currentUser,
-                    CreatedOn = DateTime.Now,
+                    CreatedOn = DateTime.Now.AddHours(7),
                     ModifiedBy = currentUser,
-                    ModifiedOn = DateTime.Now
+                    ModifiedOn = DateTime.Now.AddHours(7)
                 };
 
                 _unitOfWork.ShareRepo.AddAsync(share);
@@ -237,7 +237,7 @@ namespace Services.Services.Share
 
                 var currentUserInfo = await _unitOfWork.UserRepo.FindByField(u => u.UserId == currentUser);
 
-                share.Note += $"{DateTime.Now} - {currentUserInfo.Email} : {noteReport.Note}";
+                share.Note += $"{DateTime.Now.AddHours(7)} - {currentUserInfo.Email} : {noteReport.Note}";
 
                 _unitOfWork.ShareRepo.AddAsync(share);
                 var result = await _unitOfWork.SaveChangesAsync();
@@ -263,7 +263,7 @@ namespace Services.Services.Share
                 share.Status = responseRequest.IsAccept ? OptionSet.Status.Share.Approved : OptionSet.Status.Share.Rejected;
                 share.Note = responseRequest.Note;
                 share.ModifiedBy = currentUserId;
-                share.ModifiedOn = DateTime.Now;
+                share.ModifiedOn = DateTime.Now.AddHours(7);
 
                 if (share.Type == OptionSet.Share.Type.Public && share.Status == OptionSet.Status.Share.Approved)
                 {
@@ -284,7 +284,7 @@ namespace Services.Services.Share
                         UserId = share.CreatedBy,
                         Type = OptionSet.Transaction.Type.PublicQuestionSet, //public bo cau hoi
                         PointValue = setConfig.NB * 2 + setConfig.TH * 5 + setConfig.VDT * 10 + setConfig.VDC * 30,
-                        CreatedOn = DateTime.Now
+                        CreatedOn = DateTime.Now.AddHours(7)
                     };
                     _unitOfWork.TransactionRepo.AddAsync(transaction);
                 }

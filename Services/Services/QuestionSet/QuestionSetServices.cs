@@ -41,9 +41,9 @@ namespace Services.Services.QuestionSet
                 questionSet.Questions = questions;
 
                 questionSet.CreatedBy = currentUserId;
-                questionSet.CreatedOn = DateTime.Now;
+                questionSet.CreatedOn = DateTime.Now.AddHours(7);
                 questionSet.ModifiedBy = currentUserId;
-                questionSet.ModifiedOn = DateTime.Now;
+                questionSet.ModifiedOn = DateTime.Now.AddHours(7);
 
                 _unitOfWork.QuestionSetRepo.AddAsync(questionSet);
                 var result = await _unitOfWork.SaveChangesAsync();
@@ -279,7 +279,7 @@ namespace Services.Services.QuestionSet
                 }
                 questionSet.Status = isActive ? 1 : 0;
                 questionSet.ModifiedBy = currentUser;
-                questionSet.ModifiedOn = DateTime.Now;
+                questionSet.ModifiedOn = DateTime.Now.AddHours(7);
                 _unitOfWork.QuestionSetRepo.Update(questionSet);
                 var result = await _unitOfWork.SaveChangesAsync();
                 return result > 0;

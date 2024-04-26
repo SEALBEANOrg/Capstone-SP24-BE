@@ -31,9 +31,9 @@ namespace Services.Services.SubjectSection
                         .Max();
                     subjectSection.SectionNo = maxSectionNo + 1;
                 } 
-                subjectSection.CreatedOn = DateTime.Now;
+                subjectSection.CreatedOn = DateTime.Now.AddHours(7);
                 subjectSection.CreatedBy = currentUser;
-                subjectSection.ModifiedOn = DateTime.Now;
+                subjectSection.ModifiedOn = DateTime.Now.AddHours(7);
                 subjectSection.ModifiedBy = currentUser;
 
                 _unitOfWork.SubjectSectionRepo.AddAsync(subjectSection);
@@ -213,7 +213,7 @@ namespace Services.Services.SubjectSection
                     throw new Exception("Chương không tồn tại để chỉnh sửa");
                 }
 
-                subjectSection.ModifiedOn = DateTime.Now;
+                subjectSection.ModifiedOn = DateTime.Now.AddHours(7);
                 subjectSection.ModifiedBy = currentUser;
                 subjectSection = _mapper.Map(subjectSectionUpdate, subjectSection);
 

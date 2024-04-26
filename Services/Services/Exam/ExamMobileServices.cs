@@ -165,7 +165,7 @@ namespace Services.Services.Exam
 
                 examMark.AnswersSelected = resultToSave.AnswersSelected;
                 examMark.PaperCode = resultToSave.PaperCode;
-                examMark.ModifiedOn = DateTime.Now;
+                examMark.ModifiedOn = DateTime.Now.AddHours(7);
                 _unitOfWork.ExamMarkRepo.Update(examMark);
                 var result = await _unitOfWork.SaveChangesAsync();
 

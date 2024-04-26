@@ -69,8 +69,8 @@ namespace Services.Services.Question
             //        WriteIndented = true,
             //        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             //    });
-            //    question.CreatedOn = DateTime.Now;
-            //    question.ModifiedOn = DateTime.Now;
+            //    question.CreatedOn = DateTime.Now.AddHours(7);
+            //    question.ModifiedOn = DateTime.Now.AddHours(7);
             //    question.CreatedBy = currentUser;
             //    question.ModifiedBy = currentUser;
             //    question.Status = 0;
@@ -266,7 +266,7 @@ namespace Services.Services.Question
 
             //    question = _mapper.Map(questionUpdate, question);
             //    question.QuestionContent = JsonSerializer.Serialize((questionJson));
-            //    question.ModifiedOn = DateTime.Now;
+            //    question.ModifiedOn = DateTime.Now.AddHours(7);
             //    question.ModifiedBy = currentUser;
 
             //    _unitOfWork.QuestionRepo.AddAsync(question);

@@ -52,18 +52,18 @@ namespace Services.Services.Share
                     Type = 0,
                     Status = 1,
                     CreatedBy = currentUser,
-                    CreatedOn = DateTime.Now,
+                    CreatedOn = DateTime.Now.AddHours(7),
                     ModifiedBy = currentUser,
-                    ModifiedOn = DateTime.Now
+                    ModifiedOn = DateTime.Now.AddHours(7)
                 };
                 _unitOfWork.ShareRepo.AddAsync(shareNew);
 
                 // tru tien
                 currentUserInfo.Point = currentUserInfo.Point - price;
-                currentUserInfo.ModifiedOn = DateTime.Now;
+                currentUserInfo.ModifiedOn = DateTime.Now.AddHours(7);
 
                 creator.Point = creator.Point + price;
-                creator.ModifiedOn = DateTime.Now;
+                creator.ModifiedOn = DateTime.Now.AddHours(7);
 
                 _unitOfWork.UserRepo.Update(currentUserInfo);
                 _unitOfWork.UserRepo.Update(creator);
@@ -76,14 +76,14 @@ namespace Services.Services.Share
                         UserId = currentUser,
                         Type = 3, // mua bộ câu hỏi
                         PointValue = -price,
-                        CreatedOn = DateTime.Now,
+                        CreatedOn = DateTime.Now.AddHours(7),
                     },
                     new Repositories.Models.Transaction
                     {
                         UserId = share.CreatedBy,
                         Type = 4, // bán bộ câu hỏi
                         PointValue = price,
-                        CreatedOn = DateTime.Now,
+                        CreatedOn = DateTime.Now.AddHours(7),
                     },
                 };
 

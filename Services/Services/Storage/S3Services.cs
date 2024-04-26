@@ -75,7 +75,7 @@ namespace Services.Services.Storage
                 {
                     BucketName = _options.Value.BucketName,
                     Key = key,
-                    Expires = DateTime.Now.AddMinutes(30)
+                    Expires = DateTime.Now.AddHours(7).AddMinutes(30)
                 };
 
                 string url = s3Client.GetPreSignedURL(request);

@@ -69,7 +69,7 @@ namespace Services.Services.Exam
                     }
 
                     em.Mark = mark;
-                    em.ModifiedOn = DateTime.Now;
+                    em.ModifiedOn = DateTime.Now.AddHours(7);
                 }
 
                 _unitOfWork.ExamMarkRepo.UpdateRange(examMark);
@@ -96,7 +96,7 @@ namespace Services.Services.Exam
                     PointValue = -examMark.Count,
                     Type = 2, // chấm bài
                     UserId = currentUserId,
-                    CreatedOn = DateTime.Now
+                    CreatedOn = DateTime.Now.AddHours(7)
                 };
 
                 _unitOfWork.UserRepo.Update(currentUser);

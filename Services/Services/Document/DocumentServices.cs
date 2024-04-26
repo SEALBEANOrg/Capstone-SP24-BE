@@ -34,11 +34,11 @@ namespace Services.Services.Document
                 var keyS3 = "";
                 if (documentCreate.Type == 0)
                 {
-                    keyS3 = "templates/answer-sheet/" + $"{Utils.FormatFileName(documentCreate.Name).Trim()}-{DateTime.Now.Ticks}.pdf";
+                    keyS3 = "templates/answer-sheet/" + $"{Utils.FormatFileName(documentCreate.Name).Trim()}-{DateTime.Now.AddHours(7).Ticks}.pdf";
                 }
                 else if (documentCreate.Type == 1)
                 {
-                    keyS3 = "templates/paper/" + $"{Utils.FormatFileName(documentCreate.Name).Trim()}-{DateTime.Now.Ticks}.docx";
+                    keyS3 = "templates/paper/" + $"{Utils.FormatFileName(documentCreate.Name).Trim()}-{DateTime.Now.AddHours(7).Ticks}.docx";
                 }
                 var statusCode = await _s3Services.UploadFileIntoS3Async(memoryStream, keyS3);
                 if (statusCode == HttpStatusCode.OK)
@@ -50,7 +50,7 @@ namespace Services.Services.Document
                     return false;
                 }
                 document.CreatedBy = currentUser;
-                document.CreatedOn = DateTime.Now;
+                document.CreatedOn = DateTime.Now.AddHours(7);
 
                 _unitOfWork.DocumentRepo.AddAsync(document);
                 var result = await _unitOfWork.SaveChangesAsync();
@@ -152,7 +152,7 @@ namespace Services.Services.Document
         //        {
         //            Name = documentCreate.Name,
         //            Type = documentCreate.Type,
-        //            CreatedOn = DateTime.Now,
+        //            CreatedOn = DateTime.Now.AddHours(7),
         //            CreatedBy = Guid.Parse("00000000-0000-0000-0000-000000000000"),
         //            Description = documentCreate.Description,
         //            Data = stream.ToArray(),
