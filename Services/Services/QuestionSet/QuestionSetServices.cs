@@ -117,7 +117,25 @@ namespace Services.Services.QuestionSet
                     }
 
                     // Set the Type property
-                    questionSetViewModel.Type = boughtQuestionSets.Select(s => s.QuestionSetId).Contains(questionSet.QuestionSetId) ? 0 : 1;
+                    var boughtQuestionSet = boughtQuestionSets.FirstOrDefault(s => s.QuestionSetId == questionSet.QuestionSetId);
+                    if (boughtQuestionSet != null) //If the question set is bought, set the Type property to -1 if it is a shared question set, 0 if it is a bought question set
+                    {
+                        if (boughtQuestionSet.Type == 1)
+                        {
+                            questionSetViewModel.Type = -1;
+                            var createdByUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == boughtQuestionSet.CreatedBy);
+                            questionSetViewModel.NameOfOwner = createdByUser != null ? createdByUser.FullName : null;
+                        }
+                        else
+                        {
+                            questionSetViewModel.Type = 0;
+                            questionSetViewModel.NameOfOwner = null;
+                        }
+                    }
+                    else //If the question set is not bought, set the Type property to 1
+                    {
+                        questionSetViewModel.Type = 1;
+                    }
 
                     questionSetViewModels.Add(questionSetViewModel);
                 }

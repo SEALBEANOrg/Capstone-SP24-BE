@@ -103,6 +103,7 @@ namespace Services.ViewModels
         public int SubjectEnum { get; set; }
         public int NumOfQuestion { get; set; }
         public int Type { get; set; }
+        public string? NameOfOwner { get; set; } = null;
     }
 
     public class SharedQuestionSet
