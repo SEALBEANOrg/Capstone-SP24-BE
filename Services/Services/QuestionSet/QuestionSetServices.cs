@@ -122,7 +122,7 @@ namespace Services.Services.QuestionSet
                     {
                         if (boughtQuestionSet.Type == 1)
                         {
-                            questionSetViewModel.Type = -1;
+                            questionSetViewModel.Type = 2;
                             var createdByUser = await _unitOfWork.UserRepo.FindByField(user => user.UserId == boughtQuestionSet.CreatedBy);
                             questionSetViewModel.NameOfOwner = createdByUser != null ? createdByUser.FullName : null;
                         }
