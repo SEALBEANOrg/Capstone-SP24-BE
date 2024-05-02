@@ -41,7 +41,7 @@ namespace Services.Services.Share
                 var currentUserInfo = await _unitOfWork.UserRepo.FindByField(u => u.UserId == currentUser);
                 if (currentUserInfo.Point < price)
                 {
-                    throw new Exception("Không đủ điểm");
+                    throw new Exception("Không đủ xu");
                 }
 
                 // them share

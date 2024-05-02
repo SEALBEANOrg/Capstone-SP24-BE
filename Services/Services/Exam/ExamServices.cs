@@ -580,7 +580,7 @@ namespace Services.Services.Exam
         {
             if (examCreate.NumOfDiffPaper * examCreate.NumOfPaperCode * 10 > user.Point)
             {
-                throw new Exception("Không đủ điểm để phát sinh đề");
+                throw new Exception("Không đủ xu để phát sinh đề");
             }
             if (examCreate.Sections.Count == 0)
             {

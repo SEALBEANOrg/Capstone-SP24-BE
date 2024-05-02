@@ -31,7 +31,7 @@ namespace Services.Services.Transaction
               "&extraData=" + currentUserId +
               "&ipnUrl=" + _options.Value.NotifyUrl +
               "&orderId=" + orderId +
-              "&orderInfo=" + "Nạp điểm" +
+              "&orderInfo=" + "Nạp xu" +
               "&partnerCode=" + _options.Value.PartnerCode +
               "&redirectUrl=" + _options.Value.ReturnUrl +
               "&requestId=" + requestId +
@@ -48,7 +48,7 @@ namespace Services.Services.Transaction
                 { "requestId", requestId },
                 { "amount", transactionViaMomo.PointValue },
                 { "orderId", orderId },
-                { "orderInfo", "Nạp điểm" },
+                { "orderInfo", "Nạp xu" },
                 { "redirectUrl", _options.Value.ReturnUrl },
                 { "ipnUrl", _options.Value.NotifyUrl },
                 { "lang", "en" },
